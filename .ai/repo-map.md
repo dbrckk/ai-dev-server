@@ -1686,7 +1686,7 @@ jobs:
           STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
           STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
-          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
           STUDIO_PROVIDERS_JSON: >-
@@ -1921,7 +1921,7 @@ jobs:
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_FALLBACK_API_KEY: ${{ secrets.STUDIO_FALLBACK_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
-      STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+      STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b' }}
       STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
       STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -2703,7 +2703,7 @@ jobs:
           PRODUCTION_OS_DIAGNOSE_CODE_SMOKE: '1'
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
           STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
-          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -3473,8 +3473,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 21,
-  "reason": "Verify current configured inference providers and operator access after worker permanent-HTTP retry fix; bounded smoke only, no job restart",
+  "sequence": 22,
+  "reason": "Check live-qualified Lightning as primary after default routing update; bounded code smoke and operator access only, no job restart",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }
@@ -22638,7 +22638,16 @@ account = str(environ.get("CLOUDFLARE_ACCOUNT_ID") or "").strip().lower()
 ⋮----
 def configure(environ)
 ⋮----
-providers = [
+# Hosted primary defaults to the live-qualified Lightning model.
+# Avoid sending two paid-or-quota-metered requests to the same API
+# model/key when the primary and implementation model already match.
+# If an operator selected a different primary/code model, retain an
+# independently selectable Lightning fallback without overriding it.
+qualified = "nvidia/nemotron-3.5-lightning-30b-a3b"
+primary = str(environ.get("STUDIO_MODEL") or qualified).strip()
+primary_code = str(environ.get("STUDIO_CODE_MODEL") or primary).strip()
+providers = []
+⋮----
 free_fallback = _cloudflare_free_fallback(environ)
 ````
 
@@ -24123,7 +24132,7 @@ def _primary() -> ProviderSpec | None
 base = os.environ.get("STUDIO_API_BASE", "https://integrate.api.nvidia.com/v1")
 key = os.environ.get("STUDIO_API_KEY", "")
 ⋮----
-model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3-super-120b-a12b")
+model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")
 code_model = os.environ.get("STUDIO_CODE_MODEL", "") or model
 vision = os.environ.get("STUDIO_VISION_MODEL", "")
 ⋮----
@@ -36064,10 +36073,23 @@ env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
 ⋮----
-# Fresh hosted code proof qualifies Lightning; keep an unavailable
-# Poolside fallback from preceding it in the actual default registry.
+# The qualified Lightning model is the primary, not an unnecessary
+# duplicate fallback with the same API key and model. Preserve the
+# secondary named provider for operator-selected alternatives.
 ⋮----
 ordered = load_providers()
+⋮----
+# A deliberately customized model is never overwritten by defaults;
+# the verified Lightning model remains available as its fallback.
+selected = {
+⋮----
+# A non-default implementation model also merits a Lightning fallback.
+overridden = {
+⋮----
+# Managed production worker, hosted diagnostics and mobile entrypoints
+# share the tested default; explicit variables remain untouched.
+⋮----
+source = (Path(__file__).resolve().parents[1]
 ⋮----
 cloudflare_env = {
 ⋮----

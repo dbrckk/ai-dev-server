@@ -9096,10 +9096,23 @@ env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
 ⋮----
-# Fresh hosted code proof qualifies Lightning; keep an unavailable
-# Poolside fallback from preceding it in the actual default registry.
+# The qualified Lightning model is the primary, not an unnecessary
+# duplicate fallback with the same API key and model. Preserve the
+# secondary named provider for operator-selected alternatives.
 ⋮----
 ordered = load_providers()
+⋮----
+# A deliberately customized model is never overwritten by defaults;
+# the verified Lightning model remains available as its fallback.
+selected = {
+⋮----
+# A non-default implementation model also merits a Lightning fallback.
+overridden = {
+⋮----
+# Managed production worker, hosted diagnostics and mobile entrypoints
+# share the tested default; explicit variables remain untouched.
+⋮----
+source = (Path(__file__).resolve().parents[1]
 ⋮----
 cloudflare_env = {
 ⋮----

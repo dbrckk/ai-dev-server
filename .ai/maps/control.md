@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 21,
-  "reason": "Verify current configured inference providers and operator access after worker permanent-HTTP retry fix; bounded smoke only, no job restart",
+  "sequence": 22,
+  "reason": "Check live-qualified Lightning as primary after default routing update; bounded code smoke and operator access only, no job restart",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }

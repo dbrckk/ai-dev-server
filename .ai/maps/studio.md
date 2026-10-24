@@ -16787,7 +16787,16 @@ account = str(environ.get("CLOUDFLARE_ACCOUNT_ID") or "").strip().lower()
 ⋮----
 def configure(environ)
 ⋮----
-providers = [
+# Hosted primary defaults to the live-qualified Lightning model.
+# Avoid sending two paid-or-quota-metered requests to the same API
+# model/key when the primary and implementation model already match.
+# If an operator selected a different primary/code model, retain an
+# independently selectable Lightning fallback without overriding it.
+qualified = "nvidia/nemotron-3.5-lightning-30b-a3b"
+primary = str(environ.get("STUDIO_MODEL") or qualified).strip()
+primary_code = str(environ.get("STUDIO_CODE_MODEL") or primary).strip()
+providers = []
+⋮----
 free_fallback = _cloudflare_free_fallback(environ)
 ````
 
@@ -18272,7 +18281,7 @@ def _primary() -> ProviderSpec | None
 base = os.environ.get("STUDIO_API_BASE", "https://integrate.api.nvidia.com/v1")
 key = os.environ.get("STUDIO_API_KEY", "")
 ⋮----
-model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3-super-120b-a12b")
+model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")
 code_model = os.environ.get("STUDIO_CODE_MODEL", "") or model
 vision = os.environ.get("STUDIO_VISION_MODEL", "")
 ⋮----

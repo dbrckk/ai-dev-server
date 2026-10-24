@@ -1,21 +1,25 @@
 # Change impact
 
-Base: f7cdc62a73a89a664a1e02fb0b325a078c907647
-Head: b75934ec0e31015dd143f6001ab9190789aa4b70
+Base: 3a60de96210e1bfb00e29c7425a7d984df0924f6
+Head: 6ad645b95be26f2865dc541dcdc0d189b86cd31a
 
 ## Changed files
-- M control/production-os-worker-canary.json
-- M studio/production_os_bounded_source_repair.py
-- M studio/production_os_source_tasks.py
-- M tests/test_multi_engine_orchestrator.py
+- M .github/workflows/mobile-studio.yml
+- M .github/workflows/production-os-actions-worker.yml
+- M .github/workflows/production-os-live-diagnostics.yml
+- M control/production-os-diagnostics-kick.json
+- M studio/production_os_provider_config.py
+- M studio/provider_router.py
+- M tests/test_production_os_live_diagnostics.py
 
 ## Affected areas
+- .github
 - control
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_provider_router.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -261,16 +261,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T06:56:29Z
+Generated: 2026-10-24T07:27:26Z
 
 ### Git
 - Branch: `main`
-- Head: `b75934ec0e31`
-- Commit date: 2026-10-24T02:56:19-04:00
-- Commit: feat: run a bounded model-authored reviewer-state repair (#391)
+- Head: `6ad645b95be2`
+- Commit date: 2026-10-24T03:27:07-04:00
+- Commit: fix(inference): prefer qualified Lightning and avoid duplicate provider calls (#386)
 - Tracked files: 875
 
 ### Recently changed files
+- `.github/workflows/mobile-studio.yml`
+- `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-live-diagnostics.yml`
+- `control/production-os-diagnostics-kick.json`
+- `studio/production_os_provider_config.py`
+- `studio/provider_router.py`
+- `tests/test_production_os_live_diagnostics.py`
 - `control/production-os-worker-canary.json`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_source_tasks.py`
@@ -278,7 +285,6 @@ Generated: 2026-10-24T06:56:29Z
 - `studio/multi_engine_orchestrator.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
-- `studio/generic_repository.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -5,134 +5,263 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "contract": {
+    "_cloudflare_free_fallback": {
       "source": {
-        "file": "studio/production_os_bounded_source_repair.py",
-        "start": 29,
-        "end": 46
+        "file": "studio/production_os_provider_config.py",
+        "start": 14,
+        "end": 38
       },
       "symbol_dependencies": [
         {
-          "symbol": "SourceTask",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_line_statement": {
-      "source": {
-        "file": "studio/production_os_bounded_source_repair.py",
-        "start": 49,
-        "end": 56
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Model",
+          "symbol": "API",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 433,
+              "line": 343,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "class_like"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "class_like"
         }
       ],
       "dependency_count": 2
     },
-    "apply_model_edit": {
+    "configure": {
       "source": {
-        "file": "studio/production_os_bounded_source_repair.py",
-        "start": 59,
-        "end": 102
+        "file": "studio/production_os_provider_config.py",
+        "start": 41,
+        "end": 69
       },
       "symbol_dependencies": [
         {
-          "symbol": "Model",
+          "symbol": "API",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 433,
+              "line": 343,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "class_like"
         },
         {
-          "symbol": "SourceTask",
+          "symbol": "_cloudflare_free_fallback",
           "definitions": [
             {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 11,
+              "file": "studio/production_os_provider_config.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "ProviderSpec": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 23,
+        "end": 46
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "model_for": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 38,
+        "end": 46
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_is_local_base": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 49,
+        "end": 60
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_bool": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 63,
+        "end": 68
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_auto_omniroute": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 71,
+        "end": 101
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "_bool",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
+              "file": "studio/provider_router.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_is_local_base",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_primary": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 104,
+        "end": 163
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "_line_statement",
+          "symbol": "_bool",
           "definitions": [
             {
-              "file": "studio/production_os_bounded_source_repair.py",
+              "file": "studio/provider_router.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_is_local_base",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_json_specs": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 166,
+        "end": 249
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_bool",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_is_local_base",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
               "line": 49,
               "kind": "function",
               "language": "python"
@@ -141,11 +270,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "new",
+          "symbol": "append",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 29,
+              "file": "studio/routing_audit.py",
+              "line": 13,
               "kind": "function",
               "language": "python"
             }
@@ -155,53 +284,363 @@
       ],
       "dependency_count": 5
     },
-    "run": {
+    "_local_capacity_specs": {
       "source": {
-        "file": "studio/production_os_bounded_source_repair.py",
-        "start": 19,
-        "end": 19
+        "file": "studio/provider_router.py",
+        "start": 252,
+        "end": 299
       },
       "symbol_dependencies": [
         {
-          "symbol": "GitHub",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 59,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append",
+          "definitions": [
+            {
+              "file": "studio/routing_audit.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
           "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "load_providers": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 302,
+        "end": 336
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_auto_omniroute",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 71,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_specs",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 166,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_local_capacity_specs",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_primary",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append",
+          "definitions": [
+            {
+              "file": "studio/routing_audit.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sort_key",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 331,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "sort_key": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 331,
+        "end": 451
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append",
+          "definitions": [
+            {
+              "file": "studio/routing_audit.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 339,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/unified_routing_score.py",
+              "line": 10,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "candidates_for": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 339,
+        "end": 410
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append",
+          "definitions": [
+            {
+              "file": "studio/routing_audit.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/unified_routing_score.py",
+              "line": 10,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "budget_eligible": {
+      "source": {
+        "file": "studio/provider_router.py",
+        "start": 413,
+        "end": 428
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1
     },
-    "SourceTask": {
+    "LiveDiagnosticsTests": {
       "source": {
-        "file": "studio/production_os_source_tasks.py",
-        "start": 11,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "instruction": {
-      "source": {
-        "file": "studio/production_os_source_tasks.py",
-        "start": 109,
-        "end": 120
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "MultiEngineOrchestratorTests": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 15,
-        "end": 590
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 13,
+        "end": 265
       },
       "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "APIError",
           "definitions": [
@@ -215,64 +654,40 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "StudioError",
@@ -312,10 +727,16 @@
               "line": 923,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_catalog_confirms_zero_cost",
+          "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 27,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -323,239 +744,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_approved_source_path",
+          "symbol": "_safe_increment_source",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 31,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "apply_model_edit",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_model_guard",
-          "definitions": [
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "contract",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 29,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finalize_source_delivery_evidence",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "never_detect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 233,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 394,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
@@ -563,88 +780,52 @@
           "relation": "same_file"
         },
         {
-          "symbol": "no_fallback",
+          "symbol": "configure",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 403,
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "publish",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "publish_approved_source",
+          "symbol": "load_providers",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
+              "file": "studio/provider_router.py",
+              "line": 302,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "request",
+          "symbol": "model_for",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
+              "file": "studio/provider_router.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "run",
@@ -656,14 +837,8 @@
               "language": "python"
             },
             {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -671,35 +846,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_persistent_project",
+          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
           "definitions": [
             {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 171,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 176,
               "kind": "function",
               "language": "python"
             }
@@ -707,11 +858,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_each_failed_godot_stage_stays_on_itself",
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 177,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
               "kind": "function",
               "language": "python"
             }
@@ -719,11 +870,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_flutter_delegates_unchanged",
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 20,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
               "kind": "function",
               "language": "python"
             }
@@ -731,11 +882,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_generic_only_forwards_published_round_checkpoint_callback",
+          "symbol": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 32,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 14,
               "kind": "function",
               "language": "python"
             }
@@ -743,587 +894,27 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 40
+      "dependency_count": 18
     },
-    "request": {
+    "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 16,
-        "end": 17
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_flutter_delegates_unchanged": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 20,
-        "end": 29
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 14,
+        "end": 111
       },
       "symbol_dependencies": [
         {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "runner": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 24,
-        "end": 144
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_generic_only_forwards_published_round_checkpoint_callback",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_generic_without_callback_preserves_original_call",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_generic_only_forwards_published_round_checkpoint_callback": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 32,
-        "end": 59
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_generic_without_callback_preserves_original_call": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 62,
-        "end": 82
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_runner": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 84,
-        "end": 143
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_godot_stops_cleanly_when_release_keystore_is_missing": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 145,
-        "end": 150
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
+          "symbol": "API",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_release_chain_reaches_human_play_submission_only": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 152,
-        "end": 157
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_opt_in_play_validation_can_complete_godot_pipeline": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 159,
-        "end": 169
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_credentials_lost_between_preflight_and_signing_return_to_human_action": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 171,
-        "end": 175
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_each_failed_godot_stage_stays_on_itself": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 177,
-        "end": 191
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_journey_stage_cannot_fake_execution_coverage": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 193,
-        "end": 197
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
+              "line": 343,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_visual_stage_cannot_fake_visual_coverage": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 199,
-        "end": 203
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_runner",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_missing_detection_evidence_fails_closed": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 205,
-        "end": 590
-      },
-      "symbol_dependencies": [
         {
           "symbol": "APIError",
           "definitions": [
@@ -1337,47 +928,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
               "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
               "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
               "kind": "class",
               "language": "python"
             }
@@ -1385,23 +952,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "Repository",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
@@ -1434,238 +989,40 @@
               "line": 923,
               "kind": "function",
               "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "_approved_source_path",
+          "symbol": "_catalog_confirms_zero_cost",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 31,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_model_edit",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_model_guard",
-          "definitions": [
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "contract",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 29,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finalize_source_delivery_evidence",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "never_detect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 233,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 394,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
@@ -1673,88 +1030,16 @@
           "relation": "same_file"
         },
         {
-          "symbol": "no_fallback",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 403,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "run",
@@ -1766,186 +1051,8 @@
               "language": "python"
             },
             {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 37
-    },
-    "never_detect": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 233,
-        "end": 353
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_model_edit",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_model_guard",
-          "definitions": [
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "contract",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "finalize_source_delivery_evidence",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -1955,13 +1062,25 @@
       ],
       "dependency_count": 9
     },
-    "no_fallback": {
+    "FakeAPI": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 403,
-        "end": 523
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 18,
+        "end": 138
       },
       "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "APIError",
           "definitions": [
@@ -1975,52 +1094,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "StudioError",
@@ -2060,10 +1143,16 @@
               "line": 923,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_catalog_confirms_zero_cost",
+          "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 27,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -2071,482 +1160,52 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ask",
+          "symbol": "_safe_increment_source",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 460,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 22
-    },
-    "Repository": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 439,
-        "end": 559
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/core.py",
-              "line": 345,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/core.py",
-              "line": 434,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "run",
@@ -2558,14 +1217,8 @@
               "language": "python"
             },
             {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -2573,63 +1226,51 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_persistent_project",
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
           "definitions": [
             {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "run_project",
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
           "definitions": [
             {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 25
+      "dependency_count": 12
     },
     "__init__": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 441,
-        "end": 561
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 19,
+        "end": 139
       },
       "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "APIError",
           "definitions": [
@@ -2643,64 +1284,40 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "StudioError",
@@ -2715,11 +1332,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ask",
+          "symbol": "_catalog_confirms_zero_cost",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 460,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -2727,160 +1344,52 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "await_trusted_review",
+          "symbol": "_safe_increment_source",
           "definitions": [
             {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "run",
@@ -2892,14 +1401,144 @@
               "language": "python"
             },
             {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "call": {
+      "source": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 21,
+        "end": 141
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
               "kind": "function",
               "language": "python"
             }
@@ -2907,11 +1546,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_persistent_project",
+          "symbol": "_catalog_confirms_zero_cost",
           "definitions": [
             {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -2919,11 +1558,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_project",
+          "symbol": "_safe_increment_source",
           "definitions": [
             {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
@@ -2931,11 +1570,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "validate",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -2943,11 +1582,177 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "wait_for_exact_commit_ci",
+          "symbol": "run",
           "definitions": [
             {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
+              "file": "studio/core.py",
+              "line": 926,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready": {
+      "source": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 113,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_increment_source",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -2955,13 +1760,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 25
+      "dependency_count": 7
     },
-    "restore": {
+    "test_operator_probe_is_read_only_and_no_token_is_reported": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 442,
-        "end": 562
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 138,
+        "end": 174
       },
       "symbol_dependencies": [
         {
@@ -2977,59 +1782,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
               "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
               "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
               "kind": "class",
               "language": "python"
             }
@@ -3074,2124 +1843,6 @@
               "line": 923,
               "kind": "function",
               "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 449,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 25
-    },
-    "restore_approved_source": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 449,
-        "end": 569
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 26
-    },
-    "publish": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 452,
-        "end": 572
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish_approved_source",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 456,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 25
-    },
-    "publish_approved_source": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 456,
-        "end": 576
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ensure_pull_request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 459,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "publish",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 452,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 25
-    },
-    "ensure_pull_request": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 459,
-        "end": 579
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_trusted_review_handoff",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 461,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 23
-    },
-    "request_trusted_review_handoff": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 461,
-        "end": 581
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "await_trusted_review",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 22
-    },
-    "await_trusted_review": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 465,
-        "end": 585
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
             }
           ],
           "relation": "imported_module"
@@ -5200,164 +1851,32 @@
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "run_persistent_project",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -5365,21 +1884,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 21
+      "dependency_count": 6
     },
-    "execute_lane": {
+    "test_defaults_preserve_explicit_configuration_and_other_providers": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 472,
-        "end": 592
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 176,
+        "end": 265
       },
       "symbol_dependencies": [
         {
-          "symbol": "APIError",
+          "symbol": "API",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 328,
+              "line": 343,
               "kind": "class",
               "language": "python"
             }
@@ -5387,107 +1906,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GenericRepository",
+          "symbol": "configure",
           "definitions": [
             {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
@@ -5495,11 +1918,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ask",
+          "symbol": "load_providers",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 460,
+              "file": "studio/provider_router.py",
+              "line": 302,
               "kind": "function",
               "language": "python"
             }
@@ -5507,593 +1930,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "call",
+          "symbol": "model_for",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_goal",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 475,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 20
-    },
-    "continue_goal": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 475,
-        "end": 595
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GenericRepository",
-          "definitions": [
-            {
-              "file": "studio/generic_repository.py",
-              "line": 26,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Repository",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 460,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute_lane",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 472,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 19
-    },
-    "ReadOnlyGitHub": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 552,
-        "end": 672
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 923,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/generic_repository.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 556,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "get": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 556,
-        "end": 676
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 563,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
+              "file": "studio/provider_router.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -6102,52 +1943,6 @@
         }
       ],
       "dependency_count": 4
-    },
-    "inspect": {
-      "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 563,
-        "end": 683
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ReadOnlyGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 552,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "inspect_exact_commit_ci",
-          "definitions": [
-            {
-              "file": "studio/target_ci_verification.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
     }
   }
 }

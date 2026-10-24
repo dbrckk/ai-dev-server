@@ -1,18 +1,21 @@
 # Change impact
 
-Base: 4bfbffd80110e2d319df920c4cd3acdad85f3b16
-Head: 057a1dafe707265cf686976dac4af4b88b4c4911
+Base: f7cdc62a73a89a664a1e02fb0b325a078c907647
+Head: b75934ec0e31015dd143f6001ab9190789aa4b70
 
 ## Changed files
-- M studio/multi_engine_orchestrator.py
+- M control/production-os-worker-canary.json
+- M studio/production_os_bounded_source_repair.py
+- M studio/production_os_source_tasks.py
 - M tests/test_multi_engine_orchestrator.py
 
 ## Affected areas
+- control
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_multi_engine_orchestrator.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

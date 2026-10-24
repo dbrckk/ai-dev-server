@@ -5,28 +5,19 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_remaining": {
+    "contract": {
       "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 20,
-        "end": 23
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_detect": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 26,
-        "end": 38
+        "file": "studio/production_os_bounded_source_repair.py",
+        "start": 29,
+        "end": 46
       },
       "symbol_dependencies": [
         {
-          "symbol": "StudioError",
+          "symbol": "SourceTask",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
+              "file": "studio/production_os_source_tasks.py",
+              "line": 11,
               "kind": "class",
               "language": "python"
             }
@@ -34,115 +25,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_remaining",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_stage": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 41,
-        "end": 44
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "run_project": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 47,
-        "end": 234
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_detect",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_stage",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "contract",
-          "definitions": [
-            {
-              "file": "studio/production_os_bounded_source_repair.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_review_canary.py",
-              "line": 21,
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -154,31 +41,7 @@
           "definitions": [
             {
               "file": "studio/production_os_source_tasks.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_report",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 268,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -186,13 +49,157 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 3
+    },
+    "_line_statement": {
+      "source": {
+        "file": "studio/production_os_bounded_source_repair.py",
+        "start": 49,
+        "end": 56
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Model",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 433,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "apply_model_edit": {
+      "source": {
+        "file": "studio/production_os_bounded_source_repair.py",
+        "start": 59,
+        "end": 102
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Model",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 433,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "SourceTask",
+          "definitions": [
+            {
+              "file": "studio/production_os_source_tasks.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_line_statement",
+          "definitions": [
+            {
+              "file": "studio/production_os_bounded_source_repair.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "new",
+          "definitions": [
+            {
+              "file": "studio/execution_checkpoint.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "run": {
+      "source": {
+        "file": "studio/production_os_bounded_source_repair.py",
+        "start": 19,
+        "end": 19
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "SourceTask": {
+      "source": {
+        "file": "studio/production_os_source_tasks.py",
+        "start": 11,
+        "end": 24
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "instruction": {
+      "source": {
+        "file": "studio/production_os_source_tasks.py",
+        "start": 109,
+        "end": 120
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
     "MultiEngineOrchestratorTests": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
         "start": 15,
-        "end": 573
+        "end": 590
       },
       "symbol_dependencies": [
         {
@@ -248,7 +255,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -260,7 +267,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -380,7 +387,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -416,7 +423,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -446,7 +453,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -458,7 +465,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -482,7 +489,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -494,7 +501,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -518,7 +525,7 @@
           "definitions": [
             {
               "file": "studio/production_os_source_tasks.py",
-              "line": 78,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -548,7 +555,7 @@
             },
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 378,
+              "line": 394,
               "kind": "function",
               "language": "python"
             }
@@ -560,7 +567,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 387,
+              "line": 403,
               "kind": "function",
               "language": "python"
             }
@@ -572,7 +579,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -584,7 +591,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -608,7 +615,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -620,7 +627,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -632,7 +639,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -1314,7 +1321,7 @@
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
         "start": 205,
-        "end": 573
+        "end": 590
       },
       "symbol_dependencies": [
         {
@@ -1370,7 +1377,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -1382,7 +1389,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -1490,7 +1497,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -1526,7 +1533,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -1556,7 +1563,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -1568,7 +1575,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -1592,7 +1599,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -1604,7 +1611,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -1628,7 +1635,7 @@
           "definitions": [
             {
               "file": "studio/production_os_source_tasks.py",
-              "line": 78,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -1658,7 +1665,7 @@
             },
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 378,
+              "line": 394,
               "kind": "function",
               "language": "python"
             }
@@ -1670,7 +1677,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 387,
+              "line": 403,
               "kind": "function",
               "language": "python"
             }
@@ -1682,7 +1689,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -1694,7 +1701,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -1718,7 +1725,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -1730,7 +1737,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -1742,7 +1749,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -1914,7 +1921,7 @@
           "definitions": [
             {
               "file": "studio/production_os_source_tasks.py",
-              "line": 78,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -1951,8 +1958,8 @@
     "no_fallback": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 387,
-        "end": 507
+        "start": 403,
+        "end": 523
       },
       "symbol_dependencies": [
         {
@@ -2008,7 +2015,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -2080,7 +2087,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -2104,7 +2111,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -2116,7 +2123,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -2128,7 +2135,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -2152,7 +2159,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -2164,7 +2171,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -2188,7 +2195,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -2200,7 +2207,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -2212,7 +2219,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -2261,8 +2268,8 @@
     "Repository": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 422,
-        "end": 542
+        "start": 439,
+        "end": 559
       },
       "symbol_dependencies": [
         {
@@ -2318,7 +2325,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -2390,7 +2397,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -2414,7 +2421,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -2426,7 +2433,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -2438,7 +2445,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -2450,7 +2457,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -2474,7 +2481,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -2486,7 +2493,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -2510,7 +2517,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -2522,7 +2529,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -2534,7 +2541,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -2619,8 +2626,8 @@
     "__init__": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 424,
-        "end": 544
+        "start": 441,
+        "end": 561
       },
       "symbol_dependencies": [
         {
@@ -2676,7 +2683,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -2688,7 +2695,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -2724,7 +2731,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -2748,7 +2755,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -2760,7 +2767,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -2772,7 +2779,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -2784,7 +2791,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -2808,7 +2815,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -2820,7 +2827,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -2844,7 +2851,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -2856,7 +2863,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -2868,7 +2875,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -2953,8 +2960,8 @@
     "restore": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 425,
-        "end": 545
+        "start": 442,
+        "end": 562
       },
       "symbol_dependencies": [
         {
@@ -3010,7 +3017,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -3022,7 +3029,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -3094,7 +3101,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -3118,7 +3125,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -3130,7 +3137,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -3142,7 +3149,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -3154,7 +3161,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -3178,7 +3185,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -3190,7 +3197,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -3214,7 +3221,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -3226,7 +3233,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 432,
+              "line": 449,
               "kind": "function",
               "language": "python"
             }
@@ -3311,8 +3318,8 @@
     "restore_approved_source": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 432,
-        "end": 552
+        "start": 449,
+        "end": 569
       },
       "symbol_dependencies": [
         {
@@ -3368,7 +3375,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -3380,7 +3387,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -3452,7 +3459,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -3476,7 +3483,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -3488,7 +3495,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -3500,7 +3507,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -3512,7 +3519,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -3524,7 +3531,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -3548,7 +3555,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -3560,7 +3567,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -3584,7 +3591,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -3596,7 +3603,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -3681,8 +3688,8 @@
     "publish": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 435,
-        "end": 555
+        "start": 452,
+        "end": 572
       },
       "symbol_dependencies": [
         {
@@ -3738,7 +3745,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -3750,7 +3757,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -3822,7 +3829,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -3846,7 +3853,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -3858,7 +3865,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -3870,7 +3877,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -3882,7 +3889,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -3894,7 +3901,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -3918,7 +3925,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 439,
+              "line": 456,
               "kind": "function",
               "language": "python"
             }
@@ -3942,7 +3949,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -3954,7 +3961,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -4039,8 +4046,8 @@
     "publish_approved_source": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 439,
-        "end": 559
+        "start": 456,
+        "end": 576
       },
       "symbol_dependencies": [
         {
@@ -4096,7 +4103,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -4108,7 +4115,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -4180,7 +4187,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -4204,7 +4211,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -4216,7 +4223,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 442,
+              "line": 459,
               "kind": "function",
               "language": "python"
             }
@@ -4228,7 +4235,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -4240,7 +4247,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -4252,7 +4259,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -4276,7 +4283,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 435,
+              "line": 452,
               "kind": "function",
               "language": "python"
             }
@@ -4300,7 +4307,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -4312,7 +4319,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -4397,8 +4404,8 @@
     "ensure_pull_request": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 442,
-        "end": 562
+        "start": 459,
+        "end": 579
       },
       "symbol_dependencies": [
         {
@@ -4454,7 +4461,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -4466,7 +4473,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -4538,7 +4545,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -4562,7 +4569,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -4574,7 +4581,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -4586,7 +4593,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -4598,7 +4605,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -4634,7 +4641,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 444,
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -4646,7 +4653,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -4731,8 +4738,8 @@
     "request_trusted_review_handoff": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 444,
-        "end": 564
+        "start": 461,
+        "end": 581
       },
       "symbol_dependencies": [
         {
@@ -4788,7 +4795,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -4800,7 +4807,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -4872,7 +4879,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 448,
+              "line": 465,
               "kind": "function",
               "language": "python"
             }
@@ -4896,7 +4903,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -4908,7 +4915,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -4920,7 +4927,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -4932,7 +4939,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -4968,7 +4975,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -5053,8 +5060,8 @@
     "await_trusted_review": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 448,
-        "end": 568
+        "start": 465,
+        "end": 585
       },
       "symbol_dependencies": [
         {
@@ -5110,7 +5117,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -5122,7 +5129,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -5206,7 +5213,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -5218,7 +5225,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -5230,7 +5237,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -5242,7 +5249,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -5278,7 +5285,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -5363,8 +5370,8 @@
     "execute_lane": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 455,
-        "end": 575
+        "start": 472,
+        "end": 592
       },
       "symbol_dependencies": [
         {
@@ -5420,7 +5427,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -5432,7 +5439,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -5516,7 +5523,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 458,
+              "line": 475,
               "kind": "function",
               "language": "python"
             }
@@ -5528,7 +5535,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -5540,7 +5547,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -5576,7 +5583,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -5661,8 +5668,8 @@
     "continue_goal": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 458,
-        "end": 578
+        "start": 475,
+        "end": 595
       },
       "symbol_dependencies": [
         {
@@ -5718,7 +5725,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -5730,7 +5737,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 422,
+              "line": 439,
               "kind": "class",
               "language": "python"
             }
@@ -5814,7 +5821,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 455,
+              "line": 472,
               "kind": "function",
               "language": "python"
             }
@@ -5826,7 +5833,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -5838,7 +5845,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -5874,7 +5881,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 425,
+              "line": 442,
               "kind": "function",
               "language": "python"
             }
@@ -5947,8 +5954,8 @@
     "ReadOnlyGitHub": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 535,
-        "end": 655
+        "start": 552,
+        "end": 672
       },
       "symbol_dependencies": [
         {
@@ -6004,7 +6011,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 539,
+              "line": 556,
               "kind": "function",
               "language": "python"
             }
@@ -6016,7 +6023,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -6041,8 +6048,8 @@
     "get": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 539,
-        "end": 659
+        "start": 556,
+        "end": 676
       },
       "symbol_dependencies": [
         {
@@ -6050,7 +6057,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }
@@ -6074,7 +6081,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 546,
+              "line": 563,
               "kind": "function",
               "language": "python"
             }
@@ -6099,8 +6106,8 @@
     "inspect": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 546,
-        "end": 666
+        "start": 563,
+        "end": 683
       },
       "symbol_dependencies": [
         {
@@ -6108,7 +6115,7 @@
           "definitions": [
             {
               "file": "tests/test_multi_engine_orchestrator.py",
-              "line": 535,
+              "line": 552,
               "kind": "class",
               "language": "python"
             }

@@ -8213,6 +8213,11 @@ worktree_request = {
 ⋮----
 changed_line = worktree_task.old_line + '.replace(".", "-")'
 ⋮----
+review_task = TASKS["production_os_latest_reviewer_state"]
+review_source = "def _review_state(reviews):\n" + review_task.old_line + "\n    return states\n"
+review_request = {**worktree_request, "brief": instruction(43, review_task.task_id)}
+review_proposal = {"replacement_line": review_task.replacement_line}
+⋮----
 reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
 ⋮----
 root = Path(td); req_path = root / "request.json"

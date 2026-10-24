@@ -3502,10 +3502,10 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-    "sequence": 42,
+    "sequence": 43,
     "repository": "dbrckk/Production-OS",
     "scenario": "approved_source_repair",
-    "task_id": "production_os_worktree_git_ref"
+    "task_id": "production_os_latest_reviewer_state"
 }
 ````
 
@@ -22352,7 +22352,7 @@ indent = old[:len(old) - len(old.lstrip())]
 before_ast = _line_statement(old)
 after_ast = _line_statement(new)
 ⋮----
-expected = ast.Call(
+expected = _line_statement(task.replacement_line).value if task.replacement_line else ast.Call(
 ⋮----
 # Require the line to remain inside the approved function, not another
 # coincidentally identical statement. No other source bytes may change.
@@ -22378,6 +22378,7 @@ resumed = resume_published_source(checkpoint_path, req, task.path, base_sha, bef
 start = before.index("def " + task.function + "(")
 end = before.find("\ndef ", start + 1)
 excerpt = before[start:end if end >= 0 else None][:5500]
+transform_instruction = task.model_instruction or (
 ⋮----
 after = apply_model_edit(before, response, task)
 ⋮----
@@ -22787,6 +22788,8 @@ objective: str
 workflow_path: str
 required_steps: tuple[str, ...]
 second_argument: str | None = None
+replacement_line: str | None = None
+model_instruction: str = ""
 ⋮----
 TASKS = {
 ⋮----
@@ -35177,6 +35180,11 @@ worktree_source = "def _slug(value, *, limit=32):\n" + worktree_task.old_line + 
 worktree_request = {
 ⋮----
 changed_line = worktree_task.old_line + '.replace(".", "-")'
+⋮----
+review_task = TASKS["production_os_latest_reviewer_state"]
+review_source = "def _review_state(reviews):\n" + review_task.old_line + "\n    return states\n"
+review_request = {**worktree_request, "brief": instruction(43, review_task.task_id)}
+review_proposal = {"replacement_line": review_task.replacement_line}
 ⋮----
 reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
 ⋮----

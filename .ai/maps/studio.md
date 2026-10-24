@@ -16501,7 +16501,7 @@ indent = old[:len(old) - len(old.lstrip())]
 before_ast = _line_statement(old)
 after_ast = _line_statement(new)
 ⋮----
-expected = ast.Call(
+expected = _line_statement(task.replacement_line).value if task.replacement_line else ast.Call(
 ⋮----
 # Require the line to remain inside the approved function, not another
 # coincidentally identical statement. No other source bytes may change.
@@ -16527,6 +16527,7 @@ resumed = resume_published_source(checkpoint_path, req, task.path, base_sha, bef
 start = before.index("def " + task.function + "(")
 end = before.find("\ndef ", start + 1)
 excerpt = before[start:end if end >= 0 else None][:5500]
+transform_instruction = task.model_instruction or (
 ⋮----
 after = apply_model_edit(before, response, task)
 ⋮----
@@ -16936,6 +16937,8 @@ objective: str
 workflow_path: str
 required_steps: tuple[str, ...]
 second_argument: str | None = None
+replacement_line: str | None = None
+model_instruction: str = ""
 ⋮----
 TASKS = {
 ⋮----

@@ -261,25 +261,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-23T17:50:55Z
+Generated: 2026-10-24T06:56:29Z
 
 ### Git
 - Branch: `main`
-- Head: `057a1dafe707`
-- Commit date: 2026-10-23T13:50:45-04:00
-- Commit: fix: isolate approved source workspaces across retries (#390)
+- Head: `b75934ec0e31`
+- Commit date: 2026-10-24T02:56:19-04:00
+- Commit: feat: run a bounded model-authored reviewer-state repair (#391)
 - Tracked files: 875
 
 ### Recently changed files
-- `studio/multi_engine_orchestrator.py`
-- `tests/test_multi_engine_orchestrator.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
 - `control/production-os-worker-canary.json`
-- `studio/generic_repository.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_source_tasks.py`
-- `control/production-os-diagnostics-kick.json`
+- `tests/test_multi_engine_orchestrator.py`
+- `studio/multi_engine_orchestrator.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
+- `studio/generic_repository.py`
 
 ### Project signals
 - No common build descriptor detected

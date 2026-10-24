@@ -2901,6 +2901,16 @@ def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(se
 ⋮----
 def test_project_capacity_exhaustion_yields_without_burning_attempt_budget(self)
 ⋮----
+# Exercise genuine production failure strings from the canary
+# artifacts, not a pretend successful provider or increased quota.
+⋮----
+def no_capacity(*args)
+⋮----
+# Capacity becoming available on a subsequent worker session
+# can still finish the original goal, without reauthorizing
+# or resetting its model-attempt budget.
+recovered = run_persistent_project(
+⋮----
 def test_human_action_persists_terminal_state(self)
 ⋮----
 def test_existing_project_registry_syncs_new_promoted_capability(self)

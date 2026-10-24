@@ -4514,7 +4514,7 @@ excerpt=profile.get("readme_excerpt")
 ⋮----
 items=items[:20]
 ⋮----
-cycle_control = {"capacity_exhausted": False}
+cycle_control = {"capacity_exhausted": False, "capacity_reason": None}
 ⋮----
 def execute_cycle(_goal_state)
 ⋮----
@@ -4526,6 +4526,11 @@ previous_history = os.environ.get("STUDIO_ROUTING_HISTORY_PATH")
 result = run_once(
 ⋮----
 detail = str(exc)
+⋮----
+# The provider pool cannot accept an additional model
+# call now. Another immediate goal cycle cannot create
+# quota or reset a provider circuit breaker. Preserve the
+# original sealed goal attempt budget for a *later* run.
 ⋮----
 native_usage = native_snapshot(runtime_paths['STUDIO_NATIVE_MODEL_USAGE_PATH'])
 ⋮----
@@ -4547,7 +4552,7 @@ previous_project_id = os.environ.get("STUDIO_PROJECT_ID")
 ⋮----
 result = run_goal(
 ⋮----
-result = {**result, "transient_capacity_exhausted": True}
+result = {
 ````
 
 ## File: autonomous_research.py

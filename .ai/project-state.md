@@ -261,16 +261,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T07:27:26Z
+Generated: 2026-10-24T07:35:16Z
 
 ### Git
 - Branch: `main`
-- Head: `6ad645b95be2`
-- Commit date: 2026-10-24T03:27:07-04:00
-- Commit: fix(inference): prefer qualified Lightning and avoid duplicate provider calls (#386)
+- Head: `aafca8ee81d1`
+- Commit date: 2026-10-24T03:35:06-04:00
+- Commit: fix(worker): preserve goal attempts when inference providers are unavailable (#392)
 - Tracked files: 875
 
 ### Recently changed files
+- `studio/autonomous_project.py`
+- `studio/github_runner.py`
+- `tests/test_autonomous_project.py`
 - `.github/workflows/mobile-studio.yml`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-live-diagnostics.yml`

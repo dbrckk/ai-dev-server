@@ -1,25 +1,19 @@
 # Change impact
 
-Base: 3a60de96210e1bfb00e29c7425a7d984df0924f6
-Head: 6ad645b95be26f2865dc541dcdc0d189b86cd31a
+Base: 2d3c843f88c52abf9b57736114f58e564383180a
+Head: aafca8ee81d1602d495baca8c0999e0657cbf2d2
 
 ## Changed files
-- M .github/workflows/mobile-studio.yml
-- M .github/workflows/production-os-actions-worker.yml
-- M .github/workflows/production-os-live-diagnostics.yml
-- M control/production-os-diagnostics-kick.json
-- M studio/production_os_provider_config.py
-- M studio/provider_router.py
-- M tests/test_production_os_live_diagnostics.py
+- M studio/autonomous_project.py
+- M studio/github_runner.py
+- M tests/test_autonomous_project.py
 
 ## Affected areas
-- .github
-- control
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_provider_router.py
+- tests/test_autonomous_project.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

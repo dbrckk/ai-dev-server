@@ -6536,11 +6536,20 @@ r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOU
 # Terminate the named container first; keep both cleanup calls
 # bounded and do not obscure the original build timeout.
 ⋮----
+# Docker --rm only removes a container after it exits. If the
+# recovery client itself times out, the repair can still be
+# running with write access to this temporary workspace.
+# Name and label it so both local and outer CI cleanup can stop it.
+recovery_name = name + '-recovery'
 recovery = [
 ⋮----
 recovered = subprocess.run(
 ⋮----
 recovered = False
+⋮----
+removed = subprocess.run(
+⋮----
+removed = False
 ⋮----
 def create(self, name)
 def quick_dependency_gate(self)

@@ -273,16 +273,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T19:53:10Z
+Generated: 2026-10-24T20:45:19Z
 
 ### Git
 - Branch: `main`
-- Head: `fa2c2ef4505e`
-- Commit date: 2026-10-24T15:52:59-04:00
-- Commit: fix: retain exact-commit CI receipts in Production-OS results (#395)
+- Head: `f9aac4546aa3`
+- Commit date: 2026-10-24T16:45:09-04:00
+- Commit: fix(studio): stop timed-out recovery containers and preserve workspace cleanup
 - Tracked files: 876
 
 ### Recently changed files
+- `studio/core.py`
+- `tests/test_studio.py`
 - `studio/github_runner.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_jumpy_source_repair.py`
@@ -290,19 +292,11 @@ Generated: 2026-10-24T19:53:10Z
 - `tests/test_github_runner_persistent.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `.github/workflows/studio-smoke.yml`
-- `studio/core.py`
 - `studio/multi_project_smoke.py`
-- `tests/test_studio.py`
 - `control/production-os-worker-canary.json`
 - `docs/production-os-pilot44.md`
 - `studio/autonomous_project.py`
 - `tests/test_autonomous_project.py`
-- `.github/workflows/mobile-studio.yml`
-- `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-live-diagnostics.yml`
-- `control/production-os-diagnostics-kick.json`
-- `studio/production_os_provider_config.py`
-- `studio/provider_router.py`
 
 ### Project signals
 - No common build descriptor detected

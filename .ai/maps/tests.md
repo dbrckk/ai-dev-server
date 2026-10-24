@@ -12012,14 +12012,26 @@ def test_failed_build_does_not_export_stale_apk(self)
 ⋮----
 class Failed(FakeSandbox)
 ⋮----
-# Docker may time out before its normal in-container chmod trailer.
-# Simulate both ownership-recovery outcomes without running Docker.
+# Docker can time out before its normal in-container chmod trailer.
+# Test recovery success, nonzero exit, timeout, and a failed forced
+# removal. The recovery container must be named and discoverable by
+# the outer job watchdog, even when its Docker client is killed.
+scenarios = (
 ⋮----
+recovery_result = subprocess.TimeoutExpired(
+⋮----
+recovery_result = OSError('docker unavailable')
+⋮----
+recovery_result = subprocess.CompletedProcess(
 fake_results = [
 ⋮----
 removal = run_mock.call_args_list[1].args[0]
 ⋮----
 rescue = run_mock.call_args_list[2].args[0]
+⋮----
+recovery_name = rescue[rescue.index('--name') + 1]
+⋮----
+cleanup = run_mock.call_args_list[3].args[0]
 ⋮----
 def test_visual_rejection_repairs(self)
 ⋮----

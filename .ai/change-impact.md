@@ -1,15 +1,11 @@
 # Change impact
 
-Base: 05ee394dc9d27ec801e2771efc610ec64e83c759
-Head: fa2c2ef4505e5a633e51f5f2b5c91ae4b441beb6
+Base: 8a9b0b382c6125af8da016f4eb9faeb3ad5ef629
+Head: f9aac4546aa311c1bf0a3949414dbe98877c76b2
 
 ## Changed files
-- M studio/github_runner.py
-- M studio/production_os_bounded_source_repair.py
-- M studio/production_os_jumpy_source_repair.py
-- M studio/target_ci_verification.py
-- M tests/test_github_runner_persistent.py
-- M tests/test_multi_engine_orchestrator.py
+- M studio/core.py
+- M tests/test_studio.py
 
 ## Affected areas
 - studio

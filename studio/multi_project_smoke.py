@@ -47,14 +47,25 @@ def main() -> int:
             for attempt in range(2):
                 if attempt:
                     shutil.rmtree(project_root, ignore_errors=True)
-                result = subprocess.run(
-                    [sys.executable, "studio/smoke.py"],
-                    env=env,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    timeout=25 * 60,
-                )
+                try:
+                    result = subprocess.run(
+                        [sys.executable, "studio/smoke.py"],
+                        env=env,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        timeout=25 * 60,
+                    )
+                except subprocess.TimeoutExpired as exc:
+                    # A timed-out child may leave container-created files
+                    # behind. Report the bounded failure rather than letting
+                    # TemporaryDirectory cleanup obscure its cause.
+                    output = exc.stdout or b""
+                    if isinstance(output, bytes):
+                        output = output.decode(errors="replace")
+                    print(f"project-{index + 1}: timed out attempt={attempt + 1}")
+                    print(output[-12000:])
+                    break
                 print(f"project-{index + 1}: exit={result.returncode} attempt={attempt + 1}")
                 print(result.stdout[-12000:])
                 if result.returncode == 0:

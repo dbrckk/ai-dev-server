@@ -944,7 +944,38 @@ class Sandbox:
         try:
             r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         except subprocess.TimeoutExpired:
-            subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
+            # A timed-out docker run cannot execute the in-container chmod
+            # trailer. Flutter/Gradle may then leave root-owned build files
+            # that make TemporaryDirectory cleanup fail on the CI host.
+            # Terminate the named container first; keep both cleanup calls
+            # bounded and do not obscure the original build timeout.
+            try:
+                subprocess.run(
+                    ['docker', 'rm', '-f', name], env=env,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=30, check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+            recovery = [
+                'docker', 'run', '--rm', '--network=none',
+                '--cap-drop=ALL', '--security-opt=no-new-privileges',
+                '--pids-limit=64', '--memory=512m', '--cpus=1',
+                '-v', str(self.root) + ':/app', '-w', '/app',
+                IMAGE, 'chmod', '-R', 'a+rwX', '/app',
+            ]
+            try:
+                recovered = subprocess.run(
+                    recovery, env=env, stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=45, check=False,
+                ).returncode == 0
+            except (OSError, subprocess.TimeoutExpired):
+                recovered = False
+            if not recovered:
+                raise StudioError(
+                    'Sandbox command timed out; workspace ownership recovery failed'
+                ) from None
             raise StudioError('Sandbox command timed out') from None
         return r.returncode, r.stdout.decode(errors='replace')[-24000:]
     def create(self, name):

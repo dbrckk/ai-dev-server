@@ -41,14 +41,25 @@ def _cloudflare_free_fallback(environ):
 def configure(environ):
     if (not environ.get("STUDIO_PROVIDERS_JSON", "").strip()
             and environ.get("STUDIO_API_BASE", "").rstrip("/") == "https://integrate.api.nvidia.com/v1"):
-        providers = [
-            {"name": "nvidia-lightning-fallback", "base": "https://integrate.api.nvidia.com/v1",
-             "key_env": "STUDIO_API_KEY", "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
-             "code_model": "nvidia/nemotron-3.5-lightning-30b-a3b", "priority": 95, "free_preferred": True},
+        # Current NVIDIA default is the live-verified Lightning model.
+        # Do not add a second route to the same model when it is already
+        # both primary general and primary coding model. Explicitly selected
+        # alternative primary/code models must retain their Lightning fallback.
+        lightning = "nvidia/nemotron-3.5-lightning-30b-a3b"
+        primary = str(environ.get("STUDIO_MODEL") or lightning).strip()
+        coding = str(environ.get("STUDIO_CODE_MODEL") or primary).strip()
+        providers = []
+        if primary != lightning or coding != lightning:
+            providers.append(
+                {"name": "nvidia-lightning-fallback", "base": "https://integrate.api.nvidia.com/v1",
+                 "key_env": "STUDIO_API_KEY", "model": lightning,
+                 "code_model": lightning, "priority": 95, "free_preferred": True}
+            )
+        providers.append(
             {"name": "poolside-laguna-fallback", "base": "https://integrate.api.nvidia.com/v1",
              "key_env": "STUDIO_API_KEY", "model": "poolside/laguna-xs-2.1",
-             "code_model": "poolside/laguna-xs-2.1", "priority": 90, "free_preferred": True},
-        ]
+             "code_model": "poolside/laguna-xs-2.1", "priority": 90, "free_preferred": True}
+        )
         free_fallback = _cloudflare_free_fallback(environ)
         if free_fallback:
             providers.append(free_fallback)

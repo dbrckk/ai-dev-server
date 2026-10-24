@@ -31,7 +31,7 @@ def _proposal(request, *, api=None, model=None):
         os.environ.get("STUDIO_API_KEY", ""),
     )
     selected = model or os.environ.get("STUDIO_CODE_MODEL") or os.environ.get(
-        "STUDIO_MODEL", "nvidia/nemotron-3-super-120b-a12b"
+        "STUDIO_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b"
     )
     if not selected:
         raise StudioError("Capability synthesis model missing")

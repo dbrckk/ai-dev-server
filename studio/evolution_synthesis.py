@@ -25,7 +25,7 @@ def synthesize(order,research,api=None,model=None):
     if not isinstance(research,dict) or research.get('status')!='research_complete': raise CandidateRejected('Synthesis requires completed trusted research')
     messages=[{'role':'system','content':SYSTEM},{'role':'user','content':_context(order,research)}]
     if api is not None:
-        selected=model or os.environ.get('STUDIO_CODE_MODEL') or os.environ.get('STUDIO_MODEL','nvidia/nemotron-3-super-120b-a12b')
+        selected=model or os.environ.get('STUDIO_CODE_MODEL') or os.environ.get('STUDIO_MODEL','nvidia/nemotron-3.5-lightning-30b-a3b')
         if not selected: raise StudioError('Evolution synthesis model missing')
         params={'model':selected,'stream':False,'max_tokens':16000,'messages':messages}
         if api.base=='https://integrate.api.nvidia.com/v1' and selected.startswith('nvidia/nemotron-3-'): params.update(chat_template_kwargs={'enable_thinking':True},reasoning_budget=2048)

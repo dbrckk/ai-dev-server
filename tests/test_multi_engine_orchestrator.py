@@ -508,7 +508,14 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                         saved = load_checkpoint(out / ".autonomy/generic-execution-checkpoint.json")
                         self.assertEqual(saved["last_verification"]["target_ci"], status)
                         self.assertEqual(saved["base_sha"], "c" * 40)
-                        self.assertTrue(json.loads((out / "generic-report.json").read_text())["delivery_resumed"])
+                        report = json.loads((out / "generic-report.json").read_text())
+                        self.assertTrue(report["delivery_resumed"])
+                        self.assertEqual(report["ci"]["status"], status)
+                        self.assertEqual(report["ci"]["sha"], "c" * 40)
+                        self.assertEqual(report["ci"]["url"],
+                                         f"https://github.com/{source_request['target_repo']}/actions/runs/12")
+                        self.assertEqual(report["ci"].get("conclusion"),
+                                         "success" if status == "passed" else None)
                     model.assert_not_called()
                     from core import APIError
                     with patch.object(Repository, "restore", side_effect=APIError(403)):

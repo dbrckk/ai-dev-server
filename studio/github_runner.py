@@ -1155,6 +1155,8 @@ def run(
             else:
                 summary['usage'][key] = value
         summary['usage']['api_calls'] = summary['usage']['runs']
+    if isinstance(project_report.get('ci'),dict):
+        summary['ci']=dict(project_report['ci'])
     if isinstance(project_report.get('pull_request'),dict):
         summary['pull_request']=dict(project_report['pull_request'])
         pr=summary['pull_request']

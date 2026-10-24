@@ -101,6 +101,22 @@ class GithubRunnerPersistentTests(unittest.TestCase):
             self.assertFalse(result["finished"])
             self.assertEqual(result["next_stage"], "attempt_budget_exhausted")
             self.assertEqual(result["commit_shas"], ["c" * 40])
+            # Explicit independent gate evidence must survive report -> summary.
+            # A passing gate alone must not turn this blocked goal into success.
+            for ci_status in ("pending", "failed", "passed"):
+                receipt = {"provider": "github_actions", "status": ci_status,
+                           "sha": "c" * 40, "workflow": ".github/workflows/validate.yml",
+                           "url": "https://github.com/owner/demo/actions/runs/12"}
+                report["ci"] = receipt
+                with (patch.dict(os.environ, {"STUDIO_PERSIST_REMOTE": "0"}),
+                      patch("github_runner.run_multi_engine_project", return_value={
+                          "status": "failed", "next_stage": "preview", "report": report}),
+                      patch("github_runner.run_persistent_project", side_effect=completed_cycle)):
+                    result = run(request, out, runner=lambda *a, **k: None,
+                                 clock=lambda: 0, budget_seconds=100, baseline_sha="c" * 40)
+                self.assertEqual(result["ci"], receipt)
+                self.assertFalse(result["finished"])
+            report.pop("ci")
             # An already-blocked goal skips run_once on a later worker.
             # Retain only its matching repository's durable source evidence.
             saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhausted',

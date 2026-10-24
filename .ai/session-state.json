@@ -1,5 +1,11 @@
 {
   "version": 1,
+  "ci_receipt_followup": {
+    "incident": "Successful pilot44 checkpoint retained exact-SHA CI but final Production-OS result exposed ci:null",
+    "fix": "Carry observed CI status, workflow, source SHA and run URL through approved-source report and runner summary",
+    "verification": "20 existing targeted tests passed; actual archived pilot44 replay fails on baseline and passes with fix using freshly fetched qualification API evidence",
+    "scope": "Reporting only; no new inference, source PR merge, gate or budget change"
+  },
   "updated_at": "2026-10-24T06:42:35+00:00",
   "task": "Qualify a fresh autonomous latest-reviewer-state source repair",
   "base_commit": "f7cdc62",

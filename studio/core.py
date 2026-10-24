@@ -957,13 +957,21 @@ class Sandbox:
                 )
             except (OSError, subprocess.TimeoutExpired):
                 pass
+            # Docker --rm only removes a container after it exits. If the
+            # recovery client itself times out, the repair can still be
+            # running with write access to this temporary workspace.
+            # Name and label it so both local and outer CI cleanup can stop it.
+            recovery_name = name + '-recovery'
             recovery = [
-                'docker', 'run', '--rm', '--network=none',
+                'docker', 'run', '--name', recovery_name, '--rm',
+                '--user', '0:0', '--network=none',
                 '--cap-drop=ALL', '--security-opt=no-new-privileges',
                 '--pids-limit=64', '--memory=512m', '--cpus=1',
                 '-v', str(self.root) + ':/app', '-w', '/app',
                 IMAGE, 'chmod', '-R', 'a+rwX', '/app',
             ]
+            if run_id:
+                recovery[2:2] = ['--label', 'mobile-studio-run=' + run_id]
             try:
                 recovered = subprocess.run(
                     recovery, env=env, stdin=subprocess.DEVNULL,
@@ -973,6 +981,19 @@ class Sandbox:
             except (OSError, subprocess.TimeoutExpired):
                 recovered = False
             if not recovered:
+                try:
+                    removed = subprocess.run(
+                        ['docker', 'rm', '-f', recovery_name], env=env,
+                        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL, timeout=30, check=False,
+                    ).returncode == 0
+                except (OSError, subprocess.TimeoutExpired):
+                    removed = False
+                if not removed:
+                    raise StudioError(
+                        'Sandbox command timed out; workspace ownership recovery failed; '
+                        'recovery container removal failed'
+                    ) from None
                 raise StudioError(
                     'Sandbox command timed out; workspace ownership recovery failed'
                 ) from None

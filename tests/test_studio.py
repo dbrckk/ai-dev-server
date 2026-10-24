@@ -157,34 +157,70 @@ class StudioTests(unittest.TestCase):
         state, root, _ = self.run_fixture(sandbox=Failed)
         self.assertEqual(state['status'], 'repair_needed')
         self.assertFalse((root / 'out/app-debug.apk').exists())
-        # Docker may time out before its normal in-container chmod trailer.
-        # Simulate both ownership-recovery outcomes without running Docker.
-        for recovery_exit, expected in (
-            (0, 'Sandbox command timed out'),
-            (1, 'Sandbox command timed out; workspace ownership recovery failed'),
-        ):
-            with self.subTest(recovery_exit=recovery_exit):
+        # Docker can time out before its normal in-container chmod trailer.
+        # Test recovery success, nonzero exit, timeout, and a failed forced
+        # removal. The recovery container must be named and discoverable by
+        # the outer job watchdog, even when its Docker client is killed.
+        scenarios = (
+            (0, 0, 'Sandbox command timed out'),
+            (1, 0, 'Sandbox command timed out; workspace ownership recovery failed'),
+            ('timeout', 0, 'Sandbox command timed out; workspace ownership recovery failed'),
+            ('oserror', 0, 'Sandbox command timed out; workspace ownership recovery failed'),
+            (1, 1, 'recovery container removal failed'),
+        )
+        for recovery_outcome, cleanup_exit, expected in scenarios:
+            with self.subTest(recovery_outcome=recovery_outcome, cleanup_exit=cleanup_exit):
                 with tempfile.TemporaryDirectory() as directory:
+                    if recovery_outcome == 'timeout':
+                        recovery_result = subprocess.TimeoutExpired(
+                            cmd=['docker', 'run'], timeout=45,
+                        )
+                    elif recovery_outcome == 'oserror':
+                        recovery_result = OSError('docker unavailable')
+                    else:
+                        recovery_result = subprocess.CompletedProcess(
+                            args=['docker', 'run'], returncode=recovery_outcome,
+                        )
                     fake_results = [
                         subprocess.TimeoutExpired(cmd=['docker', 'run'], timeout=10),
                         subprocess.CompletedProcess(args=['docker', 'rm'], returncode=0),
-                        subprocess.CompletedProcess(args=['docker', 'run'], returncode=recovery_exit),
+                        recovery_result,
                     ]
-                    with patch('core.subprocess.run', side_effect=fake_results) as run_mock:
-                        with self.assertRaisesRegex(StudioError, expected):
-                            Sandbox(Path(directory)).run(
-                                ['flutter', 'analyze', '--no-pub'], timeout=10,
-                            )
-                    self.assertEqual(run_mock.call_count, 3)
+                    if recovery_outcome != 0:
+                        fake_results.append(subprocess.CompletedProcess(
+                            args=['docker', 'rm'], returncode=cleanup_exit,
+                        ))
+                    with patch.dict(os.environ, {'STUDIO_RUN_ID': 'a' * 32}):
+                        with patch('core.subprocess.run', side_effect=fake_results) as run_mock:
+                            with self.assertRaisesRegex(StudioError, expected):
+                                Sandbox(Path(directory)).run(
+                                    ['flutter', 'analyze', '--no-pub'], timeout=10,
+                                )
+                    self.assertEqual(run_mock.call_count, len(fake_results))
                     removal = run_mock.call_args_list[1].args[0]
-                    self.assertEqual(removal[:4], ['docker', 'rm', '-f', removal[3]])
+                    self.assertEqual(removal[:4], [
+                        'docker', 'rm', '-f', removal[3],
+                    ])
                     rescue = run_mock.call_args_list[2].args[0]
                     self.assertIn('--network=none', rescue)
                     self.assertIn('--cap-drop=ALL', rescue)
+                    self.assertIn('--security-opt=no-new-privileges', rescue)
+                    self.assertIn('--user', rescue)
+                    self.assertEqual(rescue[rescue.index('--user') + 1], '0:0')
                     self.assertEqual(rescue[-4:], ['chmod', '-R', 'a+rwX', '/app'])
-                    self.assertTrue(
-                        rescue[rescue.index('-v') + 1].endswith(':/app')
+                    self.assertTrue(rescue[rescue.index('-v') + 1].endswith(':/app'))
+                    self.assertIn('--label', rescue)
+                    self.assertEqual(
+                        rescue[rescue.index('--label') + 1],
+                        'mobile-studio-run=' + 'a' * 32,
                     )
+                    recovery_name = rescue[rescue.index('--name') + 1]
+                    self.assertEqual(recovery_name, removal[3] + '-recovery')
+                    if recovery_outcome != 0:
+                        cleanup = run_mock.call_args_list[3].args[0]
+                        self.assertEqual(
+                            cleanup, ['docker', 'rm', '-f', recovery_name],
+                        )
     def test_visual_rejection_repairs(self):
         class Reject(FakeModel):
             def ask(self, role, context, screenshots=()):

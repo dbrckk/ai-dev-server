@@ -3275,7 +3275,7 @@ permissions:
 jobs:
   mobile-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -12381,6 +12381,18 @@ env = {k: os.environ[k] for k in ('PATH', 'HOME', 'DOCKER_HOST') if k in os.envi
 ⋮----
 r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
 ⋮----
+# A timed-out docker run cannot execute the in-container chmod
+# trailer. Flutter/Gradle may then leave root-owned build files
+# that make TemporaryDirectory cleanup fail on the CI host.
+# Terminate the named container first; keep both cleanup calls
+# bounded and do not obscure the original build timeout.
+⋮----
+recovery = [
+⋮----
+recovered = subprocess.run(
+⋮----
+recovered = False
+⋮----
 def create(self, name)
 def quick_dependency_gate(self)
 ⋮----
@@ -12406,6 +12418,11 @@ def gates(self, name, journeys)
 ⋮----
 # Trusted test is reinstated every round; model cannot edit its reserved name.
 probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', name).replace('JOURNEYS_BASE64', encoded_journeys(journeys))
+⋮----
+# Cold Android Gradle builds can exceed the 15-minute default
+# even after Pub/analyze/visual tests pass. Keep other gates at
+# 15 minutes and cap the APK build at 20 minutes.
+command_timeout = 1200 if args[:3] == ['flutter', 'build', 'apk'] else 900
 ⋮----
 p = self.root / rel
 ⋮----
@@ -20664,6 +20681,9 @@ env = dict(base_env)
 passed = False
 ⋮----
 result = subprocess.run(
+⋮----
+# Leave headroom for a 20-minute cold APK build plus
+# Flutter dependency, analyze and screenshot gates.
 ⋮----
 passed = True
 ````
@@ -38986,6 +39006,15 @@ vision = ''
 def test_failed_build_does_not_export_stale_apk(self)
 ⋮----
 class Failed(FakeSandbox)
+⋮----
+# Docker may time out before its normal in-container chmod trailer.
+# Simulate both ownership-recovery outcomes without running Docker.
+⋮----
+fake_results = [
+⋮----
+removal = run_mock.call_args_list[1].args[0]
+⋮----
+rescue = run_mock.call_args_list[2].args[0]
 ⋮----
 def test_visual_rejection_repairs(self)
 ⋮----

@@ -1,15 +1,18 @@
 # Change impact
 
-Base: 899bfa67ae41f6050743287518e8be048eb11878
-Head: 41a007753b0423d6cb03bb4aeb39b9208d28a55d
+Base: 79073c30813346b8004e7d0e24c179bde37e5db2
+Head: a29fffb867cb2de5671577c99145e879695432cc
 
 ## Changed files
-- M control/production-os-worker-canary.json
-- A docs/production-os-pilot44.md
+- M .github/workflows/studio-smoke.yml
+- M studio/core.py
+- M studio/multi_project_smoke.py
+- M tests/test_studio.py
 
 ## Affected areas
-- control
-- docs
+- .github
+- studio
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

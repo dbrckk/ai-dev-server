@@ -12005,6 +12005,15 @@ def test_failed_build_does_not_export_stale_apk(self)
 ⋮----
 class Failed(FakeSandbox)
 ⋮----
+# Docker may time out before its normal in-container chmod trailer.
+# Simulate both ownership-recovery outcomes without running Docker.
+⋮----
+fake_results = [
+⋮----
+removal = run_mock.call_args_list[1].args[0]
+⋮----
+rescue = run_mock.call_args_list[2].args[0]
+⋮----
 def test_visual_rejection_repairs(self)
 ⋮----
 class Reject(FakeModel)

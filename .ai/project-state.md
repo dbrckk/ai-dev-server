@@ -261,16 +261,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T11:29:26Z
+Generated: 2026-10-24T15:16:23Z
 
 ### Git
 - Branch: `main`
-- Head: `41a007753b04`
-- Commit date: 2026-10-24T07:29:16-04:00
-- Commit: ops: qualify fresh source pilot after provider capacity fixes (#394)
+- Head: `a29fffb867cb`
+- Commit date: 2026-10-24T11:16:05-04:00
+- Commit: fix(studio): recover timed-out Android builds and workspace permissions (#396)
 - Tracked files: 876
 
 ### Recently changed files
+- `.github/workflows/studio-smoke.yml`
+- `studio/core.py`
+- `studio/multi_project_smoke.py`
+- `tests/test_studio.py`
 - `control/production-os-worker-canary.json`
 - `docs/production-os-pilot44.md`
 - `studio/autonomous_project.py`
@@ -286,7 +290,6 @@ Generated: 2026-10-24T11:29:26Z
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_source_tasks.py`
 - `tests/test_multi_engine_orchestrator.py`
-- `studio/multi_engine_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

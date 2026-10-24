@@ -75,6 +75,18 @@ def wait_for_exact_commit_ci(github, *, commit_sha: str, branch: str,
         sleeper(min(poll_seconds, max(0, deadline - clock())))
 
 
+def source_ci_receipt(ci: dict, *, repository: str, commit_sha: str,
+                      workflow_path: str) -> dict:
+    """Expose the observed gate in the worker result without inferring success."""
+    receipt = {"provider": "github_actions", "status": ci["status"],
+               "sha": commit_sha, "workflow": workflow_path}
+    if type(ci.get("run_id")) is int and ci["run_id"] > 0:
+        receipt["url"] = f"https://github.com/{repository}/actions/runs/{ci['run_id']}"
+    if ci["status"] == "passed":
+        receipt["conclusion"] = "success"
+    return receipt
+
+
 def finalize_source_delivery_evidence(
     provisional: dict, ci: dict, *, pr_confirmed: bool
 ) -> tuple[dict, bool]:

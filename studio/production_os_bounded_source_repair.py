@@ -18,7 +18,7 @@ from generic_repository import GenericRepository
 from production_os_source_tasks import TASKS, SourceTask, instruction
 from run import GitHub
 from source_delivery_checkpoint import request_fingerprint, resume_published_source, source_operation
-from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
+from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence, source_ci_receipt
 
 _SEQUENCE = re.compile(
     r"^Production-OS approved bounded public source repair ([1-9][0-9]{0,9}) task ([a-z0-9_]+)\. "
@@ -215,6 +215,8 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         "rounds": [{"round": 1, "changed_files": [task.path], "verification": evidence}],
         "restore": restore, "blockers": blockers,
         "checkpoint_commit": sha, "verification": evidence,
+        "ci": source_ci_receipt(ci, repository=task.repo, commit_sha=sha,
+                                workflow_path=task.workflow_path),
         "pull_request": pr or {"state": "unavailable"},
         "execution_checkpoint": {
             "round": checkpoint["round"], "phase": checkpoint["phase"],

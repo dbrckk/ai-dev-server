@@ -944,7 +944,26 @@ class Sandbox:
         try:
             r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         except subprocess.TimeoutExpired:
-            subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
+            # The normal container exit trailer cannot run after a hard timeout.
+            # Flutter/Gradle may have created root-owned files in the bind mount;
+            # restore access in a separate, credential-free, network-isolated
+            # container before the caller attempts to clean its temp directory.
+            subprocess.run(['docker', 'rm', '-f', name], env=env,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           timeout=30, check=False)
+            recovery = ['docker', 'run', '--rm', '--init', '--cap-drop=ALL',
+                        '--security-opt=no-new-privileges', '--pids-limit=128',
+                        '--network=none', '-v', str(self.root) + ':/app',
+                        '-w', '/app', IMAGE, 'chmod', '-R', 'a+rwX', '/app']
+            try:
+                rescued = subprocess.run(recovery, env=env,
+                                         stdout=subprocess.DEVNULL,
+                                         stderr=subprocess.DEVNULL,
+                                         timeout=60, check=False)
+            except (OSError, subprocess.TimeoutExpired):
+                raise StudioError('Sandbox command timed out; workspace ownership recovery failed') from None
+            if rescued.returncode != 0:
+                raise StudioError('Sandbox command timed out; workspace ownership recovery failed') from None
             raise StudioError('Sandbox command timed out') from None
         return r.returncode, r.stdout.decode(errors='replace')[-24000:]
     def create(self, name):

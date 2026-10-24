@@ -47,20 +47,31 @@ def main() -> int:
             for attempt in range(2):
                 if attempt:
                     shutil.rmtree(project_root, ignore_errors=True)
-                result = subprocess.run(
-                    [sys.executable, "studio/smoke.py"],
-                    env=env,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    timeout=25 * 60,
-                )
-                print(f"project-{index + 1}: exit={result.returncode} attempt={attempt + 1}")
-                print(result.stdout[-12000:])
-                if result.returncode == 0:
+                try:
+                    result = subprocess.run(
+                        [sys.executable, "studio/smoke.py"],
+                        env=env,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        timeout=29 * 60,
+                    )
+                    output = result.stdout or ""
+                    code = result.returncode
+                except subprocess.TimeoutExpired as exc:
+                    # Preserve a structured failure rather than aborting the
+                    # whole smoke with a traceback and uncleaned Docker files.
+                    output = exc.stdout or b""
+                    if isinstance(output, bytes):
+                        output = output.decode(errors="replace")
+                    code = 124
+                    output += "\nSmoke project exceeded the 29-minute process deadline"
+                print(f"project-{index + 1}: exit={code} attempt={attempt + 1}")
+                print(output[-12000:])
+                if code == 0:
                     passed = True
                     break
-                if attempt == 0 and _is_transient_android_sdk_failure(result.stdout):
+                if attempt == 0 and _is_transient_android_sdk_failure(output):
                     print(f"project-{index + 1}: retrying after transient Android SDK archive corruption")
                     _clear_transient_android_download_cache(env)
                     continue
@@ -68,7 +79,22 @@ def main() -> int:
 
             if not passed:
                 failures.append(index + 1)
-            shutil.rmtree(project_root, ignore_errors=True)
+            # A build killed on its deadline may leave root-owned Gradle
+            # files because Docker never reached the chmod exit trap.
+            try:
+                shutil.rmtree(project_root)
+            except OSError:
+                from core import Sandbox
+                sandbox = Sandbox(project_root)
+                permissions_env = {
+                    key: base_env[key] for key in ("PATH", "HOME")
+                    if key in base_env
+                }
+                if not sandbox._restore_host_permissions(permissions_env):
+                    raise RuntimeError(
+                        f"project-{index + 1}: Docker-owned workspace cleanup failed"
+                    ) from None
+                shutil.rmtree(project_root)
     return 1 if failures else 0
 
 

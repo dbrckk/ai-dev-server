@@ -119,7 +119,7 @@ class StudioTests(unittest.TestCase):
                 with self.assertRaisesRegex(StudioError, 'Sandbox command timed out'):
                     Sandbox(Path(d)).run(['flutter', 'build', 'apk'], timeout=1)
             self.assertEqual(len(calls), 3)
-            self.assertEqual(calls[1][0][:4], ['docker', 'rm', '-f', calls[0][0][4]])
+            self.assertEqual(calls[1][0][:4], ['docker', 'rm', '-f', calls[0][0][3]])
             repair_command = calls[2][0]
             self.assertEqual(repair_command[:2], ['docker', 'run'])
             self.assertIn('--network=none', repair_command)

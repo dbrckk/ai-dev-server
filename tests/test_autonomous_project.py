@@ -278,7 +278,7 @@ class AutonomousProjectTests(unittest.TestCase):
                         "status": "complete",
                         "report": {"status": "finished", "completion": {"finished": True}},
                     },
-                    max_cycles=1,
+                    max_cycles=2,
                 )
                 self.assertEqual(recovered["status"], "complete")
                 self.assertEqual(recovered["attempt"], 1)

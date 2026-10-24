@@ -142,7 +142,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-    "sequence": 43,
+    "sequence": 44,
     "repository": "dbrckk/Production-OS",
     "scenario": "approved_source_repair",
     "task_id": "production_os_latest_reviewer_state"

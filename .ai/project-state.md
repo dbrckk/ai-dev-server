@@ -261,16 +261,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T07:35:16Z
+Generated: 2026-10-24T11:29:26Z
 
 ### Git
 - Branch: `main`
-- Head: `aafca8ee81d1`
-- Commit date: 2026-10-24T03:35:06-04:00
-- Commit: fix(worker): preserve goal attempts when inference providers are unavailable (#392)
-- Tracked files: 875
+- Head: `41a007753b04`
+- Commit date: 2026-10-24T07:29:16-04:00
+- Commit: ops: qualify fresh source pilot after provider capacity fixes (#394)
+- Tracked files: 876
 
 ### Recently changed files
+- `control/production-os-worker-canary.json`
+- `docs/production-os-pilot44.md`
 - `studio/autonomous_project.py`
 - `studio/github_runner.py`
 - `tests/test_autonomous_project.py`
@@ -281,13 +283,10 @@ Generated: 2026-10-24T07:35:16Z
 - `studio/production_os_provider_config.py`
 - `studio/provider_router.py`
 - `tests/test_production_os_live_diagnostics.py`
-- `control/production-os-worker-canary.json`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_source_tasks.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `studio/multi_engine_orchestrator.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
 
 ### Project signals
 - No common build descriptor detected

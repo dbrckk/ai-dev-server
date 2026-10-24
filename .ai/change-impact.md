@@ -1,19 +1,18 @@
 # Change impact
 
-Base: 2d3c843f88c52abf9b57736114f58e564383180a
-Head: aafca8ee81d1602d495baca8c0999e0657cbf2d2
+Base: 899bfa67ae41f6050743287518e8be048eb11878
+Head: 41a007753b0423d6cb03bb4aeb39b9208d28a55d
 
 ## Changed files
-- M studio/autonomous_project.py
-- M studio/github_runner.py
-- M tests/test_autonomous_project.py
+- M control/production-os-worker-canary.json
+- A docs/production-os-pilot44.md
 
 ## Affected areas
-- studio
-- tests
+- control
+- docs
 
 ## Related test candidates
-- tests/test_autonomous_project.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

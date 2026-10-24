@@ -1120,7 +1120,11 @@ def run(
             raise StudioError('Project memory ingestion failed: '+str(exc)) from None
     summary={
         'status':status,
-        'next_stage':last_result.get('next_stage'),
+        'next_stage':(
+            state.get('transient_capacity_reason')
+            if status == 'capacity_exhausted'
+            else last_result.get('next_stage')
+        ),
         'finished':status=='complete',
     }
     goal_evidence = state.get('evidence')

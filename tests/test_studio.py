@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -104,6 +105,29 @@ class StudioTests(unittest.TestCase):
             with self.assertRaises(StudioError):
                 apply_patch(root, PATCH)
             self.assertFalse(list(Path(outside).iterdir()))
+        # A Docker build killed by its deadline skips the in-container chmod
+        # exit trap. The host must recover root-owned outputs without changing
+        # the timeout verdict or permitting networking in the repair.
+        with tempfile.TemporaryDirectory() as d:
+            calls = []
+            def docker_timeout(command, **kwargs):
+                calls.append((command, kwargs))
+                if command[:2] == ['docker', 'run'] and '--entrypoint' not in command:
+                    raise subprocess.TimeoutExpired(command, 1)
+                return subprocess.CompletedProcess(command, 0, stdout=b'')
+            with patch('core.subprocess.run', side_effect=docker_timeout):
+                with self.assertRaisesRegex(StudioError, 'Sandbox command timed out'):
+                    Sandbox(Path(d)).run(['flutter', 'build', 'apk'], timeout=1)
+            self.assertEqual(len(calls), 3)
+            self.assertEqual(calls[1][0][:4], ['docker', 'rm', '-f', calls[0][0][3]])
+            repair_command = calls[2][0]
+            self.assertEqual(repair_command[:2], ['docker', 'run'])
+            self.assertIn('--network=none', repair_command)
+            self.assertIn('--cap-drop=ALL', repair_command)
+            self.assertIn('--security-opt=no-new-privileges', repair_command)
+            self.assertIn('--entrypoint', repair_command)
+            self.assertNotIn('DOCKER_HOST', calls[2][1]['env'])
+
     def test_verdict_fail_closed(self):
         self.assertIn('Ground changes in supplied source', ROLES['implementation'])
         self.assertIn('never weaken tests', ROLES['implementation'])

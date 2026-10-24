@@ -923,6 +923,26 @@ class Sandbox:
     def __init__(self, root):
         self.root = root.resolve()
         self.native_files = {}
+    def _restore_host_permissions(self, env):
+        """Recover writable host files when a timed-out build skips its exit trap."""
+        command = [
+            'docker', 'run', '--rm', '--init', '--user', '0:0',
+            '--network=none', '--cap-drop=ALL', '--security-opt=no-new-privileges',
+            '--pids-limit=64', '--memory=512m', '--cpus=1',
+            '-v', str(self.root) + ':/app', '-w', '/app',
+            '--entrypoint', '/bin/sh', IMAGE,
+            '-c', 'chmod -R a+rwX /app',
+        ]
+        try:
+            repair = subprocess.run(
+                command, env=env, stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=90, check=False,
+            )
+            return repair.returncode == 0
+        except (subprocess.TimeoutExpired, OSError):
+            return False
+
     def run(self, args, network=False, timeout=600):
         name = 'mobile-studio-' + uuid.uuid4().hex
         for p in [self.root, *self.root.rglob('*')]:
@@ -944,8 +964,22 @@ class Sandbox:
         try:
             r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         except subprocess.TimeoutExpired:
-            subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
-            raise StudioError('Sandbox command timed out') from None
+            # docker run --rm does not execute its chmod exit trap when the
+            # host kills a timed-out Docker CLI. Root-owned Gradle outputs can
+            # then break TemporaryDirectory cleanup and hide the real timeout.
+            try:
+                subprocess.run(
+                    ['docker', 'rm', '-f', name], env=env,
+                    stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL, timeout=30, check=False,
+                )
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+            repaired = self._restore_host_permissions(env)
+            raise StudioError(
+                'Sandbox command timed out'
+                + ('' if repaired else ' (host permissions could not be restored)')
+            ) from None
         return r.returncode, r.stdout.decode(errors='replace')[-24000:]
     def create(self, name):
         rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)
@@ -1006,7 +1040,10 @@ class Sandbox:
                               (['flutter', 'test', '--no-pub', '--update-goldens', 'test/__studio_visual_test.dart'], False),
                               (['flutter', 'build', 'apk', '--debug', '--no-pub'], True)]:
             print('Gate: ' + ' '.join(args), flush=True)
-            rc, out = self.run(args, network=network, timeout=900)
+            # Android's first cold Gradle build may need longer than the
+            # fast dependency, analysis, widget and visual verification gates.
+            gate_timeout = 1200 if args[:3] == ['flutter', 'build', 'apk'] else 900
+            rc, out = self.run(args, network=network, timeout=gate_timeout)
             logs.append({'command': args, 'exit_code': rc, 'output': out})
             if rc:
                 return False, logs

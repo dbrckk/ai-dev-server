@@ -1037,7 +1037,11 @@ class Sandbox:
                               (['flutter', 'test', '--no-pub', '--update-goldens', 'test/__studio_visual_test.dart'], False),
                               (['flutter', 'build', 'apk', '--debug', '--no-pub'], True)]:
             print('Gate: ' + ' '.join(args), flush=True)
-            rc, out = self.run(args, network=network, timeout=900)
+            # Cold Android Gradle builds can exceed the 15-minute default
+            # even after Pub/analyze/visual tests pass. Keep other gates at
+            # 15 minutes and cap the APK build at 20 minutes.
+            command_timeout = 1200 if args[:3] == ['flutter', 'build', 'apk'] else 900
+            rc, out = self.run(args, network=network, timeout=command_timeout)
             logs.append({'command': args, 'exit_code': rc, 'output': out})
             if rc:
                 return False, logs

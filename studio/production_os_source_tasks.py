@@ -20,8 +20,39 @@ class SourceTask:
     workflow_path: str
     required_steps: tuple[str, ...]
     second_argument: str | None = None
+    replacement_line: str | None = None
+    model_instruction: str = ""
 
 TASKS = {
+    "production_os_latest_reviewer_state": SourceTask(
+        task_id="production_os_latest_reviewer_state",
+        repo="dbrckk/Production-OS",
+        path="src/production_os/github_work_state.py",
+        function="_review_state",
+        old_line='    states = [str(r.get("state", "")).upper() for r in reviews]',
+        method="", argument="",
+        replacement_line='    states = list({(r.get("user") or {}).get("id") or id(r): str(r.get("state", "")).upper() for r in reviews if str(r.get("state", "")).upper() in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}}.values())',
+        model_instruction=(
+            "Replace only the states assignment. Use states = list({...}.values()) "
+            "with a dict comprehension iterating r in reviews in their supplied "
+            "chronological order. Its key is (r.get('user') or {}).get('id') or id(r), "
+            "and value is str(r.get('state', '')).upper(). Filter using that same "
+            "normalized state in the set {'APPROVED', 'CHANGES_REQUESTED', 'DISMISSED'}, "
+            "in that order. Preserve indentation and all remaining function logic."
+        ),
+        objective=(
+            "Fix stale GitHub review decisions: when one reviewer requests changes "
+            "then approves, only that reviewer's latest decision should count. "
+            "Keep other reviewers' outstanding change requests blocking. Ignore "
+            "COMMENTED/PENDING events when choosing a decision; allow DISMISSED "
+            "to clear that reviewer's old request. Preserve case-insensitive states "
+            "and keep reviews without a reviewer ID separate. Do not change CI, "
+            "promotion policy, repository APIs or any other source bytes."
+        ),
+        workflow_path=".github/workflows/production-os-review-state-qualification.yml",
+        required_steps=("Compile", "Existing GitHub reconciliation checks",
+                        "Verify chronological review decisions", "Build distribution"),
+    ),
     "production_os_worktree_git_ref": SourceTask(
         task_id="production_os_worktree_git_ref",
         repo="dbrckk/Production-OS",

@@ -310,6 +310,8 @@ Actual Git rejects worktree identifiers containing consecutive dots or workflow 
 
 ## Pilot42 actual outcome and durable retry correction (2026-10-23)
 
+2026-10-24:worker390 postmerge8 Actions+3Circle passed. Preparing source task production_os_latest_reviewer_state for pilot43. Baseline keeps a reviewer's old change request after their approval. Register exact reviewed one-assignment AST policy and semantic model instruction;no local patch fallback. Existing bounded edits remain restricted by their original method policies and240-character line limit. Production source remains unchanged.69 selected tests+46 subtests passed,including malformed proposals and published-source resumption. Independent target workflow checks11 review histories on immutable source SHA. Hosted inference not yet launched;do not claim fresh autonomy or merge resulting source PR.
+
 Latest continuation:source39c7453d already merged via297. Permission recovery automatically opened302; independent exact-source CI39956492079 passed54 tests,eight real worktrees and builds. Closed duplicate302. Worker389 is merged and all8 postmerge Actions+3Circle passed. Original canary remains failed.
 
 The original artifacts also show a model timeout followed by three workspace-not-empty failures. Approved source attempts now run in individually owned temporary directories under the supplied work root, keeping caller files and durable project_out checkpoints intact. Existing lifecycle regression reproduces the old failure, then passes timeout/retry, publication and exact-commit resumption across all approved lanes.11 orchestrator tests and6 real authenticated server integrations passed. No live inference, new budget or source task launched by this infrastructure fix.

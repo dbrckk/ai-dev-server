@@ -74,7 +74,7 @@ def apply_model_edit(original: str, reply: dict, task: SourceTask) -> str:
     if (len(before_ast.targets) != 1 or len(after_ast.targets) != 1
             or ast.dump(before_ast.targets[0]) != ast.dump(after_ast.targets[0])):
         raise StudioError("Model source edit changes assignment destination")
-    expected = ast.Call(
+    expected = _line_statement(task.replacement_line).value if task.replacement_line else ast.Call(
         func=ast.Attribute(value=before_ast.value, attr=task.method, ctx=ast.Load()),
         args=[ast.Constant(value=value) for value in (
             (task.argument,) if task.second_argument is None
@@ -126,14 +126,16 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         start = before.index("def " + task.function + "(")
         end = before.find("\ndef ", start + 1)
         excerpt = before[start:end if end >= 0 else None][:5500]
+        transform_instruction = task.model_instruction or (
+            "Preserve original expression and wrap it only with "
+            f".{task.method}({json.dumps(task.argument)}"
+            + ("" if task.second_argument is None else ", " + json.dumps(task.second_argument))
+            + "). Do not add imports, other statements or unrelated code."
+        )
         response, provider = ask(
             "Return JSON only: {\"replacement_line\":\"...\"}, no markdown. "
             "Change only the requested Python assignment. Keep leading spaces "
-            "exactly; preserve original expression and wrap it only with "
-            f".{task.method}({json.dumps(task.argument)}"
-            + ("" if task.second_argument is None else ", " + json.dumps(task.second_argument))
-            + "). Do not add imports, "
-            "other statements or unrelated code. Model must author the new line.",
+            "exactly. " + transform_instruction + " Model must author the new line.",
             task.objective + "\nExisting source:\n" + excerpt +
             "\nExisting exact assignment:\n" + task.old_line +
             "\nReturn the complete replacement source line including indentation.",
@@ -172,7 +174,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
                 body="One approved model-authored source edit. Independently validate the exact SHA; no automatic merge.",
                 expected_sha=sha,
             )
-            if task.task_id == "production_os_worktree_git_ref":
+            if task.repo == "dbrckk/Production-OS":
                 # A direct PR creation may succeed with a PAT. The independent
                 # qualification workflow still needs its trusted dispatch.
                 handoff = repo.request_trusted_review_handoff(sha)

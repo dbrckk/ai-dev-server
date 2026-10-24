@@ -363,8 +363,24 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                     "replacement_line": worktree_task.old_line + suffix,
                 }, worktree_task)
         from generic_repository import GenericRepository
+        review_task = TASKS["production_os_latest_reviewer_state"]
+        review_source = "def _review_state(reviews):\n" + review_task.old_line + "\n    return states\n"
+        review_request = {**worktree_request, "brief": instruction(43, review_task.task_id)}
+        review_proposal = {"replacement_line": review_task.replacement_line}
+        self.assertEqual(bounded_contract(review_request)[1], review_task)
+        self.assertEqual(apply_model_edit(review_source, review_proposal, review_task),
+                         review_source.replace(review_task.old_line, review_task.replacement_line))
+        for altered in (
+            review_task.replacement_line.replace(' or id(r)', ''),
+            review_task.replacement_line.replace('"DISMISSED"', '"COMMENTED"'),
+            review_task.replacement_line.replace('list(', '__import__('),
+            review_task.replacement_line + '; print("unapproved")',
+        ):
+            with self.assertRaises(StudioError):
+                apply_model_edit(review_source, {"replacement_line": altered}, review_task)
         reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
         self.assertTrue(reviewed._approved_source_path(worktree_task.path))
+        self.assertTrue(reviewed._approved_source_path(review_task.path))
         self.assertFalse(reviewed._approved_source_path("src/production_os/control_plane.py"))
         self.assertFalse(reviewed._approved_source_path(".github/workflows/ci.yml"))
         self.assertFalse(GenericRepository(None, "other/repo", "mp-" + "b" * 24)
@@ -409,6 +425,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             (bounded_lane, request, task.path, source, proposal),
             (bounded_lane, worktree_request, worktree_task.path, worktree_source,
              {"replacement_line": changed_line}),
+            (bounded_lane, review_request, review_task.path, review_source, review_proposal),
             (jumpy_lane, exact, "scripts/integrations.gd",
              'func share_score(score: int, daily: bool = false) -> void:\n'
              '\tvar text = "Score"\n\tDisplayServer.clipboard_set(text)\n'
@@ -478,7 +495,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                     self.assertEqual(model.call_count, 1)
                     self.assertEqual(marker.read_text(), "preserve")
                     self.assertEqual(list(shared_work.iterdir()), [marker])
-                    if source_request is worktree_request:
+                    if source_request["target_repo"] == "dbrckk/Production-OS":
                         self.assertEqual(published["handoff"], published["sha"])
                     ci.assert_not_called()
                     model.reset_mock()

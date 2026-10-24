@@ -153,6 +153,18 @@
 
 # Project state
 
+## Exact-commit CI result receipt follow-up
+
+Pilot44 successfully delivered model source f2477fc6 in draft Production-OS305;
+independent qualification40090273718 and worker40090103839/canary40090094105 passed.
+One model call,5743 reported tokens. Source PR remains unmerged.
+The archived native result nevertheless has evidence.ci=null while its checkpoint
+retains passing CI. Approved-source lanes now expose observed CI receipts and the
+runner preserves them in its result envelope. Pending/failed gates remain so;
+checkpoint-only recovery does not infer fresh successful CI. Twenty existing
+targeted checks pass; replay of actual44 artifacts and freshly fetched run/jobs
+reproduces null on baseline and retains exact SHA/run URL with the fix.
+
 - **2026-10-18 hosted review delivery and duplicate wake:** Production-OS canary 38 ran from an isolated Actions `workflow_dispatch` branch with the deterministic `file` scenario. Canary run `39129978378` succeeded. Hosted worker `39129991255` published Jumpy commit `e4bc63ccf4ddf1f5c8678aa209794c13e9bee160`; the trusted target receiver opened draft PR #36 and exact-SHA Godot validation run `39130096902` succeeded. Worker artifact `12138165262` records `complete`, confirmed handoff, and zero model runs/tokens. The PR-triggered run is `action_required`, so only the separate exact-SHA dispatch gate is proven. A second worker `39129993272` was redundantly woken and reported `compatible_work_count=0` in artifact `12136744302`. Branch `fix/canary-single-worker-wake` skips the canary's extra dispatch when Production-OS reports `dispatched` or `not_needed`; an existing test now exercises both skip and fallback paths. No model calls or Jumpy source changes were made by this proof; meaningful autonomous code delivery remains open.
 
 - **2026-10-16 canary 37 patch-envelope repair:** PR317 is merged (`2cbe296f`). Later bounded-context/exact-edit changes reached main06a0ba80. Worker [38893647358](https://github.com/dbrckk/ai-dev-server/actions/runs/38893647358) ended blocked after 5 cycles, 10 calls and 58,472 reported tokens; final blocker `Structured response rejected: Expected patch envelope`, checkpoint `afd6e5f08287acdfaf0829b872c11b750f50ba9f`. Product/design persisted, no changed-file delivery. Branch `fix/godot-patch-envelope-repair` adds actionable role-specific envelope repair and uses the already budget/health-filtered alternate provider for this malformed-envelope error only. Strict patch policy and two-call repair remain. Existing synthetic wrong-envelope regression (raw live reply unavailable), QA restriction and single-provider failure checks pass: 38 selected tests. Review/CI pending; no new canary or live delivery claim. Repeated outer-cycle retries remain a separate stop-loss concern.

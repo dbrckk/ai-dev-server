@@ -17,7 +17,7 @@ from generic_repository import GenericRepository
 from production_os_worker_canary import canary_instruction
 from run import GitHub
 from source_delivery_checkpoint import request_fingerprint, resume_published_source, source_operation
-from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
+from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence, source_ci_receipt
 
 _TARGET = "dbrckk/Jumpy"
 _FILE = "scripts/integrations.gd"
@@ -220,6 +220,8 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         "blockers": blockers,
         "checkpoint_commit": sha,
         "verification": verification,
+        "ci": source_ci_receipt(ci, repository=_TARGET, commit_sha=sha,
+                                workflow_path=".github/workflows/validate.yml"),
         "pull_request": pr,
         "execution_checkpoint": {
             "round": checkpoint["round"], "phase": checkpoint["phase"], "base_sha": checkpoint["base_sha"],

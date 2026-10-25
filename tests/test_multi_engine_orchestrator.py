@@ -548,23 +548,29 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             "Import and parse project",
             "Smoke-test touch routing and HUD input passthrough",
         )
-        good_run = {"id": 12, "head_sha": source_sha,
+        good_run = {"id": 12, "run_attempt": 1, "head_sha": source_sha,
                     "head_branch": review_branch, "path": workflow_path,
                     "event": "workflow_dispatch", "status": "completed",
                     "conclusion": "success"}
-        good_job = {"status": "completed", "conclusion": "success",
+        good_job = {"run_id": 12, "run_attempt": 1, "head_sha": source_sha,
+                    "status": "completed", "conclusion": "success",
                     "steps": [{"name": name, "status": "completed",
                                "conclusion": "success"} for name in required_steps]}
 
         class ReadOnlyGitHub:
-            def __init__(self, runs, jobs=None):
+            def __init__(self, runs, jobs=None, final_run=None):
                 self.runs = runs
                 self.jobs = [good_job] if jobs is None else jobs
+                self.final_run = final_run
+                self.calls = []
             def get(self, endpoint):
+                self.calls.append(endpoint)
                 if endpoint.startswith("/actions/runs?"):
                     return {"workflow_runs": self.runs}
                 if endpoint.endswith("/jobs?per_page=100"):
                     return {"total_count": len(self.jobs), "jobs": self.jobs}
+                if endpoint == "/actions/runs/12":
+                    return good_run if self.final_run is None else self.final_run
                 raise AssertionError("Unexpected CI endpoint")
 
         def inspect(client):
@@ -574,6 +580,21 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         verified = inspect(ReadOnlyGitHub([good_run]))
         self.assertEqual(verified["status"], "passed")
         self.assertEqual(verified["commit_sha"], source_sha)
+        rerunning = ReadOnlyGitHub([good_run], final_run={
+            **good_run, "run_attempt": 2, "status": "queued", "conclusion": None})
+        self.assertEqual(inspect(rerunning)["status"], "pending")
+        for changed in ({"run_attempt": 2}, {"run_id": 13}, {"head_sha": "e" * 40}):
+            self.assertEqual(inspect(ReadOnlyGitHub(
+                [good_run], [{**good_job, **changed}]))["status"], "failed")
+        self.assertEqual(verified["run_attempt"], 1)
+        self.assertIn("/actions/runs/12/attempts/1/jobs?per_page=100", rerunning.calls)
+        for changed in ({"status": "in_progress"}, {"conclusion": "failure"},
+                        {"head_sha": "e" * 40}, {"run_attempt": True}):
+            self.assertEqual(inspect(ReadOnlyGitHub(
+                [good_run], final_run={**good_run, **changed}))["status"], "pending")
+        for attempt in (None, True, 0, "1"):
+            with self.assertRaises(StudioError):
+                inspect(ReadOnlyGitHub([{**good_run, "run_attempt": attempt}]))
         for invalid in (
             {**good_run, "event": "pull_request"},
             {**good_run, "head_sha": "e" * 40},

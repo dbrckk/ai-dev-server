@@ -1,3 +1,10 @@
+# 2026-10-25 — independent CI attempt consistency
+
+- PR400 postmerge all8 Actions and3 CircleCI passed. Managed generic PR recovery is delivered;arbitrary hosted independent qualification remains ungeneralized.
+- Reproduced a race in exact-commit CI proof:the old verifier accepts success while a rerun is queued. Pin job queries to run_attempt, validate each job's run/attempt/SHA, then reread the run before accepting. Expose observed attempt in CI receipts/checkpoints and remove stale attempt when resuming source delivery.
+- Existing test extended;no new test functions. Baseline fails passed!=pending;11 targeted cases pass;full1784 tests passed22.810s. Fresh real GitHub API responses for pilot44 run40090273718/attempt1 still produce passed onf2477fc6. This reuses actual proof without new inference or CI dispatch.
+- Remote CI pending. No source PR305 merge,quota change or deployment modification.
+
 # 2026-10-25 — resume managed generic PR delivery
 
 - Reproduced false completion using the prior generic orchestration: PR creation403 still returned complete/finished. Managed generic implementation now persists a published checkpoint and yields until an exact-commit open PR is confirmed.

@@ -1,5 +1,13 @@
 {
   "version": 1,
+  "exact_ci_attempt_evidence": {
+    "date": "2026-10-25",
+    "branch": "fix/exact-ci-attempt-evidence",
+    "issue": "Successful run snapshot could be accepted while the same run is being rerun",
+    "fix": "Fetch attempt-specific jobs; verify run ID, attempt and SHA; reread run identity/status before success; retain attempt in receipts and clear stale checkpoint attempt on resumption",
+    "evidence": "Baseline existing regression fails passed!=pending; corrected11 orchestrator tests pass;full1784 pass22.810s;real GitHub pilot44 run40090273718 attempt1 still accepted",
+    "remaining": "Remote CI and merge pending;no new model call or target source merge"
+  },
   "managed_generic_delivery": {
     "date": "2026-10-25",
     "branch": "fix/generic-review-delivery-resume",

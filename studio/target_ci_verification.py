@@ -34,11 +34,15 @@ def inspect_exact_commit_ci(github, *, commit_sha: str, branch: str,
         return {"status": "pending", "reason": "exact_commit_ci_not_dispatched"}
     run = max(eligible, key=lambda r: r["id"])
     rid = run["id"]
+    attempt = run.get("run_attempt")
+    if type(attempt) is not int or attempt < 1:
+        raise StudioError("Target CI run attempt unavailable")
     if run.get("status") != "completed":
         return {"status": "pending", "run_id": rid, "reason": "exact_commit_ci_in_progress"}
     if run.get("conclusion") != "success":
         return {"status": "failed", "run_id": rid, "reason": "exact_commit_ci_not_successful"}
-    response = github.get("/actions/runs/" + str(rid) + "/jobs?per_page=100")
+    # Never mix a successful run snapshot with jobs from a later rerun.
+    response = github.get(f"/actions/runs/{rid}/attempts/{attempt}/jobs?per_page=100")
     jobs = response.get("jobs") if isinstance(response, dict) else None
     if (not isinstance(jobs, list) or not jobs
             or type(response.get("total_count")) is not int
@@ -46,6 +50,12 @@ def inspect_exact_commit_ci(github, *, commit_sha: str, branch: str,
         raise StudioError("Target CI job evidence incomplete")
     passed = set()
     for job in jobs:
+        if (not isinstance(job, dict) or type(job.get("run_id")) is not int
+                or job.get("run_id") != rid
+                or type(job.get("run_attempt")) is not int
+                or job.get("run_attempt") != attempt
+                or job.get("head_sha") != commit_sha):
+            return {"status": "failed", "run_id": rid, "reason": "exact_commit_ci_job_identity_mismatch"}
         if not isinstance(job, dict) or job.get("status") != "completed" or job.get("conclusion") != "success":
             return {"status": "failed", "run_id": rid, "reason": "exact_commit_ci_job_not_successful"}
         steps = job.get("steps")
@@ -57,7 +67,14 @@ def inspect_exact_commit_ci(github, *, commit_sha: str, branch: str,
                       and step.get("conclusion") == "success")
     if not set(required_steps).issubset(passed):
         return {"status": "failed", "run_id": rid, "reason": "exact_commit_ci_required_steps_not_passed"}
-    return {"status": "passed", "run_id": rid, "commit_sha": commit_sha}
+    current = github.get("/actions/runs/" + str(rid))
+    identity = ("id", "run_attempt", "head_sha", "head_branch", "event", "path", "status", "conclusion")
+    if (not isinstance(current, dict)
+            or type(current.get("id")) is not int
+            or type(current.get("run_attempt")) is not int
+            or any(current.get(key) != run.get(key) for key in identity)):
+        return {"status": "pending", "run_id": rid, "reason": "exact_commit_ci_changed_during_inspection"}
+    return {"status": "passed", "run_id": rid, "run_attempt": attempt, "commit_sha": commit_sha}
 
 def wait_for_exact_commit_ci(github, *, commit_sha: str, branch: str,
                              workflow_path: str, required_steps: tuple[str, ...],
@@ -82,6 +99,8 @@ def source_ci_receipt(ci: dict, *, repository: str, commit_sha: str,
                "sha": commit_sha, "workflow": workflow_path}
     if type(ci.get("run_id")) is int and ci["run_id"] > 0:
         receipt["url"] = f"https://github.com/{repository}/actions/runs/{ci['run_id']}"
+    if type(ci.get("run_attempt")) is int and ci["run_attempt"] > 0:
+        receipt["run_attempt"] = ci["run_attempt"]
     if ci["status"] == "passed":
         receipt["conclusion"] = "success"
     return receipt
@@ -110,6 +129,9 @@ def finalize_source_delivery_evidence(
     )
     validated["passed"] = complete
     validated.pop("target_ci_run_id", None)
+    validated.pop("target_ci_run_attempt", None)
     if type(ci.get("run_id")) is int and ci["run_id"] > 0:
         validated["target_ci_run_id"] = ci["run_id"]
+    if type(ci.get("run_attempt")) is int and ci["run_attempt"] > 0:
+        validated["target_ci_run_attempt"] = ci["run_attempt"]
     return validated, complete

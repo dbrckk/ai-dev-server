@@ -82,4 +82,5 @@ def resume_published_source(path: Path, request: dict, source_path: str,
     # Revalidate review/CI even after an earlier successful observation.
     evidence.update(status="pending", passed=False, target_ci="pending_exact_commit")
     evidence.pop("target_ci_run_id", None)
+    evidence.pop("target_ci_run_attempt", None)
     return advance(checkpoint, phase="published", last_verification=evidence), evidence

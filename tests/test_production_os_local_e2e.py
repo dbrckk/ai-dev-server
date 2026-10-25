@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import threading
@@ -219,6 +220,7 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
                 {
                     "workflow_id": "e" * 32,
                     "workflow_task_id": "acceptance",
+                    "objective_sha256": hashlib.sha256(request["brief"].encode()).hexdigest(),
                 },
             )
             self.assertIn("dbrckk/asset-forge", request["brief"])

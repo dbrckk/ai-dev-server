@@ -14,6 +14,7 @@ from unittest.mock import patch
 import generic_project
 from generic_toolchain import detect, bootstrap_commands
 from generic_verify import run as verify
+from core import StudioError
 
 
 def _fixture(root: Path) -> None:
@@ -35,6 +36,8 @@ def _fixture(root: Path) -> None:
 class FakeRepository:
     def __init__(self, github, target_repo, project_id):
         self.project_id=project_id
+        self.branch="studio/"+project_id
+        self.default_branch="main"
 
     def restore(self, work: Path):
         _fixture(work)
@@ -142,10 +145,53 @@ def main() -> int:
     out.mkdir(parents=True,exist_ok=True)
     verifier=verifier_smoke()
     orchestration=orchestration_smoke(out)
+    # Exercise the real managed generation -> verification -> publication loop.
+    # External model/GitHub boundaries remain explicitly deterministic fixtures.
+    managed_out = Path(tempfile.mkdtemp(prefix="managed-", dir=out))
+    request = {"id": "managed-smoke", "target_repo": "fixture/generic-smoke",
+               "brief": "Fix calculator addition", "max_calls": 8,
+               "production_os": {"workflow_id": "1" * 32, "workflow_task_id": "implementation"}}
+    publication = {"sha": "a" * 40, "count": 0, "available": False}
+    class ManagedRepository(FakeRepository):
+        def restore(self, work):
+            _fixture(work)
+            if publication["count"]:
+                (work / "calculator.py").write_text("def add(a,b):\n    return a+b\n")
+            return publication["sha"], {"mode": "deterministic_smoke"}
+        def publish(self, base_sha, work, message):
+            publication["count"] += 1
+            publication["sha"] = super().publish(base_sha, work, message)
+            return publication["sha"]
+        def ensure_pull_request(self, **kwargs):
+            assert kwargs["expected_sha"] == publication["sha"]
+            if not publication["available"]:
+                raise StudioError("API HTTP 403")
+            return {"number": 1, "state": "open", "url": "https://github.com/fixture/generic-smoke/pull/1"}
+        def request_trusted_review_handoff(self, sha):
+            return {"status": "unavailable"}
+    with patch.object(generic_project, "GitHub", side_effect=lambda repo: object()), \
+         patch.object(generic_project, "GenericRepository", ManagedRepository), \
+         patch.object(generic_project, "ask", side_effect=fake_ask) as model, \
+         patch.object(generic_project, "rank_agents", return_value=[]), \
+         patch.object(generic_project, "recommend", return_value={"matches": []}):
+        pending = generic_project.run_project(request, managed_out, out / "managed-work", max_rounds=1)
+        calls = model.call_count
+        assert calls > 0
+        model.side_effect = AssertionError("delivery recovery must not regenerate implementation")
+        publication["available"] = True
+        resumed = generic_project.run_project(request, managed_out, out / "managed-resume", max_rounds=1)
+        managed = {
+            "passed": pending["status"] == "deferred" and resumed["status"] == "complete"
+                      and publication["count"] == 1 and model.call_count == calls
+                      and resumed["report"]["checkpoint_commit"] == "b" * 40,
+            "initial_status": pending["status"], "resumed_status": resumed["status"],
+            "publication_count": publication["count"], "new_model_calls_on_resume": model.call_count - calls,
+        }
     evidence={
-        "passed":verifier.get("passed") is True and orchestration.get("passed") is True,
+        "passed":verifier.get("passed") is True and orchestration.get("passed") is True and managed["passed"],
         "verifier":verifier,
         "orchestration":orchestration,
+        "managed_delivery": managed,
     }
     (out/"generic-smoke.json").write_text(json.dumps(evidence,sort_keys=True,indent=2)+"\n")
     return 0 if evidence["passed"] else 1

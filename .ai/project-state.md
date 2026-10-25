@@ -1,3 +1,10 @@
+# 2026-10-25 — resume managed generic PR delivery
+
+- Reproduced false completion using the prior generic orchestration: PR creation403 still returned complete/finished. Managed generic implementation now persists a published checkpoint and yields until an exact-commit open PR is confirmed.
+- Resume restores the same verified SHA without another model call or publication. Stable objective identity tolerates changing retry diagnostics; changed objective or commit fails closed. Legacy complete reports with blocked review delivery are rejected by the goal adapter.
+- Full1784 existing tests passed22.348s;6 real authenticated server integrations passed4.029s. Generic CLI smoke runs actual verification with deterministic model/GitHub boundaries: first403/deferred, then complete, one publication, zero model calls on resume. No new unit-test functions.
+- Remote CI pending. This is review delivery, not proof of generalized hosted independent CI or autonomous merge. Pilot44 source PR305 remains draft/unmerged; no additional inference quota consumed.
+
 # 2026-10-22 — honor cancellation before worker setup
 
 - Actual authenticated HTTP initial heartbeat requests operator cancellation. Baseline valid job still invokes runner/creates output;malformed handoff is falsely failed without cancellation acknowledgment. Corrected valid/malformed jobs:zero executor starts/output,no fail/complete,queue cancelled,operator cancellation acknowledged,active0.

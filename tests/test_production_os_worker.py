@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from core import request_check
+from core import StudioError, request_check
 from production_os_worker import (
     build_studio_request,
     completion_payload,
@@ -47,11 +47,25 @@ class ProductionOSWorkerTests(unittest.TestCase):
             {
                 "workflow_id": "f" * 32,
                 "workflow_task_id": "goal",
+                "objective_sha256": __import__("hashlib").sha256(b"Ship the final verified version").hexdigest(),
             },
         )
         self.assertEqual(request["agent_preference"], "codex")
         self.assertTrue(request["id"].startswith("pos-"))
         self.assertLessEqual(len(request["id"]), 48)
+        retry = self.job()
+        retry["payload"]["handoff"]["retry_context"] = {"summary": "PR temporarily unavailable"}
+        retried = request_check(build_studio_request(retry))
+        self.assertNotEqual(retried["brief"], checked["brief"])
+        self.assertEqual(retried["production_os"]["objective_sha256"],
+                         checked["production_os"]["objective_sha256"])
+        retry["payload"]["handoff"]["task"] = "Implement a different objective"
+        retry["payload"]["handoff"]["final_goal"] = "Implement a different objective"
+        self.assertNotEqual(build_studio_request(retry)["production_os"]["objective_sha256"],
+                            checked["production_os"]["objective_sha256"])
+        for invalid in (True, "bad", "A" * 64):
+            with self.assertRaises(StudioError):
+                request_check({**request, "production_os": {**request["production_os"], "objective_sha256": invalid}})
 
     def test_visual_reuse_adds_asset_forge_guidance(self):
         job = self.job()

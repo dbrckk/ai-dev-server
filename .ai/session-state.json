@@ -1,5 +1,13 @@
 {
   "version": 1,
+  "managed_generic_delivery": {
+    "date": "2026-10-25",
+    "branch": "fix/generic-review-delivery-resume",
+    "fix": "Do not complete managed generic objectives without an exact-commit PR; persist delivery checkpoint and resume without model generation or republishing",
+    "identity": "Stable validated objective SHA excludes transient retry diagnostics; changed objective or restored commit fails closed",
+    "validation": "1784 existing tests passed22.348s;6 actual server integrations passed4.029s;generic CLI smoke verifies first403 then successful PR with one publication and zero model calls on resume",
+    "remaining": "Publish PR and qualify remote CI. Generic smoke uses deterministic model/GitHub boundaries; arbitrary hosted independent qualification is not generalized. Pilot44 source PR305 remains draft/unmerged."
+  },
   "integration_baseline_refresh": {
     "server_sha": "2d7bab79ec27366d5c573a2db9387f414800dbfb",
     "change": "Replace Oct11 current-qualified matrix pin with Oct24 qualified main;keep historical and deployed compatibility entries",

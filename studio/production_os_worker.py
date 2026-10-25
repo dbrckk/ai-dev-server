@@ -807,6 +807,10 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     from production_os_bounded_source_repair import contract as bounded_contract
     from production_os_jumpy_source_repair import contract as jumpy_contract
     if bounded_contract(request) is None and jumpy_contract(request) is None:
+        # Retry diagnostics can change between attempts without changing the
+        # authenticated objective. Bind completed delivery to its stable input.
+        objective = brief + _upstream_guidance(handoff) + _asset_forge_guidance(handoff)
+        request["production_os"]["objective_sha256"] = hashlib.sha256(objective.encode("utf-8")).hexdigest()
         request["brief"] = (
             brief + _upstream_guidance(handoff) + _retry_guidance(handoff)
             + _asset_forge_guidance(handoff)

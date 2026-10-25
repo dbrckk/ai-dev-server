@@ -17,6 +17,7 @@ from capacity_runtime import project_envelope as load_project_envelope
 from generic_model import ask
 from generic_policy import validate_patch
 from generic_repository import GenericRepository
+from generic_delivery import deliver as deliver_managed_review, resumable as resumable_managed_review
 from generic_verify import run as verify, verify_structural_text_changes
 from generic_verifier_adaptation import save_recipe, synthesize as synthesize_verifier, validate_recipe
 from generic_toolchain import bootstrap_commands, detect as detect_toolchain
@@ -843,6 +844,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
     except ExecutionCheckpointError:
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
+    if resumable_managed_review(checkpoint, req, base_sha):
+        return deliver_managed_review(req, repo, checkpoint,
+                                      {"restore": restore, "rounds": []}, out,
+                                      checkpoint_observer)
     if checkpoint.get("project_id") != req["id"] or checkpoint.get("engine") != "generic":
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
     if checkpoint.get("base_sha") != base_sha:
@@ -2618,6 +2623,13 @@ Objective and current plan:
         (out / "generic-report.json").write_text(canonical(state))
 
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
+        if complete and req.get("production_os"):
+            checkpoint = advance_checkpoint(
+                checkpoint, base_sha=base_sha, round_index=round_index,
+                phase="published", last_verification=verification,
+            )
+            return deliver_managed_review(req, repo, checkpoint, state, out,
+                                          checkpoint_observer)
         checkpoint = advance_checkpoint(
             checkpoint,
             base_sha=base_sha,

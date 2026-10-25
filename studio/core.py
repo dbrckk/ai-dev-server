@@ -98,7 +98,8 @@ def request_check(data):
         production_os = data['production_os']
         if (
             not isinstance(production_os, dict)
-            or set(production_os) != {'workflow_id', 'workflow_task_id'}
+            or not {'workflow_id', 'workflow_task_id'} <= set(production_os)
+            or set(production_os) - {'workflow_id', 'workflow_task_id', 'objective_sha256'}
         ):
             raise StudioError('Invalid production_os')
         workflow_id = production_os.get('workflow_id')
@@ -114,6 +115,11 @@ def request_check(data):
             'workflow_id': workflow_id,
             'workflow_task_id': workflow_task_id,
         }
+        if 'objective_sha256' in production_os:
+            objective_sha = production_os['objective_sha256']
+            if not isinstance(objective_sha, str) or not re.fullmatch(r'[a-f0-9]{64}', objective_sha):
+                raise StudioError('Invalid production_os objective identity')
+            data['production_os']['objective_sha256'] = objective_sha
     if 'tool_contracts' in data:
         contracts = data['tool_contracts']
         if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation', 'mobile_validation', 'skill_learning'}:

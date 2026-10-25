@@ -122,6 +122,52 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
             _save_published_checkpoint(path, checkpoint)
             self.assertEqual(load(path), checkpoint)
 
+        # A completed implementation with failed PR publication must resume
+        # delivery only, preserving its exact commit and avoiding model work.
+        from core import StudioError
+        from generic_delivery import deliver
+        from autonomous_project import translate_orchestrator_result
+        from source_delivery_checkpoint import SourceCheckpointError
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "out"
+            out.mkdir()
+            request = {"id": "managed", "target_repo": "owner/app", "brief": "Fix parsing",
+                       "production_os": {"workflow_id": "1" * 32, "workflow_task_id": "implementation", "objective_sha256": "a" * 64}}
+            checkpoint = advance(new("managed", "generic", "a" * 40),
+                                 base_sha="b" * 40, round_index=1, phase="published",
+                                 last_verification={"passed": True})
+            with patch("generic_project.GitHub"), patch("generic_project.GenericRepository") as factory, \
+                 patch("generic_project.ask", side_effect=AssertionError("delivery must not invoke model")) as model:
+                repo = factory.return_value
+                repo.restore.return_value = ("b" * 40, {"files": 1})
+                repo.ensure_pull_request.side_effect = StudioError("API HTTP 403")
+                repo.request_trusted_review_handoff.return_value = {"status": "unavailable"}
+                pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
+                self.assertEqual(pending["status"], "deferred")
+                self.assertFalse(pending["report"]["completion"]["finished"])
+                self.assertEqual(translate_orchestrator_result(pending), {"yield_run": True})
+                saved_path = out / ".autonomy/generic-execution-checkpoint.json"
+                self.assertEqual(load(saved_path)["phase"], "published")
+                pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
+                                            out, Path(temp) / "retry")
+                self.assertEqual(pending_again["status"], "deferred")
+                repo.ensure_pull_request.side_effect = None
+                repo.ensure_pull_request.return_value = {
+                    "number": 3, "state": "open", "url": "https://github.com/owner/app/pull/3"}
+                complete = run_project(request, out, Path(temp) / "resume")
+                self.assertEqual(complete["status"], "complete")
+                self.assertEqual(load(saved_path)["phase"], "complete")
+                self.assertEqual(complete["report"]["checkpoint_commit"], "b" * 40)
+                self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "b" * 40)
+                model.assert_not_called()
+                repo.publish.assert_not_called()
+                with self.assertRaises(SourceCheckpointError):
+                    run_project({**request, "production_os": {**request["production_os"],
+                                "objective_sha256": "c" * 64}}, out, Path(temp) / "changed")
+                repo.restore.return_value = ("c" * 40, {"files": 1})
+                with self.assertRaises(SourceCheckpointError):
+                    run_project(request, out, Path(temp) / "moved")
+
 
 if __name__ == "__main__":
     unittest.main()

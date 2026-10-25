@@ -1,15 +1,13 @@
 # Change impact
 
-Base: 8a9b0b382c6125af8da016f4eb9faeb3ad5ef629
-Head: f9aac4546aa311c1bf0a3949414dbe98877c76b2
+Base: a4e0ab3cf4710d0353f85d06416948e29ff79929
+Head: a79d2b177bdbf197dadae61585212c5e6218ea8c
 
 ## Changed files
-- M studio/core.py
-- M tests/test_studio.py
+- M .github/workflows/production-os-worker-integration.yml
 
 ## Affected areas
-- studio
-- tests
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

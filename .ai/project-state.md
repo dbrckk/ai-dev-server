@@ -285,16 +285,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T20:45:19Z
+Generated: 2026-10-25T07:14:59Z
 
 ### Git
 - Branch: `main`
-- Head: `f9aac4546aa3`
-- Commit date: 2026-10-24T16:45:09-04:00
-- Commit: fix(studio): stop timed-out recovery containers and preserve workspace cleanup
+- Head: `a79d2b177bdb`
+- Commit date: 2026-10-25T03:14:49-04:00
+- Commit: ci: qualify workers against current Production-OS server (#399)
 - Tracked files: 876
 
 ### Recently changed files
+- `.github/workflows/production-os-worker-integration.yml`
 - `studio/core.py`
 - `tests/test_studio.py`
 - `studio/github_runner.py`
@@ -307,8 +308,6 @@ Generated: 2026-10-24T20:45:19Z
 - `studio/multi_project_smoke.py`
 - `control/production-os-worker-canary.json`
 - `docs/production-os-pilot44.md`
-- `studio/autonomous_project.py`
-- `tests/test_autonomous_project.py`
 
 ### Project signals
 - No common build descriptor detected

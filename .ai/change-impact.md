@@ -1,16 +1,27 @@
 # Change impact
 
-Base: a4e0ab3cf4710d0353f85d06416948e29ff79929
-Head: a79d2b177bdbf197dadae61585212c5e6218ea8c
+Base: 9f70ac919e64417cead45eee91ebbfaf666170c1
+Head: 9e10f5caab4e375a2ee79b5dd053dee23096213f
 
 ## Changed files
-- M .github/workflows/production-os-worker-integration.yml
+- M studio/autonomous_project.py
+- M studio/core.py
+- A studio/generic_delivery.py
+- M studio/generic_project.py
+- M studio/generic_smoke.py
+- M studio/production_os_worker.py
+- M tests/test_autonomous_project.py
+- M tests/test_generic_published_checkpoint.py
+- M tests/test_production_os_local_e2e.py
+- M tests/test_production_os_worker.py
 
 ## Affected areas
-- .github
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_autonomous_project.py
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

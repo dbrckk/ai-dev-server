@@ -292,18 +292,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-25T07:14:59Z
+Generated: 2026-10-25T18:11:55Z
 
 ### Git
 - Branch: `main`
-- Head: `a79d2b177bdb`
-- Commit date: 2026-10-25T03:14:49-04:00
-- Commit: ci: qualify workers against current Production-OS server (#399)
-- Tracked files: 876
+- Head: `9e10f5caab4e`
+- Commit date: 2026-10-25T14:11:45-04:00
+- Commit: fix: resume managed generic PR delivery without regenerating source (#400)
+- Tracked files: 877
 
 ### Recently changed files
-- `.github/workflows/production-os-worker-integration.yml`
+- `studio/autonomous_project.py`
 - `studio/core.py`
+- `studio/generic_delivery.py`
+- `studio/generic_project.py`
+- `studio/generic_smoke.py`
+- `studio/production_os_worker.py`
+- `tests/test_autonomous_project.py`
+- `tests/test_generic_published_checkpoint.py`
+- `tests/test_production_os_local_e2e.py`
+- `tests/test_production_os_worker.py`
+- `.github/workflows/production-os-worker-integration.yml`
 - `tests/test_studio.py`
 - `studio/github_runner.py`
 - `studio/production_os_bounded_source_repair.py`
@@ -313,8 +322,6 @@ Generated: 2026-10-25T07:14:59Z
 - `tests/test_multi_engine_orchestrator.py`
 - `.github/workflows/studio-smoke.yml`
 - `studio/multi_project_smoke.py`
-- `control/production-os-worker-canary.json`
-- `docs/production-os-pilot44.md`
 
 ### Project signals
 - No common build descriptor detected

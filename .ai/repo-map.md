@@ -268,6 +268,7 @@ studio/
   generic_capability_isolated_validation.py
   generic_capability_persist.py
   generic_capability_synthesis.py
+  generic_delivery.py
   generic_model.py
   generic_policy.py
   generic_project.py
@@ -12103,6 +12104,8 @@ production_os = data['production_os']
 workflow_id = production_os.get('workflow_id')
 workflow_task_id = production_os.get('workflow_task_id')
 ⋮----
+objective_sha = production_os['objective_sha256']
+⋮----
 contracts = data['tool_contracts']
 ⋮----
 normalized = {}
@@ -14630,6 +14633,45 @@ choice = response["choices"][0]
 def synthesize_from_memory(memory, project_id, capability, *, api=None, model=None)
 ````
 
+## File: studio/generic_delivery.py
+````python
+"""Resume managed review delivery after implementation, without another model call."""
+⋮----
+def _fingerprint(request: dict) -> str
+⋮----
+objective = (request.get("production_os") or {}).get("objective_sha256")
+⋮----
+def resumable(checkpoint: dict, request: dict, commit_sha: str) -> bool
+⋮----
+verification = checkpoint.get("last_verification") or {}
+receipt = verification.get("managed_review_delivery")
+⋮----
+sha = checkpoint["base_sha"]
+verification = dict(checkpoint.get("last_verification") or {})
+⋮----
+previous = verification.get("managed_review_delivery") or {}
+changed = previous.get("changed_files", [])
+⋮----
+changed = sorted({name for row in state["rounds"] if isinstance(row, dict)
+⋮----
+checkpoint = advance(checkpoint, phase="published", last_verification=verification)
+path = out / ".autonomy/generic-execution-checkpoint.json"
+# Persist before contacting GitHub: a failed POST must not erase completed work.
+⋮----
+pr = repo.ensure_pull_request(
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(sha) if denied else None
+pr = (repo.await_trusted_review(sha)
+confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
+checkpoint = advance(checkpoint, phase="complete" if confirmed else "published")
+⋮----
+status = "complete" if confirmed else "deferred"
+next_stage = None if confirmed else "review_handoff"
+blockers = [] if confirmed else ["Exact-commit review PR not confirmed"]
+report = {
+````
+
 ## File: studio/generic_model.py
 ````python
 """Provider-routed structured model calls for generic projects."""
@@ -15952,6 +15994,23 @@ out=Path("studio-output/generic-smoke")
 ⋮----
 verifier=verifier_smoke()
 orchestration=orchestration_smoke(out)
+# Exercise the real managed generation -> verification -> publication loop.
+# External model/GitHub boundaries remain explicitly deterministic fixtures.
+managed_out = Path(tempfile.mkdtemp(prefix="managed-", dir=out))
+request = {"id": "managed-smoke", "target_repo": "fixture/generic-smoke",
+publication = {"sha": "a" * 40, "count": 0, "available": False}
+class ManagedRepository(FakeRepository)
+⋮----
+def restore(self, work)
+def publish(self, base_sha, work, message)
+def ensure_pull_request(self, **kwargs)
+def request_trusted_review_handoff(self, sha)
+⋮----
+pending = generic_project.run_project(request, managed_out, out / "managed-work", max_rounds=1)
+calls = model.call_count
+⋮----
+resumed = generic_project.run_project(request, managed_out, out / "managed-resume", max_rounds=1)
+managed = {
 evidence={
 ````
 
@@ -23219,6 +23278,10 @@ repository_branch_id = _repository_branch_id(
 # Retry diagnostics remain in the job handoff; appending them here would
 # change both the approved contract and the durable request fingerprint.
 ⋮----
+# Retry diagnostics can change between attempts without changing the
+# authenticated objective. Bind completed delivery to its stable input.
+objective = brief + _upstream_guidance(handoff) + _asset_forge_guidance(handoff)
+⋮----
 tool_contracts = handoff.get("tool_contracts")
 ⋮----
 preference = str(handoff.get("agent_preference") or "auto").strip()
@@ -29870,6 +29933,8 @@ translated = translate_orchestrator_result({
 ⋮----
 def test_false_complete_fails_closed(self)
 ⋮----
+legacy = translate_orchestrator_result({
+⋮----
 def test_human_action_is_preserved(self)
 ⋮----
 def test_adaptation_yields_without_claiming_completion(self)
@@ -32479,6 +32544,22 @@ proof = {"passed": True, "reason": "existing verified contract"}
 result = run_project(
 ⋮----
 def test_missing_observer_keeps_original_local_behavior(self)
+⋮----
+# A completed implementation with failed PR publication must resume
+# delivery only, preserving its exact commit and avoiding model work.
+⋮----
+request = {"id": "managed", "target_repo": "owner/app", "brief": "Fix parsing",
+checkpoint = advance(new("managed", "generic", "a" * 40),
+⋮----
+repo = factory.return_value
+⋮----
+pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
+⋮----
+saved_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
+⋮----
+complete = run_project(request, out, Path(temp) / "resume")
 ````
 
 ## File: tests/test_generic_published_round_checkpoint.py
@@ -36966,6 +37047,10 @@ def test_build_studio_request_preserves_goal_and_workflow_correlation(self)
 request = build_studio_request(self.job())
 ⋮----
 checked = request_check(request)
+⋮----
+retry = self.job()
+⋮----
+retried = request_check(build_studio_request(retry))
 ⋮----
 def test_visual_reuse_adds_asset_forge_guidance(self)
 ⋮----

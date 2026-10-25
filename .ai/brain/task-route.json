@@ -6,13 +6,13 @@
     "requested_max_files": 12,
     "score_margin": 0,
     "tier": "narrow",
-    "top_score": 39
+    "top_score": 45
   },
   "cache": {
-    "fingerprint": "70607494c97f09839af6e4df4b9755338f11d34714022081f49957668e13242f",
+    "fingerprint": "6d8b624b660978b9cfdca0f732c13e3bb93d88dcfa99724aad9c7da08312db36",
     "hit": false
   },
-  "candidate_count": 97,
+  "candidate_count": 242,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,9 +23,10 @@
       ],
       "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 39,
+      "score": 45,
       "symbols": [
         "_detect",
         "_remaining",
@@ -41,9 +42,10 @@
       ],
       "path": "tests/test_multi_engine_orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 39,
+      "score": 45,
       "symbols": [
         "MultiEngineOrchestratorTests",
         "ReadOnlyGitHub",
@@ -73,32 +75,34 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_asset_forge_bridge.py",
+      "path": "tests/test_autonomous_project.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 33,
+      "score": 38,
       "symbols": [
-        "test_3d_character_inference_enables_lods_for_primary_assets",
-        "test_3d_environment_inference_uses_environment_profile",
-        "test_asset_reuse_policy_is_primary_unique_secondary_reusable",
-        "test_batch_infers_animation_of_dependency",
-        "test_batch_infers_parent_asset_dependency",
-        "test_batch_preserves_explicit_asset_dependencies",
-        "test_brief_inference_builds_character_dependency_chain",
-        "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
-        "test_brief_inference_detects_3d_environment",
-        "test_builds_production_os_dispatch_contract",
-        "test_engine_is_inferred_from_visual_instruction",
-        "test_explicit_secondary_importance_is_preserved",
-        "test_ignores_plain_code_task",
-        "test_premium_route_defaults_to_primary_importance",
-        "test_primary_3d_environment_requires_collision_readiness",
-        "test_primary_raster_batch_enables_optional_semantic_art_review",
-        "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
-        "test_raster_quality_policy_can_be_overridden_per_task",
-        "test_route_includes_repository_delivery_target",
-        "test_routes_premium_visual_task"
+        "AutonomousProjectTests",
+        "fail_remote",
+        "no_capacity",
+        "persist",
+        "run_once",
+        "step",
+        "sync",
+        "test_adaptation_yields_without_claiming_completion",
+        "test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle",
+        "test_complete_requires_machine_completion_evidence",
+        "test_existing_project_registry_syncs_new_promoted_capability",
+        "test_failed_remote_cycle_checkpoint_aborts_without_silent_progress",
+        "test_false_complete_fails_closed",
+        "test_human_action_is_preserved",
+        "test_human_action_persists_terminal_state",
+        "test_ordinary_failure_remains_autonomous_failure",
+        "test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace",
+        "test_persistent_wrapper_relaunches_until_proved_complete",
+        "test_project_capacity_exhaustion_yields_without_burning_attempt_budget",
+        "test_promoted_stage_syncs_into_capability_registry"
       ]
     }
   ],

@@ -2856,6 +2856,8 @@ translated = translate_orchestrator_result({
 ⋮----
 def test_false_complete_fails_closed(self)
 ⋮----
+legacy = translate_orchestrator_result({
+⋮----
 def test_human_action_is_preserved(self)
 ⋮----
 def test_adaptation_yields_without_claiming_completion(self)
@@ -5465,6 +5467,22 @@ proof = {"passed": True, "reason": "existing verified contract"}
 result = run_project(
 ⋮----
 def test_missing_observer_keeps_original_local_behavior(self)
+⋮----
+# A completed implementation with failed PR publication must resume
+# delivery only, preserving its exact commit and avoiding model work.
+⋮----
+request = {"id": "managed", "target_repo": "owner/app", "brief": "Fix parsing",
+checkpoint = advance(new("managed", "generic", "a" * 40),
+⋮----
+repo = factory.return_value
+⋮----
+pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
+⋮----
+saved_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
+⋮----
+complete = run_project(request, out, Path(temp) / "resume")
 ```
 
 ## File: test_generic_published_round_checkpoint.py
@@ -9952,6 +9970,10 @@ def test_build_studio_request_preserves_goal_and_workflow_correlation(self)
 request = build_studio_request(self.job())
 ⋮----
 checked = request_check(request)
+⋮----
+retry = self.job()
+⋮----
+retried = request_check(build_studio_request(retry))
 ⋮----
 def test_visual_reuse_adds_asset_forge_guidance(self)
 ⋮----

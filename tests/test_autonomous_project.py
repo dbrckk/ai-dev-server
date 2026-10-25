@@ -29,6 +29,13 @@ class AutonomousProjectTests(unittest.TestCase):
             "next_stage": None,
         })
         self.assertIn("blocked_reason", translated)
+        legacy = translate_orchestrator_result({
+            "status": "complete",
+            "report": {"completion": {"finished": True},
+                       "release_status": "verified_branch_review_blocked"},
+        })
+        self.assertIn("blocked_reason", legacy)
+        self.assertNotIn("evidence", legacy)
 
     def test_human_action_is_preserved(self):
         translated = translate_orchestrator_result({

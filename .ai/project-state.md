@@ -153,6 +153,18 @@
 
 # Project state
 
+## Current server integration baseline — 2026-10-24
+
+The worker integration matrix still called an Oct11 server current-qualified.
+Replace that entry with immutable main2d7bab79ec27366d5c573a2db9387f414800dbfb,
+qualified by server CI40131300355. Keep historical-baseline and deployed-Oct13
+compatibility coverage. Six real authenticated integrations against this source
+passed4.303s;21 workflow checks passed0.83s. An initial local command incorrectly
+put studio on PYTHONPATH,shadowing stdlib queue during psycopg import;the corrected
+server-only PYTHONPATH invocation passed. unittest discovery found0 pytest-style
+workflow tests;the actual pytest invocation passed21. No new test functions.
+Remote worker CI is the merge gate. This refresh does not launch model work.
+
 ## Exact-commit CI result receipt follow-up
 
 Pilot44 successfully delivered model source f2477fc6 in draft Production-OS305;

@@ -58,7 +58,9 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                 for failure in (None, "API HTTP 403", "Generic review pull request head revision unverified", "confirmed handoff", "pending handoff"):
                     with self.subTest(failure=failure), patch.dict(os.environ), patch(
                         "generic_project.GitHub"
-                    ), patch("generic_project.GenericRepository") as repository:
+                    ), patch("generic_project.GenericRepository") as repository, patch(
+                        "generic_delivery.inspect_ci", return_value={"status": "passed", "sha": "a" * 40}
+                    ) as ci:
                         repo = repository.return_value
                         repo.restore.return_value = ("a" * 40, {"files": 1})
                         repo.branch = "studio/canary-resume"
@@ -79,11 +81,12 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                         request = {**self._request(), "id": "canary-resume"}
                         outcome = run_project(request, root / "output", root,
                                               checkpoint_observer=observed.append)
-                        self.assertEqual(outcome["status"], "complete" if delivered else "blocked")
+                        self.assertEqual(outcome["status"], "complete" if delivered else "deferred")
                         self.assertEqual(outcome["report"]["completion"]["finished"], delivered)
                         self.assertEqual(observed[-1]["phase"], "complete" if delivered else "published")
                         self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "a" * 40)
                         repo.publish.assert_not_called()
+                        self.assertEqual(ci.call_count, 1 if delivered else 0)
                         if handoff:
                             repo.await_trusted_review.assert_called_once_with("a" * 40)
 

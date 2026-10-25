@@ -548,7 +548,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             "Import and parse project",
             "Smoke-test touch routing and HUD input passthrough",
         )
-        good_run = {"id": 12, "run_attempt": 1, "head_sha": source_sha,
+        good_run = {"id": 12, "run_attempt": 1, "workflow_id": 7, "head_sha": source_sha,
                     "head_branch": review_branch, "path": workflow_path,
                     "event": "workflow_dispatch", "status": "completed",
                     "conclusion": "success"}
@@ -565,6 +565,12 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 self.calls = []
             def get(self, endpoint):
                 self.calls.append(endpoint)
+                if endpoint == "/actions/workflows?per_page=100":
+                    return {"total_count": 1, "workflows": [{"id": 7, "name": "CI", "state": "active", "path": workflow_path}]}
+                if endpoint.startswith("/contents/"):
+                    return {"type": "file", "sha": "d" * 40}
+                if endpoint.startswith("/actions/workflows/7/runs?"):
+                    return {"workflow_runs": self.runs}
                 if endpoint.startswith("/actions/runs?"):
                     return {"workflow_runs": self.runs}
                 if endpoint.endswith("/jobs?per_page=100"):
@@ -580,6 +586,28 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         verified = inspect(ReadOnlyGitHub([good_run]))
         self.assertEqual(verified["status"], "passed")
         self.assertEqual(verified["commit_sha"], source_sha)
+        from types import SimpleNamespace
+        from generic_target_ci import inspect as inspect_generic_ci
+        generic_repo = SimpleNamespace(github=ReadOnlyGitHub([good_run]),
+                                       branch=review_branch, default_branch="main", repo="owner/app")
+        self.assertEqual(inspect_generic_ci(generic_repo, source_sha)["status"], "passed")
+        generic_repo.github = ReadOnlyGitHub([good_run], final_run={**good_run, "run_attempt": 2})
+        self.assertEqual(inspect_generic_ci(generic_repo, source_sha)["status"], "pending")
+        from generic_target_ci import dispatch as dispatch_generic_ci
+        generic_repo.github.key = "fixture-not-a-real-token"
+        with patch("generic_target_ci.urllib.request.build_opener") as opener:
+            opener.return_value.open.return_value.__enter__.return_value.status = 204
+            self.assertEqual(dispatch_generic_ci(generic_repo, 7)["status"], "accepted")
+            opener.return_value.open.assert_called_once()
+            opener.return_value.open.reset_mock()
+            opener.return_value.open.side_effect = TimeoutError("accepted POST response lost")
+            self.assertEqual(dispatch_generic_ci(generic_repo, 7)["status"], "ambiguous")
+            opener.return_value.open.assert_called_once()
+        failed_run = {**good_run, "conclusion": "failure"}
+        generic_repo.github = ReadOnlyGitHub([failed_run], [{**good_job, "conclusion": "failure"}], failed_run)
+        self.assertEqual(inspect_generic_ci(generic_repo, source_sha)["status"], "failed")
+        generic_repo.github = ReadOnlyGitHub([{**good_run, "head_sha": "e" * 40}])
+        self.assertEqual(inspect_generic_ci(generic_repo, source_sha)["status"], "pending")
         rerunning = ReadOnlyGitHub([good_run], final_run={
             **good_run, "run_attempt": 2, "status": "queued", "conclusion": None})
         self.assertEqual(inspect(rerunning)["status"], "pending")

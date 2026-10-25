@@ -855,6 +855,12 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     save_checkpoint(checkpoint_path, checkpoint)
 
     existing_canary_verification = _existing_worker_canary_verification(req, work)
+    if existing_canary_verification is not None and req.get("production_os"):
+        checkpoint = advance_checkpoint(checkpoint, base_sha=base_sha,
+                                        round_index=max(1, checkpoint.get("round", 0)),
+                                        phase="published", last_verification=existing_canary_verification)
+        return deliver_managed_review(req, repo, checkpoint, {"restore": restore, "rounds": []},
+                                      out, checkpoint_observer)
     if existing_canary_verification is not None:
         # Restored file content proves implementation only, not review delivery.
         # Reuse/create the review with the same exact-SHA guard as normal rounds.

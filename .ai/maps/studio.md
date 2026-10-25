@@ -21115,13 +21115,18 @@ eligible = [r for r in runs if isinstance(r, dict)
 ⋮----
 run = max(eligible, key=lambda r: r["id"])
 rid = run["id"]
+attempt = run.get("run_attempt")
 ⋮----
-response = github.get("/actions/runs/" + str(rid) + "/jobs?per_page=100")
+# Never mix a successful run snapshot with jobs from a later rerun.
+response = github.get(f"/actions/runs/{rid}/attempts/{attempt}/jobs?per_page=100")
 jobs = response.get("jobs") if isinstance(response, dict) else None
 ⋮----
 passed = set()
 ⋮----
 steps = job.get("steps")
+⋮----
+current = github.get("/actions/runs/" + str(rid))
+identity = ("id", "run_attempt", "head_sha", "head_branch", "event", "path", "status", "conclusion")
 ⋮----
 deadline = clock() + timeout_seconds
 ⋮----

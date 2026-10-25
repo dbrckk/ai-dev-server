@@ -26966,13 +26966,18 @@ eligible = [r for r in runs if isinstance(r, dict)
 ⋮----
 run = max(eligible, key=lambda r: r["id"])
 rid = run["id"]
+attempt = run.get("run_attempt")
 ⋮----
-response = github.get("/actions/runs/" + str(rid) + "/jobs?per_page=100")
+# Never mix a successful run snapshot with jobs from a later rerun.
+response = github.get(f"/actions/runs/{rid}/attempts/{attempt}/jobs?per_page=100")
 jobs = response.get("jobs") if isinstance(response, dict) else None
 ⋮----
 passed = set()
 ⋮----
 steps = job.get("steps")
+⋮----
+current = github.get("/actions/runs/" + str(rid))
+identity = ("id", "run_attempt", "head_sha", "head_branch", "event", "path", "status", "conclusion")
 ⋮----
 deadline = clock() + timeout_seconds
 ⋮----
@@ -35392,16 +35397,18 @@ source_sha = "f" * 40
 review_branch = "studio/mp-" + "a" * 24
 workflow_path = ".github/workflows/validate.yml"
 required_steps = (
-good_run = {"id": 12, "head_sha": source_sha,
-good_job = {"status": "completed", "conclusion": "success",
+good_run = {"id": 12, "run_attempt": 1, "head_sha": source_sha,
+good_job = {"run_id": 12, "run_attempt": 1, "head_sha": source_sha,
 ⋮----
 class ReadOnlyGitHub
 ⋮----
-def __init__(self, runs, jobs=None)
+def __init__(self, runs, jobs=None, final_run=None)
 def get(self, endpoint)
 ⋮----
 def inspect(client)
 verified = inspect(ReadOnlyGitHub([good_run]))
+⋮----
+rerunning = ReadOnlyGitHub([good_run], final_run={
 ````
 
 ## File: tests/test_multi_project_canary.py

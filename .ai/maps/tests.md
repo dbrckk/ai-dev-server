@@ -8315,16 +8315,18 @@ source_sha = "f" * 40
 review_branch = "studio/mp-" + "a" * 24
 workflow_path = ".github/workflows/validate.yml"
 required_steps = (
-good_run = {"id": 12, "head_sha": source_sha,
-good_job = {"status": "completed", "conclusion": "success",
+good_run = {"id": 12, "run_attempt": 1, "head_sha": source_sha,
+good_job = {"run_id": 12, "run_attempt": 1, "head_sha": source_sha,
 ⋮----
 class ReadOnlyGitHub
 ⋮----
-def __init__(self, runs, jobs=None)
+def __init__(self, runs, jobs=None, final_run=None)
 def get(self, endpoint)
 ⋮----
 def inspect(client)
 verified = inspect(ReadOnlyGitHub([good_run]))
+⋮----
+rerunning = ReadOnlyGitHub([good_run], final_run={
 ```
 
 ## File: test_multi_project_canary.py

@@ -183,6 +183,8 @@ def main() -> int:
                         "steps": [{"status": "completed", "conclusion": publication["ci"]}]}]}
             raise AssertionError(path)
     class ManagedRepository(FakeRepository):
+        def delivery_head(self):
+            return publication["sha"]
         def restore(self, work):
             _fixture(work)
             if publication["count"]:

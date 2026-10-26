@@ -56,6 +56,18 @@ class GenericRepository:
             raise StudioError("Generic repository tree unavailable or truncated")
         return tree
 
+    def delivery_head(self) -> str:
+        """Confirm the published branch without downloading its source tree."""
+        self._reject_reserved_generic_branch()
+        refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+        exact = [r for r in refs if isinstance(r, dict)
+                 and r.get("ref") == "refs/heads/" + self.branch] if isinstance(refs, list) else []
+        obj = exact[0].get("object") if len(exact) == 1 else None
+        sha = obj.get("sha") if isinstance(obj, dict) else None
+        if not isinstance(sha, str) or not re.fullmatch(r"[a-f0-9]{40}", sha):
+            raise StudioError("Generic delivery branch identity unavailable")
+        return sha
+
     def restore(self,root:Path)->tuple[str,dict]:
         self._reject_reserved_generic_branch()
         metadata=self.github.get("")

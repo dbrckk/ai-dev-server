@@ -63,6 +63,7 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                     ) as ci:
                         repo = repository.return_value
                         repo.restore.return_value = ("a" * 40, {"files": 1})
+                        repo.delivery_head.return_value = "a" * 40
                         repo.branch = "studio/canary-resume"
                         repo.ensure_pull_request.side_effect = StudioError(
                             "API HTTP 403" if failure in {"confirmed handoff", "pending handoff"} else failure

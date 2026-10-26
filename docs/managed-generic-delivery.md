@@ -28,6 +28,9 @@ they never count as successful delivery.
 3. Observe the target's CI. If absent, persist dispatch intent before sending one
    dispatch POST. Do not replay an ambiguous response after restart.
 4. While CI runs, yield without invoking the model or republishing source.
+   The worker polls every30 seconds with heartbeat and cancellation active;
+   waiting does not spend implementation continuations. Delivery-only resumes
+   read the branch SHA instead of downloading the source tree again.
 5. Require successful jobs from the same run attempt and SHA, executed steps,
    unchanged run identity/status on reread, and an open PR still on the source SHA.
 6. A failed CI job returns its run URL, job and step names to the next bounded

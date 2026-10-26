@@ -141,6 +141,7 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                  patch("generic_project.ask", side_effect=AssertionError("delivery must not invoke model")) as model:
                 repo = factory.return_value
                 repo.restore.return_value = ("b" * 40, {"files": 1})
+                repo.delivery_head.return_value = "b" * 40
                 repo.ensure_pull_request.side_effect = StudioError("API HTTP 403")
                 repo.request_trusted_review_handoff.return_value = {"status": "unavailable"}
                 pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
@@ -167,6 +168,7 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "b" * 40)
                 model.assert_not_called()
                 repo.publish.assert_not_called()
+                repo.restore.assert_not_called()
                 ci.return_value = {"status": "failed", "reason": "independent_CI_failed", "failed_jobs": ["test"]}
                 failed = run_project(request, out, Path(temp) / "ci-failed")
                 self.assertEqual(failed["next_stage"], "generic_ci_repair")
@@ -178,6 +180,7 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                     run_project({**request, "production_os": {**request["production_os"],
                                 "objective_sha256": "c" * 64}}, out, Path(temp) / "changed")
                 repo.restore.return_value = ("c" * 40, {"files": 1})
+                repo.delivery_head.return_value = "c" * 40
                 with self.assertRaises(SourceCheckpointError):
                     run_project(request, out, Path(temp) / "moved")
 

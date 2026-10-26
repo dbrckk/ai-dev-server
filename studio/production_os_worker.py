@@ -1433,6 +1433,16 @@ def run_once(
                 and summary.get("finished") is not True
                 and not cancel_event.is_set()
             ):
+                if (summary.get("next_stage") == "independent_target_ci"
+                        and isinstance(summary.get("ci"), dict)
+                        and summary["ci"].get("status") == "pending"):
+                    # CI scheduling is not a model-repair continuation. Keep
+                    # heartbeats/cancellation alive while the wall-clock limit
+                    # and the persisted CI deadline bound this read-only wait.
+                    wait_seconds = min(30, max(0, runtime_limit - (float(clock()) - started) - 30))
+                    if cancel_event.wait(wait_seconds):
+                        break
+                    continue
                 if continuations >= max_continuations:
                     summary = {
                         **summary,

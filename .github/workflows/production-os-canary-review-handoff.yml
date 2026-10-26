@@ -119,7 +119,7 @@ jobs:
                   or source.get("path") != path
                   or source.get("encoding") != "base64"
                   or not isinstance(source.get("content"), str)
-                  or not isinstance(source.get("sha"), str)):
+                  or not re.fullmatch(r"[a-f0-9]{40}", str(source.get("sha") or ""))):
               raise SystemExit("Canary file evidence missing")
           try:
               raw = base64.b64decode(source["content"], validate=False)
@@ -145,6 +145,9 @@ jobs:
               and (pr.get("head") or {}).get("ref") == branch
               and (pr.get("head") or {}).get("sha") == sha
               and (pr.get("base") or {}).get("ref") == "main"
+              and ((pr.get("head") or {}).get("repo") or {}).get("full_name") == repo
+              and ((pr.get("base") or {}).get("repo") or {}).get("full_name") == repo
+              and pr.get("draft") is True
               and pr.get("html_url") == "https://github.com/" + repo + "/pull/" + str(pr.get("number"))
           ]
           if len(valid) > 1:
@@ -171,6 +174,8 @@ jobs:
                       or (pr.get("head") or {}).get("sha") != sha
                       or (pr.get("head") or {}).get("ref") != branch
                       or (pr.get("base") or {}).get("ref") != "main"
+                      or ((pr.get("head") or {}).get("repo") or {}).get("full_name") != repo
+                      or ((pr.get("base") or {}).get("repo") or {}).get("full_name") != repo
                       or pr.get("html_url") != "https://github.com/" + repo + "/pull/" + str(pr.get("number"))):
                   raise SystemExit("Canary PR creation receipt is unverified")
               print("Opened exact-SHA draft review: " + pr["html_url"])

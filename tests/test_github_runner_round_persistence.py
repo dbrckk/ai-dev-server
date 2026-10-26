@@ -32,12 +32,16 @@ class GithubRunnerRoundPersistenceTests(unittest.TestCase):
             request = self.request(root)
             out = root / "out"
             checkpoints = []
-            checkpoint = {
-                "project_id": "demo",
-                "phase": "published",
-                "round": 1,
-                "base_sha": "b" * 40,
-            }
+            from execution_checkpoint import advance, new, save
+            checkpoint = advance(
+                new("demo", "generic", "a" * 40),
+                base_sha="b" * 40,
+                round_index=1,
+                phase="published",
+                last_verification={"passed": True},
+            )
+            complete_checkpoint = advance(checkpoint, phase="complete")
+            checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
             remote_saves = []
             with ExitStack() as stack:
                 stack.enter_context(patch.dict(
@@ -67,7 +71,7 @@ class GithubRunnerRoundPersistenceTests(unittest.TestCase):
                     stack.enter_context(patch("github_runner." + name))
                 flush = stack.enter_context(patch(
                     "github_runner.persist_execution_checkpoint_local",
-                    side_effect=lambda *args: remote_saves.append(args),
+                    side_effect=lambda *args: (remote_saves.append(args), "f" * 40)[1],
                 ))
                 stack.enter_context(patch(
                     "github_runner.load_project_memory", return_value={},
@@ -78,7 +82,11 @@ class GithubRunnerRoundPersistenceTests(unittest.TestCase):
 
                 def emulate_generic(*args, **kwargs):
                     self.assertIn("checkpoint_observer", kwargs)
+                    save(checkpoint_path, checkpoint)
                     kwargs["checkpoint_observer"](checkpoint)
+                    kwargs["checkpoint_observer"](checkpoint)
+                    save(checkpoint_path, complete_checkpoint)
+                    kwargs["checkpoint_observer"](complete_checkpoint)
                     checkpoints.append("generic-round-returned")
                     return {"status": "deferred", "report": {}, "next_stage": "generic_continue"}
 
@@ -93,6 +101,9 @@ class GithubRunnerRoundPersistenceTests(unittest.TestCase):
                         "request.json", out, str(root / "work"),
                         lambda *a, **k: None, 100, lambda: 0, "a" * 40,
                     )
+                    kwargs["checkpoint_observer"](
+                        {"status": "active", "attempt": 1}, {"yield_run": True}
+                    )
                     return {"status": "active", "attempt": 1}
 
                 stack.enter_context(patch(
@@ -106,8 +117,12 @@ class GithubRunnerRoundPersistenceTests(unittest.TestCase):
                 self.assertEqual(result["status"], "active")
                 self.assertEqual(checkpoints, ["generic-round-returned"])
                 self.assertEqual(flush.call_count, 2)
+                # Two distinct sealed phases get one write each. The
+                # duplicate observer and the later cycle/final flush do not.
                 self.assertEqual(len(remote_saves), 2)
                 self.assertEqual(remote_saves[0][1], "demo")
+                self.assertEqual(remote_saves[1][1], "demo")
+                self.assertEqual(complete_checkpoint["phase"], "complete")
                 self.assertEqual(
                     remote_saves[0][2],
                     out / ".autonomy/generic-execution-checkpoint.json",

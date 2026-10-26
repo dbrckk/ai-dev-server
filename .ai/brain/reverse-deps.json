@@ -2059,6 +2059,7 @@
         "studio/generic_delivery.py",
         "studio/generic_project.py",
         "studio/github_execution_checkpoint_store.py",
+        "studio/github_runner.py",
         "studio/preemption_apply.py",
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_jumpy_source_repair.py",
@@ -2068,10 +2069,11 @@
         "tests/test_generic_published_checkpoint.py",
         "tests/test_generic_published_round_checkpoint.py",
         "tests/test_github_runner_persistent.py",
+        "tests/test_github_runner_round_persistence.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_preemption_apply.py"
       ],
-      "in_degree": 17,
+      "in_degree": 19,
       "out_degree": 0
     },
     "studio/existing_project.py": {
@@ -2795,6 +2797,7 @@
         "studio/ci_provider.py",
         "studio/continuous_improvement.py",
         "studio/core.py",
+        "studio/execution_checkpoint.py",
         "studio/generic_capability_isolated_validation.py",
         "studio/generic_capability_persist.py",
         "studio/generic_capability_synthesis.py",
@@ -2844,7 +2847,7 @@
         "tests/test_production_os_worker_recovery.py"
       ],
       "in_degree": 8,
-      "out_degree": 48
+      "out_degree": 49
     },
     "studio/github_strategy_efficiency_store.py": {
       "dependencies": [
@@ -6674,11 +6677,12 @@
     },
     "tests/test_github_runner_round_persistence.py": {
       "dependencies": [
+        "studio/execution_checkpoint.py",
         "studio/github_runner.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_github_runner_usage.py": {
       "dependencies": [

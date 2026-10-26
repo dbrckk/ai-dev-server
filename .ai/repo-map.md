@@ -17544,6 +17544,29 @@ registry_review_path=out/'.autonomy/capability-registry-review.json'
 registry_review_status=inspect_capability_registry_review(
 ⋮----
 last_result={}
+confirmed_execution_checkpoint_digest = None
+⋮----
+def persist_execution_checkpoint_if_changed()
+⋮----
+"""Do not reissue GitHub writes for an already confirmed sealed state.
+
+        The publication observer writes the exact round checkpoint first.
+        Cycle and final flushes must still validate the local checksum, but
+        should not burn GitHub API quota re-reading an identical checkpoint.
+        A changed phase/digest always requires another acknowledged remote save.
+        """
+⋮----
+path = out/'.autonomy/generic-execution-checkpoint.json'
+⋮----
+# Preserve existing non-generic engine behavior.
+⋮----
+checkpoint = load_execution_checkpoint(path)
+⋮----
+digest = checkpoint['sha256']
+⋮----
+persisted = persist_execution_checkpoint_local(remote_github, request['id'], path)
+⋮----
+confirmed_execution_checkpoint_digest = digest
 ⋮----
 def persist_published_round(checkpoint)
 ⋮----
@@ -33350,7 +33373,10 @@ root = Path(td)
 request = self.request(root)
 out = root / "out"
 checkpoints = []
-checkpoint = {
+⋮----
+checkpoint = advance(
+complete_checkpoint = advance(checkpoint, phase="complete")
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
 remote_saves = []
 ⋮----
 flush = stack.enter_context(patch(
@@ -33360,6 +33386,9 @@ def emulate_generic(*args, **kwargs)
 def emulate_goal_loop(*args, **kwargs)
 ⋮----
 result = run(
+⋮----
+# Two distinct sealed phases get one write each. The
+# duplicate observer and the later cycle/final flush do not.
 ⋮----
 def test_wrong_project_round_checkpoint_is_refused(self)
 ⋮----

@@ -314,16 +314,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-26T18:13:03Z
+Generated: 2026-10-26T19:04:53Z
 
 ### Git
 - Branch: `main`
-- Head: `c8cf0b6ded54`
-- Commit date: 2026-10-26T14:12:52-04:00
-- Commit: fix(actions): recover cross-repository 403 during Production-OS CI qualification (#405)
+- Head: `27326fe5c5f4`
+- Commit date: 2026-10-26T15:04:41-04:00
+- Commit: fix(worker): avoid duplicate writes of confirmed execution checkpoints (#407)
 - Tracked files: 879
 
 ### Recently changed files
+- `studio/github_runner.py`
+- `tests/test_github_runner_round_persistence.py`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-worker-canary.json`
@@ -342,8 +344,6 @@ Generated: 2026-10-26T18:13:03Z
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_generic_worker_canary_resume.py`
 - `tests/test_multi_engine_orchestrator.py`
-- `tests/test_production_os_worker_runtime.py`
-- `studio/source_delivery_checkpoint.py`
 
 ### Project signals
 - No common build descriptor detected

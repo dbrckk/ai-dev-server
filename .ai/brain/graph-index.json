@@ -799,6 +799,7 @@
         "studio/ci_provider.py",
         "studio/continuous_improvement.py",
         "studio/core.py",
+        "studio/execution_checkpoint.py",
         "studio/generic_capability_isolated_validation.py",
         "studio/generic_capability_persist.py",
         "studio/generic_capability_synthesis.py",
@@ -848,7 +849,7 @@
         "tests/test_production_os_worker_recovery.py"
       ],
       "in_degree": 8,
-      "out_degree": 48,
+      "out_degree": 49,
       "path": "studio/github_runner.py"
     },
     {
@@ -1251,6 +1252,33 @@
       "dependencies": [],
       "dependents": [
         "scripts/production-os-live-resume-proof.py",
+        "studio/fault_injection_smoke.py",
+        "studio/fleet_capacity.py",
+        "studio/generic_delivery.py",
+        "studio/generic_project.py",
+        "studio/github_execution_checkpoint_store.py",
+        "studio/github_runner.py",
+        "studio/preemption_apply.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_jumpy_source_repair.py",
+        "studio/production_os_review_canary.py",
+        "studio/source_delivery_checkpoint.py",
+        "tests/test_execution_checkpoint.py",
+        "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_published_round_checkpoint.py",
+        "tests/test_github_runner_persistent.py",
+        "tests/test_github_runner_round_persistence.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_preemption_apply.py"
+      ],
+      "in_degree": 19,
+      "out_degree": 0,
+      "path": "studio/execution_checkpoint.py"
+    },
+    {
+      "dependencies": [],
+      "dependents": [
+        "scripts/production-os-live-resume-proof.py",
         "studio/autonomous_project.py",
         "studio/continuous_improvement.py",
         "studio/github_goal_store.py",
@@ -1464,31 +1492,6 @@
       "in_degree": 7,
       "out_degree": 11,
       "path": "studio/release_stage_engine.py"
-    },
-    {
-      "dependencies": [],
-      "dependents": [
-        "scripts/production-os-live-resume-proof.py",
-        "studio/fault_injection_smoke.py",
-        "studio/fleet_capacity.py",
-        "studio/generic_delivery.py",
-        "studio/generic_project.py",
-        "studio/github_execution_checkpoint_store.py",
-        "studio/preemption_apply.py",
-        "studio/production_os_bounded_source_repair.py",
-        "studio/production_os_jumpy_source_repair.py",
-        "studio/production_os_review_canary.py",
-        "studio/source_delivery_checkpoint.py",
-        "tests/test_execution_checkpoint.py",
-        "tests/test_generic_published_checkpoint.py",
-        "tests/test_generic_published_round_checkpoint.py",
-        "tests/test_github_runner_persistent.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_preemption_apply.py"
-      ],
-      "in_degree": 17,
-      "out_degree": 0,
-      "path": "studio/execution_checkpoint.py"
     },
     {
       "dependencies": [
@@ -2262,7 +2265,7 @@
       "path": "studio/queue.py"
     }
   ],
-  "edge_count": 2103,
+  "edge_count": 2106,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 644,
   "schema_version": 1

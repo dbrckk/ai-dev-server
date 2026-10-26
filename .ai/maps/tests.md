@@ -6116,7 +6116,10 @@ root = Path(td)
 request = self.request(root)
 out = root / "out"
 checkpoints = []
-checkpoint = {
+⋮----
+checkpoint = advance(
+complete_checkpoint = advance(checkpoint, phase="complete")
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
 remote_saves = []
 ⋮----
 flush = stack.enter_context(patch(
@@ -6126,6 +6129,9 @@ def emulate_generic(*args, **kwargs)
 def emulate_goal_loop(*args, **kwargs)
 ⋮----
 result = run(
+⋮----
+# Two distinct sealed phases get one write each. The
+# duplicate observer and the later cycle/final flush do not.
 ⋮----
 def test_wrong_project_round_checkpoint_is_refused(self)
 ⋮----

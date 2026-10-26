@@ -1,14 +1,14 @@
 # Change impact
 
-Base: 5e418d6a6fa4a8120cfda6dbae92d032ab21b5c0
-Head: c8cf0b6ded540a6648ab626893245d181573f17a
+Base: e3a076f4968cc01a1af318aa0344c21f5cf4cf9f
+Head: 27326fe5c5f45ebb52376f93c21da118040906b5
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M tests/test_production_os_actions_worker_workflow.py
+- M studio/github_runner.py
+- M tests/test_github_runner_round_persistence.py
 
 ## Affected areas
-- .github
+- studio
 - tests
 
 ## Related test candidates

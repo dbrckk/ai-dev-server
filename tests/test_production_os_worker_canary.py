@@ -361,3 +361,131 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     )
     assert "- 'control/production-os-worker-kick.json'" in worker_workflow
     assert "- 'control/production-os-worker-canary.json'" not in worker_workflow
+
+    # Exercise the real trusted default-branch handoff script through a
+    # deterministic GitHub transport; do not create a separate unit test.
+    import contextlib
+    import io
+    import json
+    import os
+    import tempfile
+    import urllib.request
+    from textwrap import dedent
+
+    trusted = Path(".github/workflows/production-os-canary-review-handoff.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "pull-requests: write" in trusted
+    assert "contents: read" in trusted
+    assert "cancel-in-progress: false" in trusted
+    source = dedent(
+        trusted.split("python3 - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
+    )
+    compiled = compile(source, "trusted-canary-review-handoff", "exec")
+    head = "a" * 40
+    branch = "studio/mp-" + "b" * 24
+    marker = ".production-os/worker-canary-46.txt"
+    expected = b"production-os-worker-canary sequence 46\n"
+    api_base = "https://api.github.com/repos/dbrckk/ai-dev-server"
+
+    class FakeResponse:
+        status = 200
+
+        def __init__(self, payload=None, *, status=200):
+            self.status = status
+            self.data = b"" if payload is None else json.dumps(payload).encode()
+
+        def read(self, *_args):
+            return self.data
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+    class Transport:
+        def __init__(self, *, content=expected):
+            self.content = content
+            self.calls = []
+
+        def open(self, request, timeout=20):
+            assert timeout == 20
+            assert request.get_header("Authorization") == "Bearer test-review-token"
+            assert request.full_url.startswith(api_base)
+            method = request.get_method()
+            path = request.full_url[len(api_base):]
+            self.calls.append((method, path))
+            if method == "GET" and path == "/git/ref/heads/" + branch:
+                return FakeResponse({"object": {"sha": head}})
+            if method == "GET" and path == "/compare/main..." + head:
+                return FakeResponse({
+                    "status": "ahead",
+                    "files": [{"filename": marker, "status": "added",
+                               "additions": 1, "deletions": 0, "changes": 1}],
+                })
+            if method == "GET" and path == "/contents/" + marker + "?ref=" + head:
+                return FakeResponse({
+                    "path": marker, "type": "file", "encoding": "base64",
+                    "sha": "c" * 40,
+                    "content": base64.b64encode(self.content).decode(),
+                })
+            if method == "GET" and path.startswith("/pulls?"):
+                return FakeResponse([])
+            if method == "POST" and path == "/pulls":
+                posted = json.loads(request.data)
+                assert posted["head"] == branch
+                assert posted["base"] == "main"
+                assert posted["draft"] is True
+                return FakeResponse({
+                    "number": 46, "state": "open", "draft": True,
+                    "head": {"sha": head, "ref": branch},
+                    "base": {"ref": "main"},
+                    "html_url": api_base.replace("api.github.com/repos", "github.com")
+                                + "/pull/46",
+                })
+            if method == "POST" and path == "/actions/workflows/ci.yml/dispatches":
+                assert json.loads(request.data) == {"ref": branch}
+                return FakeResponse(status=204)
+            raise AssertionError(("unexpected GitHub request", method, path))
+
+    def run_trusted(transport, *, payload=None):
+        event = {"client_payload": payload or {"branch": branch, "commit_sha": head}}
+        with tempfile.TemporaryDirectory() as td:
+            event_file = Path(td) / "event.json"
+            event_file.write_text(json.dumps(event), encoding="utf-8")
+            with patch.dict(os.environ, {
+                "GITHUB_REPOSITORY": "dbrckk/ai-dev-server",
+                "GITHUB_EVENT_PATH": str(event_file),
+                "REVIEW_TOKEN": "test-review-token",
+            }):
+                with patch("urllib.request.build_opener", return_value=transport):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        exec(compiled, {"__name__": "__main__"})
+
+    transport = Transport()
+    run_trusted(transport)
+    assert ("POST", "/pulls") in transport.calls
+    assert ("POST", "/actions/workflows/ci.yml/dispatches") in transport.calls
+    assert all(url.startswith("/") for _, url in transport.calls)
+
+    for bad in (
+        Transport(content=b"tampered marker\n"),
+        Transport(content=b"production-os-worker-canary sequence 47\n"),
+    ):
+        try:
+            run_trusted(bad)
+        except SystemExit as exc:
+            assert "contents do not match exact marker" in str(exc)
+        else:
+            raise AssertionError("unverified marker must be rejected")
+        assert not any(method == "POST" for method, _ in bad.calls)
+
+    denied = Transport()
+    try:
+        run_trusted(denied, payload={"branch": "studio/foreign", "commit_sha": head})
+    except SystemExit as exc:
+        assert "branch or commit invalid" in str(exc)
+    else:
+        raise AssertionError("foreign branch must be refused")
+    assert denied.calls == []

@@ -183,7 +183,26 @@ jobs:
           if exact_head() != sha:
               raise SystemExit("Canary branch moved before CI dispatch")
           # GITHUB_TOKEN-created PRs do not trigger ordinary pull_request
-          # workflows. Launch existing CI on the immutable observed branch tip.
-          api("POST", "/actions/workflows/ci.yml/dispatches", {"ref": branch})
-          print("Requested independent existing CI for " + sha, flush=True)
+          # workflows. Dispatch existing CI only if this exact commit has
+          # not already received an eligible run. A duplicate dispatch would
+          # cancel an in-progress run under the existing CI concurrency group.
+          runs = api(
+              "GET", "/actions/workflows/ci.yml/runs?head_sha=" + sha + "&per_page=100",
+          )
+          inventory = runs.get("workflow_runs") if isinstance(runs, dict) else None
+          if (not isinstance(inventory, list) or len(inventory) > 100
+                  or runs.get("total_count") != len(inventory)):
+              raise SystemExit("Exact canary CI inventory incomplete")
+          observed = [
+              run for run in inventory
+              if isinstance(run, dict) and run.get("head_sha") == sha
+              and run.get("head_branch") == branch
+              and run.get("path") == ".github/workflows/ci.yml"
+              and run.get("event") in {"workflow_dispatch", "pull_request", "push"}
+          ]
+          if observed:
+              print("Exact-head CI already exists for " + sha, flush=True)
+          else:
+              api("POST", "/actions/workflows/ci.yml/dispatches", {"ref": branch})
+              print("Requested independent existing CI for " + sha, flush=True)
           PY

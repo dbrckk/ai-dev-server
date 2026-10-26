@@ -187,6 +187,25 @@ def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_
     assert "urllib.request.urlopen(request, timeout=20)" not in resolver
 
 
+
+def test_qualified_revision_lookup_retries_public_reads_after_scoped_token_denial():
+    # The token used to edit ai-dev-server need not have Actions-read access
+    # to the separate public Production-OS repository.
+    resolver = WORKFLOW.split(
+        "- name: Resolve qualified Production-OS revision", 1
+    )[1].split("- name: Checkout Production-OS tools", 1)[0]
+    assert "import urllib.error" in resolver
+    assert "except urllib.error.HTTPError as exc:" in resolver
+    assert "exc.code not in {401, 403} or not token" in resolver
+    assert 'if key != "Authorization"' in resolver
+    assert "public_request = urllib.request.Request(" in resolver
+    assert "with opener.open(public_request, timeout=20)" in resolver
+    assert "opener = urllib.request.build_opener(NoRedirect())" in resolver
+    assert 'if url not in {runs_url, branch_url}:' in resolver
+    assert 'if sha == main_before:' in resolver
+
+
+
 def test_actions_worker_preflight_uses_runtime_capability_detection():
     probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
     assert "from production_os_worker import worker_capabilities" in probe

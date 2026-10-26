@@ -1,5 +1,11 @@
 {
   "version": 1,
+  "generic_ci_dispatch_configuration": {
+    "branch": "fix/enable-independent-ci-dispatch",
+    "change": "Enable workflow_dispatch on existing read-only CI jobs so managed delivery can start exact-branch qualification when automatic PR events are suppressed.",
+    "validation": "Initial remote CI correctly rejected dispatch under policy12. Policy13 now permits input-free dispatch only;61 existing policy tests passed;full regression and independent PR checks pending. No hosted-model objective launched.",
+    "previous_delivery": "PR402 merged as04c155252930b13669b4f9352bec8f48c85a40a3; all8 postmerge Actions and3 CircleCI checks passed."
+  },
   "generic_independent_delivery": {
     "date": "2026-10-25",
     "branch": "feat/generic-independent-delivery",

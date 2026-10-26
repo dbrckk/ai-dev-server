@@ -17,6 +17,18 @@ Standalone generic runs and approved bounded-source lanes retain their own gates
 - CI starts on push/PR, or supports `workflow_dispatch` and the credential has
   permission to dispatch it. A `GITHUB_TOKEN` publication alone may not trigger CI.
 
+This repository's `CI` workflow also accepts `workflow_dispatch`, so delivery can
+explicitly start the same validation jobs on its published branch if no automatic
+run appears. The dispatched workflow uses read-only contents permission and does
+not require model or operator secrets. The source SHA and unchanged workflow
+definition are still verified before accepting the result.
+
+CI trust policy v13 explicitly permits this input-free dispatch trigger in
+addition to mandatory push/PR triggers. Dispatch inputs, extra triggers,
+event-dependent job conditions and write permissions remain rejected. The policy
+version and digest change, so attestations bound to an older trust policy must be
+collected again; old attestations are not silently reused.
+
 No secret values belong in objectives or reports. Missing permissions, missing
 CI, changed workflow definitions and execution problems produce explicit blockers;
 they never count as successful delivery.

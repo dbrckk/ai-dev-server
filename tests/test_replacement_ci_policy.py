@@ -326,7 +326,15 @@ class ReplacementCIPolicyTests(unittest.TestCase):
 
     def test_extra_trigger_is_rejected(self):
         text="on:\n  push:\n    branches: [\"main\"]\n  pull_request:\n  workflow_dispatch:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n"
-        self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
+        self.assertTrue(validate_trigger_concurrency_text(text)["valid"])
+        for replacement in (
+            "  repository_dispatch:",
+            "  workflow_dispatch: {inputs: {skip: {type: boolean}}}",
+            "  workflow_dispatch:\n    inputs:\n      skip:\n        type: boolean",
+            "  workflow_dispatch:\n  workflow_dispatch:",
+        ):
+            self.assertFalse(validate_trigger_concurrency_text(
+                text.replace("  workflow_dispatch:", replacement))["valid"], replacement)
 
     def test_non_main_push_branch_is_rejected(self):
         text="on:\n  push:\n    branches: [\"dev\"]\n  pull_request:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n"

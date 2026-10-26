@@ -17,6 +17,12 @@ Standalone generic runs and approved bounded-source lanes retain their own gates
 - CI starts on push/PR, or supports `workflow_dispatch` and the credential has
   permission to dispatch it. A `GITHUB_TOKEN` publication alone may not trigger CI.
 
+This repository's `CI` workflow also accepts `workflow_dispatch`, so delivery can
+explicitly start the same validation jobs on its published branch if no automatic
+run appears. The dispatched workflow uses read-only contents permission and does
+not require model or operator secrets. The source SHA and unchanged workflow
+definition are still verified before accepting the result.
+
 No secret values belong in objectives or reports. Missing permissions, missing
 CI, changed workflow definitions and execution problems produce explicit blockers;
 they never count as successful delivery.

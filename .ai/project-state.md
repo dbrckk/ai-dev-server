@@ -176,6 +176,12 @@
 
 # Project state
 
+Managed generic delivery follow-up: enable explicit dispatch of the existing CI
+workflow when automatic PR events do not start qualification. Jobs retain their
+read-only permission and existing checks. PR402 postmerge validation passed all
+8 Actions workflows and 3 CircleCI checks. A fresh hosted-model generic objective
+remains unexecuted; total autonomy is not claimed.
+
 ## Current server integration baseline — 2026-10-24
 
 The worker integration matrix still called an Oct11 server current-qualified.

@@ -1949,6 +1949,7 @@ jobs:
             env -u PYTHONPATH python3 - <<'PY'
           import json
           import os
+          import urllib.error
           import urllib.request
           import time
 
@@ -1980,8 +1981,26 @@ jobs:
               if url not in {runs_url, branch_url}:
                   raise SystemExit("Unexpected Production-OS GitHub API URL")
               request = urllib.request.Request(url, headers=headers)
-              with opener.open(request, timeout=20) as response:
-                  return json.load(response)
+              try:
+                  with opener.open(request, timeout=20) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as exc:
+                  if exc.code not in {401, 403} or not token:
+                      raise
+                  # The worker's PAT can be scoped to ai-dev-server and
+                  # denied access to the other repository's Actions API.
+                  # These fixed Production-OS endpoints are public reads.
+                  # Retry without *any* credential; retain exact-SHA CI
+                  # qualification and never follow redirects.
+                  public_headers = {
+                      key: value for key, value in headers.items()
+                      if key != "Authorization"
+                  }
+                  public_request = urllib.request.Request(
+                      url, headers=public_headers
+                  )
+                  with opener.open(public_request, timeout=20) as response:
+                      return json.load(response)
 
           # A just-deployed main revision can still have running CI.
           # Wait for its exact-head gate rather than failing a fresh worker.
@@ -3505,10 +3524,9 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-    "sequence": 44,
-    "repository": "dbrckk/Production-OS",
-    "scenario": "approved_source_repair",
-    "task_id": "production_os_latest_reviewer_state"
+    "sequence": 45,
+    "repository": "dbrckk/ai-dev-server",
+    "scenario": "file"
 }
 ````
 
@@ -36251,6 +36269,43 @@ def test_actions_worker_resolves_only_ci_green_current_production_os_main()
 resolver = WORKFLOW.split(
 ⋮----
 def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token()
+⋮----
+# Exercise the embedded production resolver itself with deterministic
+# public GitHub responses, not just source-string assertions. The PAT
+# deliberately lacks Actions-read access to the other public repository.
+⋮----
+script = dedent(
+qualified_sha = "d" * 40
+branch_url = "https://api.github.com/repos/dbrckk/Production-OS/branches/main"
+runs_url = (
+success_payload = {
+⋮----
+class Response
+⋮----
+def __init__(self, payload)
+⋮----
+def read(self, *_args)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_args)
+⋮----
+class ScopedTransport
+⋮----
+def __init__(self, *, deny_public=False)
+⋮----
+def open(self, request, *, timeout)
+⋮----
+url = request.full_url
+authorization = request.get_header("Authorization")
+⋮----
+def run_resolver(transport)
+⋮----
+capture = io.StringIO()
+⋮----
+working = ScopedTransport()
+⋮----
+blocked = ScopedTransport(deny_public=True)
 ⋮----
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----

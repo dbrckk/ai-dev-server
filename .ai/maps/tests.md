@@ -9036,6 +9036,43 @@ resolver = WORKFLOW.split(
 ⋮----
 def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token()
 ⋮----
+# Exercise the embedded production resolver itself with deterministic
+# public GitHub responses, not just source-string assertions. The PAT
+# deliberately lacks Actions-read access to the other public repository.
+⋮----
+script = dedent(
+qualified_sha = "d" * 40
+branch_url = "https://api.github.com/repos/dbrckk/Production-OS/branches/main"
+runs_url = (
+success_payload = {
+⋮----
+class Response
+⋮----
+def __init__(self, payload)
+⋮----
+def read(self, *_args)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_args)
+⋮----
+class ScopedTransport
+⋮----
+def __init__(self, *, deny_public=False)
+⋮----
+def open(self, request, *, timeout)
+⋮----
+url = request.full_url
+authorization = request.get_header("Authorization")
+⋮----
+def run_resolver(transport)
+⋮----
+capture = io.StringIO()
+⋮----
+working = ScopedTransport()
+⋮----
+blocked = ScopedTransport(deny_public=True)
+⋮----
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]

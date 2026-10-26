@@ -1,1448 +1,218 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "04c155252930b13669b4f9352bec8f48c85a40a3",
-  "head": "3b456daec9c7663b4c19021208692f3fc867dd2a",
+  "base": "3b456daec9c7663b4c19021208692f3fc867dd2a",
+  "head": "c8cf0b6ded540a6648ab626893245d181573f17a",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/ci.yml",
+      "path": ".github/workflows/production-os-actions-worker.yml",
       "status": "M"
     },
     {
-      "path": "docs/managed-generic-delivery.md",
+      "path": "control/production-os-worker-canary.json",
       "status": "M"
     },
     {
-      "path": "studio/replacement_ci_policy.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_replacement_ci_policy.py",
+      "path": "tests/test_production_os_actions_worker_workflow.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/replacement_ci_policy.py",
-    "tests/test_replacement_ci_policy.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ],
   "impacted_files": [
-    "studio/architecture_replacement_postmerge.py",
-    "studio/architecture_replacement_pr_validator.py",
-    "studio/architecture_reputation_policy_approval.py",
-    "studio/architecture_reputation_policy_github_attestation.py",
-    "studio/architecture_reputation_policy_github_collect.py",
-    "studio/architecture_reputation_policy_migration.py",
-    "studio/replacement_ci_policy.py",
-    "studio/replacement_ci_policy_check.py",
-    "tests/test_architecture_reputation_policy_approval.py",
-    "tests/test_architecture_reputation_policy_github_attestation.py",
-    "tests/test_architecture_reputation_policy_migration.py",
-    "tests/test_architecture_reputation_policy_migration_cli.py",
-    "tests/test_checkout_credentials_policy.py",
-    "tests/test_replacement_ci_policy.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ],
   "impacted_symbols": [
     {
-      "name": "ReplacementPostMergeError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_postmerge.py",
-      "line": 18
-    },
-    {
-      "name": "_sha",
+      "name": "test_actions_worker_has_no_codespace_dependency",
       "kind": "function",
-      "file": "studio/architecture_replacement_postmerge.py",
-      "line": 21
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 9
     },
     {
-      "name": "_expected_files",
+      "name": "test_actions_worker_polls_production_os_on_schedule",
       "kind": "function",
-      "file": "studio/architecture_replacement_postmerge.py",
-      "line": 26
-    },
-    {
-      "name": "_content_bytes",
-      "kind": "function",
-      "file": "studio/architecture_replacement_postmerge.py",
-      "line": 43
-    },
-    {
-      "name": "verify",
-      "kind": "function",
-      "file": "studio/architecture_replacement_postmerge.py",
-      "line": 51
-    },
-    {
-      "name": "ReplacementPRValidationError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_pr_validator.py",
-      "line": 16
-    },
-    {
-      "name": "_expected_files",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_validator.py",
-      "line": 19
-    },
-    {
-      "name": "_decode_content",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_validator.py",
-      "line": 36
-    },
-    {
-      "name": "validate",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_validator.py",
-      "line": 47
-    },
-    {
-      "name": "ApprovalProvenanceError",
-      "kind": "class",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 12
-    },
-    {
-      "name": "_canonical",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 15
     },
     {
-      "name": "approval_digest",
+      "name": "test_actions_worker_uses_existing_secure_credentials",
       "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 18
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 33
     },
     {
-      "name": "validate_approval",
+      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
       "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 22
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 41
     },
     {
-      "name": "new_ledger",
+      "name": "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
       "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 47
-    },
-    {
-      "name": "consume",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 50
-    },
-    {
-      "name": "validate_ledger",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 61
-    },
-    {
-      "name": "validate_github_attestation",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 82
-    },
-    {
-      "name": "approval_from_github_attestation",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_approval.py",
-      "line": 286
-    },
-    {
-      "name": "_canonical",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 13
-    },
-    {
-      "name": "_login",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 16
-    },
-    {
-      "name": "_state",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 27
-    },
-    {
-      "name": "_commit",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 31
-    },
-    {
-      "name": "_timestamp",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 35
-    },
-    {
-      "name": "_submitted_at",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 49
-    },
-    {
-      "name": "_review_order_key",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 54
-    },
-    {
-      "name": "latest_approvals",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 61
-    },
-    {
-      "name": "_workflow_path",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 78
-    },
-    {
-      "name": "successful_workflow",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 84
-    },
-    {
-      "name": "build",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_attestation.py",
-      "line": 97
-    },
-    {
-      "name": "GitHubAttestationCollectionError",
-      "kind": "class",
-      "file": "studio/architecture_reputation_policy_github_collect.py",
-      "line": 17
-    },
-    {
-      "name": "_valid_repository",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_collect.py",
-      "line": 20
-    },
-    {
-      "name": "_collect_workflow_file",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_collect.py",
-      "line": 23
-    },
-    {
-      "name": "collect_review_target",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_collect.py",
-      "line": 54
-    },
-    {
-      "name": "collect",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_github_collect.py",
-      "line": 98
-    },
-    {
-      "name": "ReputationPolicyMigrationError",
-      "kind": "class",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 38
-    },
-    {
-      "name": "_canonical",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 46
-    },
-    {
-      "name": "registry_digest",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 49
-    },
-    {
-      "name": "_entry_context",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 54
-    },
-    {
-      "name": "_learning_index",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 57
     },
     {
-      "name": "_evidence_for",
+      "name": "test_actions_worker_is_single_flight_and_bounded",
       "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 71
-    },
-    {
-      "name": "_migrated_state",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 81
-    },
-    {
-      "name": "_rule_snapshot",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 106
-    },
-    {
-      "name": "_policy_edges",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 128
-    },
-    {
-      "name": "_is_stricter_or_equal",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 140
-    },
-    {
-      "name": "classify_migration_risk",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 160
-    },
-    {
-      "name": "_format_seconds",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 232
-    },
-    {
-      "name": "explain_migration",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 240
-    },
-    {
-      "name": "review_digest",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 303
-    },
-    {
-      "name": "authorization_template",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 315
-    },
-    {
-      "name": "dry_run",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 333
-    },
-    {
-      "name": "bind_github_review_target",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 426
-    },
-    {
-      "name": "apply_migration",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 468
-    },
-    {
-      "name": "write_dry_run",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 673
-    },
-    {
-      "name": "write_applied",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration.py",
-      "line": 689
-    },
-    {
-      "name": "ci_trust_policy_digest",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 18
-    },
-    {
-      "name": "validate_trigger_concurrency_text",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 29
-    },
-    {
-      "name": "_checkout_input_violations",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 58
-    },
-    {
-      "name": "finish",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 65
-    },
-    {
-      "name": "validate_step_inputs_env_text",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 100
-    },
-    {
-      "name": "workflow_semantic_manifest_text",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 120
-    },
-    {
-      "name": "validate_workflow_text",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 143
-    },
-    {
-      "name": "validate_workflow",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy.py",
-      "line": 183
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/replacement_ci_policy_check.py",
-      "line": 10
-    },
-    {
-      "name": "_canonical",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 13
-    },
-    {
-      "name": "ApprovalProvenanceTests",
-      "kind": "class",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 17
-    },
-    {
-      "name": "approval",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 18
-    },
-    {
-      "name": "test_standard_approval",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 23
-    },
-    {
-      "name": "test_reinforced_requires_separation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 25
-    },
-    {
-      "name": "test_reinforced_accepts_distinct_risk_owner",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 28
-    },
-    {
-      "name": "test_ledger_is_append_only_and_replay_safe",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 30
-    },
-    {
-      "name": "test_tampered_ledger_fails",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 34
-    },
-    {
-      "name": "canonical_workflow_file",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 39
-    },
-    {
-      "name": "github_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 44
-    },
-    {
-      "name": "test_github_attestation_binds_commit_review_permission_and_workflow",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 59
-    },
-    {
-      "name": "test_github_attestation_rejects_stale_commit",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 62
-    },
-    {
-      "name": "test_github_attestation_rejects_read_only_reviewer",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 65
-    },
-    {
-      "name": "test_github_reinforced_requires_distinct_approver",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 68
-    },
-    {
-      "name": "test_github_attestation_rejects_review_before_head_commit",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 72
-    },
-    {
-      "name": "test_github_attestation_rejects_draft_pr",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 79
-    },
-    {
-      "name": "test_github_attestation_rejects_mixed_workflow_runs",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 86
-    },
-    {
-      "name": "test_github_attestation_rejects_attested_workflow_id_mismatch",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 96
-    },
-    {
-      "name": "test_github_attestation_rejects_workflow_content_with_mutable_action",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 103
-    },
-    {
-      "name": "test_github_attestation_rejects_wrong_workflow_file_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 112
-    },
-    {
-      "name": "test_github_attestation_rejects_untrusted_workflow_path",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 115
-    },
-    {
-      "name": "test_github_attestation_rejects_untrusted_workflow_name",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 118
-    },
-    {
-      "name": "test_github_attestation_rejects_stale_workflow",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 121
-    },
-    {
-      "name": "test_github_attestation_rejects_stale_required_check",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 124
-    },
-    {
-      "name": "test_github_attestation_rejects_forged_pass_without_check_evidence",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 127
-    },
-    {
-      "name": "test_github_attestation_rejects_check_evidence_for_wrong_sha",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 130
-    },
-    {
-      "name": "test_github_attestation_rejects_check_evidence_before_head_commit",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 133
-    },
-    {
-      "name": "test_github_attestation_rejects_failed_required_check",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 136
-    },
-    {
-      "name": "_redigest_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 140
-    },
-    {
-      "name": "test_github_attestation_rejects_missing_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 142
-    },
-    {
-      "name": "test_github_attestation_rejects_forged_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 145
-    },
-    {
-      "name": "test_github_attestation_rejects_invalid_semantic_digest_length",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_approval.py",
-      "line": 148
-    },
-    {
-      "name": "canonical_ci_file",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 11
-    },
-    {
-      "name": "GitHubAttestationBuilderTests",
-      "kind": "class",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 16
-    },
-    {
-      "name": "check_runs",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 19
-    },
-    {
-      "name": "pr_identity",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 25
-    },
-    {
-      "name": "workflow_file",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 28
-    },
-    {
-      "name": "test_build_standard",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 30
-    },
-    {
-      "name": "test_latest_review_wins",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 37
-    },
-    {
-      "name": "test_latest_review_order_is_timestamp_driven",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 42
-    },
-    {
-      "name": "test_reinforced_requires_two_eligible",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 49
-    },
-    {
-      "name": "test_missing_required_check_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 55
-    },
-    {
-      "name": "test_draft_pr_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 62
-    },
-    {
-      "name": "test_approval_before_head_commit_is_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 71
-    },
-    {
-      "name": "test_wrong_workflow_name_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 78
-    },
-    {
-      "name": "test_wrong_workflow_path_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 86
-    },
-    {
-      "name": "test_stale_workflow_time_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 94
-    },
-    {
-      "name": "test_stale_check_time_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 102
-    },
-    {
-      "name": "test_required_checks_from_different_workflow_runs_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 112
-    },
-    {
-      "name": "test_stale_workflow_rejected",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-      "line": 125
-    },
-    {
-      "name": "ReputationPolicyMigrationTests",
-      "kind": "class",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 20
-    },
-    {
-      "name": "context",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 21
-    },
-    {
-      "name": "registry",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 28
-    },
-    {
-      "name": "learning",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 42
-    },
-    {
-      "name": "canonical_workflow_file",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 50
-    },
-    {
-      "name": "authorize",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 55
-    },
-    {
-      "name": "approval",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 77
-    },
-    {
-      "name": "github_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 89
-    },
-    {
-      "name": "apply",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 116
-    },
-    {
-      "name": "test_dry_run_is_content_bound_and_non_mutating",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 126
-    },
-    {
-      "name": "test_policy_migration_can_downgrade_trusted",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 136
-    },
-    {
-      "name": "test_policy_migration_never_promotes_nontrusted_directly",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 143
-    },
-    {
-      "name": "test_apply_requires_explicit_authorization",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 154
-    },
-    {
-      "name": "test_bind_target_rejects_untrusted_workflow_path",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 160
-    },
-    {
-      "name": "test_bind_target_rejects_invalid_workflow_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 173
-    },
-    {
-      "name": "test_apply_rejects_unbound_github_review_target",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 185
-    },
-    {
-      "name": "test_apply_is_bound_to_exact_registry",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 192
-    },
-    {
-      "name": "test_authorized_apply_updates_policy_and_audit",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 200
-    },
-    {
-      "name": "test_preserved_quarantine_keeps_revalidation_gate",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 213
-    },
-    {
-      "name": "test_policy_migration_does_not_mutate_source_registry",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 225
-    },
-    {
-      "name": "test_trust_downgrade_risk_classification",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 232
-    },
-    {
-      "name": "test_promotion_path_change_requires_reinforced_review",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 239
-    },
-    {
-      "name": "test_reinforced_review_is_required_for_promotion_path_change",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 252
-    },
-    {
-      "name": "test_no_impact_when_registry_already_matches_current_policy",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 267
-    },
-    {
-      "name": "test_source_invalid_policy_is_critical",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 273
-    },
-    {
-      "name": "test_explainer_describes_policy_edge_and_state_impact",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 280
-    },
-    {
-      "name": "test_explainer_no_impact_is_compact",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 299
-    },
-    {
-      "name": "test_authorization_is_bound_to_review_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 307
-    },
-    {
-      "name": "test_authorization_expires",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 316
-    },
-    {
-      "name": "test_authorization_rejects_future_issue_time",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 323
-    },
-    {
-      "name": "test_authorization_rejects_extended_expiry",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 330
-    },
-    {
-      "name": "test_review_digest_is_persisted_in_migration_audit",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 338
-    },
-    {
-      "name": "test_apply_requires_reviewer_provenance",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 346
-    },
-    {
-      "name": "test_apply_records_reviewer_and_ledger",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 351
-    },
-    {
-      "name": "test_replay_ledger_rejects_same_migration",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 359
-    },
-    {
-      "name": "test_apply_requires_github_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 366
-    },
-    {
-      "name": "test_applied_migration_audits_github_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 377
-    },
-    {
-      "name": "test_github_attestation_can_derive_approval_provenance",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 395
-    },
-    {
-      "name": "test_manual_approval_identity_must_match_github",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 407
-    },
-    {
-      "name": "test_bind_target_rejects_missing_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 423
-    },
-    {
-      "name": "test_bind_target_rejects_invalid_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 429
-    },
-    {
-      "name": "test_audit_persists_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 435
-    },
-    {
-      "name": "test_apply_rejects_semantic_digest_mismatch_between_target_and_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 440
-    },
-    {
-      "name": "test_apply_rejects_review_target_semantic_digest_tamper",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration.py",
-      "line": 450
-    },
-    {
-      "name": "ReputationPolicyMigrationCLITests",
-      "kind": "class",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 19
-    },
-    {
-      "name": "registry",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 20
-    },
-    {
-      "name": "canonical_workflow_file",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 31
-    },
-    {
-      "name": "target_for",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 45
-    },
-    {
-      "name": "test_review_writes_plan",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 54
-    },
-    {
-      "name": "test_apply_requires_authorized_record",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 62
-    },
-    {
-      "name": "test_apply_can_auto_collect_github_attestation",
-      "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 69
     },
     {
-      "name": "test_bind_target_reissues_content_bound_plan",
+      "name": "test_actions_worker_retains_hidden_autonomy_diagnostics",
       "kind": "function",
-      "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-      "line": 99
-    },
-    {
-      "name": "CheckoutCredentialsPolicyTests",
-      "kind": "class",
-      "file": "tests/test_checkout_credentials_policy.py",
-      "line": 10
-    },
-    {
-      "name": "test_checkout_persist_credentials_false_is_accepted",
-      "kind": "function",
-      "file": "tests/test_checkout_credentials_policy.py",
-      "line": 11
-    },
-    {
-      "name": "test_checkout_missing_persist_credentials_is_rejected",
-      "kind": "function",
-      "file": "tests/test_checkout_credentials_policy.py",
-      "line": 24
-    },
-    {
-      "name": "test_checkout_persist_credentials_true_is_rejected",
-      "kind": "function",
-      "file": "tests/test_checkout_credentials_policy.py",
-      "line": 35
-    },
-    {
-      "name": "test_checkout_extra_input_is_rejected",
-      "kind": "function",
-      "file": "tests/test_checkout_credentials_policy.py",
-      "line": 48
-    },
-    {
-      "name": "ReplacementCIPolicyTests",
-      "kind": "class",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 10
-    },
-    {
-      "name": "test_repository_ci_exposes_required_check_ids",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 11
-    },
-    {
-      "name": "test_missing_required_check_is_detected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 17
-    },
-    {
-      "name": "test_required_check_runs_must_be_trusted_and_successful",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 25
-    },
-    {
-      "name": "test_untrusted_check_run_does_not_satisfy_policy",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 34
-    },
-    {
-      "name": "test_stale_check_run_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 43
-    },
-    {
-      "name": "test_wrong_sha_check_run_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 52
-    },
-    {
-      "name": "test_required_checks_from_multiple_workflow_runs_are_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 61
-    },
-    {
-      "name": "test_workflow_text_requires_canonical_name_and_jobs",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 72
-    },
-    {
-      "name": "test_workflow_text_rejects_wrong_name",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 77
     },
     {
-      "name": "test_workflow_text_rejects_missing_required_job",
+      "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 81
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 85
     },
     {
-      "name": "test_workflow_actions_must_be_allowlisted_and_sha_pinned",
+      "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 86
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 96
     },
     {
-      "name": "test_mutable_action_ref_is_rejected",
+      "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 99
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 109
     },
     {
-      "name": "test_third_party_action_is_rejected",
+      "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 112
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 115
     },
     {
-      "name": "test_unapproved_sha_for_trusted_action_is_rejected",
+      "name": "test_actions_worker_availability_probe_fails_closed",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 125
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 122
     },
     {
-      "name": "test_local_action_is_fail_closed",
+      "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 138
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 135
     },
     {
-      "name": "test_workflow_permissions_are_exact_least_privilege",
+      "name": "test_actions_worker_resolves_only_ci_green_current_production_os_main",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 143
-    },
-    {
-      "name": "test_workflow_write_permission_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 148
     },
     {
-      "name": "test_extra_sensitive_permission_is_rejected",
+      "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 153
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 174
     },
     {
-      "name": "test_job_permission_override_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 159
-    },
-    {
-      "name": "test_missing_explicit_permissions_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 171
-    },
-    {
-      "name": "test_runtime_policy_accepts_repository_ci",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 176
-    },
-    {
-      "name": "test_pull_request_target_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 181
-    },
-    {
-      "name": "test_container_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 185
-    },
-    {
-      "name": "test_secret_expression_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 189
-    },
-    {
-      "name": "test_required_runner_and_timeout_are_exact",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 193
-    },
-    {
-      "name": "test_expression_policy_rejects_untrusted_contexts",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 200
-    },
-    {
-      "name": "test_matrix_strategy_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 205
-    },
-    {
-      "name": "test_job_needs_and_if_are_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 210
-    },
-    {
-      "name": "test_continue_on_error_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 217
-    },
-    {
-      "name": "test_static_safe_workflow_has_no_expression_violations",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "name": "Response",
+      "kind": "class",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 221
     },
     {
-      "name": "test_run_policy_accepts_repository_ci",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 226
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 222
     },
     {
-      "name": "test_run_policy_rejects_network_download",
+      "name": "read",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 225
+    },
+    {
+      "name": "__enter__",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 228
+    },
+    {
+      "name": "__exit__",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 231
     },
     {
-      "name": "test_run_policy_rejects_runtime_dependency_install",
+      "name": "ScopedTransport",
+      "kind": "class",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 234
+    },
+    {
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 235
     },
     {
-      "name": "test_run_policy_rejects_github_command_file",
+      "name": "open",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 239
     },
     {
-      "name": "test_run_policy_rejects_expression_in_command",
+      "name": "run_resolver",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 243
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 252
     },
     {
-      "name": "test_run_policy_rejects_untrusted_shell",
+      "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 247
-    },
-    {
-      "name": "test_yaml_surface_rejects_anchors_aliases_and_merge_keys",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 251
-    },
-    {
-      "name": "test_yaml_surface_rejects_tags",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 256
-    },
-    {
-      "name": "test_yaml_surface_rejects_duplicate_mapping_keys",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 260
-    },
-    {
-      "name": "test_yaml_surface_rejects_tab_indentation",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 265
-    },
-    {
-      "name": "test_repository_ci_yaml_surface_is_unambiguous",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 269
-    },
-    {
-      "name": "test_schema_rejects_unknown_root_job_and_step_keys",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 274
-    },
-    {
-      "name": "test_schema_accepts_repository_ci",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 284
     },
     {
-      "name": "test_schema_allowlists_are_reported",
+      "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 289
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 292
     },
     {
-      "name": "test_step_inputs_env_accepts_repository_ci",
+      "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 295
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 297
     },
     {
-      "name": "test_setup_python_only_accepts_312",
+      "name": "run",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 300
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 324
     },
     {
-      "name": "test_unknown_action_input_is_rejected",
+      "name": "test_actions_worker_fails_ci_when_production_result_failed",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 306
-    },
-    {
-      "name": "test_checkout_inputs_are_fail_closed",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 311
-    },
-    {
-      "name": "test_run_env_only_allows_static_pythonpath",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 316
-    },
-    {
-      "name": "test_trigger_concurrency_accepts_repository_ci",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 322
-    },
-    {
-      "name": "test_extra_trigger_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 327
-    },
-    {
-      "name": "test_non_main_push_branch_is_rejected",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 339
-    },
-    {
-      "name": "test_concurrency_group_must_be_exact",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 343
-    },
-    {
-      "name": "test_concurrency_cancellation_must_be_enabled",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 347
-    },
-    {
-      "name": "test_exact_job_steps_accept_repository_ci",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 351
-    },
-    {
-      "name": "test_exact_job_steps_reject_extra_job",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 356
-    },
-    {
-      "name": "test_exact_job_steps_reject_reordered_steps",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 361
     },
     {
-      "name": "test_exact_job_steps_reject_changed_command",
+      "name": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 367
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 365
     },
     {
-      "name": "test_semantic_digest_is_stable_for_repository_ci",
+      "name": "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci",
       "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 372
-    },
-    {
-      "name": "test_validate_workflow_exposes_semantic_digest",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 381
-    },
-    {
-      "name": "test_semantic_digest_refuses_untrusted_workflow",
-      "kind": "function",
-      "file": "tests/test_replacement_ci_policy.py",
-      "line": 388
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 371
     }
   ],
   "selected_tests": [
-    "tests/test_architecture_reputation_policy_approval.py",
-    "tests/test_architecture_reputation_policy_github_attestation.py",
-    "tests/test_architecture_reputation_policy_migration.py",
-    "tests/test_architecture_reputation_policy_migration_cli.py",
-    "tests/test_checkout_credentials_policy.py",
-    "tests/test_ci.py",
-    "tests/test_replacement_ci_policy.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ]
 }

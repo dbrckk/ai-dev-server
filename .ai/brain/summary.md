@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 656
-- Files reparsed this run: 2
-- Symbols: 4793
+- Files reparsed this run: 1
+- Symbols: 4802
 - Internal import edges: 1420
-- Impacted files: 14
-- Selected tests: 7
+- Impacted files: 1
+- Selected tests: 1
 
 ## Languages
 - python: 653 files
@@ -24,6 +24,7 @@
 - tests/test_multi_engine_orchestrator.py: 37 symbols
 - studio/core.py: 32 symbols
 - tests/test_architecture_reputation_policy_approval.py: 32 symbols
+- tests/test_production_os_actions_worker_workflow.py: 31 symbols
 - tests/test_orchestrator.py: 30 symbols
 - tests/test_architecture_replacement_reputation.py: 26 symbols
 - tests/test_capacity_scheduler.py: 26 symbols
@@ -32,7 +33,6 @@
 - studio/replacement_ci_policy_v11.py: 24 symbols
 - tests/test_goal_loop.py: 24 symbols
 - tests/test_architecture_feedback.py: 23 symbols
-- tests/test_architecture_reputation_policy_github_collect.py: 23 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,7 +43,7 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 2
+- AST files reparsed this run: 1
 - outline files retained: 652
 - top-level items retained: 6931
 - direct members retained: 2316

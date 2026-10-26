@@ -314,16 +314,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-26T12:53:19Z
+Generated: 2026-10-26T18:13:03Z
 
 ### Git
 - Branch: `main`
-- Head: `3b456daec9c7`
-- Commit date: 2026-10-26T08:52:57-04:00
-- Commit: fix: allow explicit independent CI dispatch (#403)
+- Head: `c8cf0b6ded54`
+- Commit date: 2026-10-26T14:12:52-04:00
+- Commit: fix(actions): recover cross-repository 403 during Production-OS CI qualification (#405)
 - Tracked files: 879
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
+- `control/production-os-worker-canary.json`
 - `.github/workflows/ci.yml`
 - `docs/managed-generic-delivery.md`
 - `studio/replacement_ci_policy.py`
@@ -341,9 +344,6 @@ Generated: 2026-10-26T12:53:19Z
 - `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/source_delivery_checkpoint.py`
-- `studio/target_ci_verification.py`
-- `studio/core.py`
-- `tests/test_autonomous_project.py`
 
 ### Project signals
 - No common build descriptor detected

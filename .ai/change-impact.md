@@ -1,23 +1,18 @@
 # Change impact
 
-Base: 819166cca9377509a808dbc4b3c6777b79115212
-Head: 3b456daec9c7663b4c19021208692f3fc867dd2a
+Base: 5e418d6a6fa4a8120cfda6dbae92d032ab21b5c0
+Head: c8cf0b6ded540a6648ab626893245d181573f17a
 
 ## Changed files
-- M .github/workflows/ci.yml
-- M docs/managed-generic-delivery.md
-- M studio/replacement_ci_policy.py
-- M tests/test_replacement_ci_policy.py
+- M .github/workflows/production-os-actions-worker.yml
+- M tests/test_production_os_actions_worker_workflow.py
 
 ## Affected areas
 - .github
-- docs
-- studio
 - tests
 
 ## Related test candidates
-- tests/test_ci.py
-- tests/test_replacement_ci_policy.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

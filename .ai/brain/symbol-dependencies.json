@@ -5,889 +5,279 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "ci_trust_policy_digest": {
+    "test_actions_worker_has_no_codespace_dependency": {
       "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 18,
-        "end": 26
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 9,
+        "end": 12
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "validate_trigger_concurrency_text": {
+    "test_actions_worker_polls_production_os_on_schedule": {
       "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 29,
-        "end": 55
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 15,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_uses_existing_secure_credentials": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 33,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 41,
+        "end": 54
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 57,
+        "end": 66
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_is_single_flight_and_bounded": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 69,
+        "end": 74
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_retains_hidden_autonomy_diagnostics": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 77,
+        "end": 81
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 85,
+        "end": 93
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_skips_base_pass_for_mobile_only_work": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 96,
+        "end": 106
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_does_not_prepare_android_for_base_only_claim_race": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 109,
+        "end": 111
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_reports_rejected_worker_token_without_exposing_it": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 115,
+        "end": 119
       },
       "symbol_dependencies": [
         {
-          "symbol": "_yaml_code",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 92,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "class_like"
         }
       ],
       "dependency_count": 1
     },
-    "_checkout_input_violations": {
+    "test_actions_worker_availability_probe_fails_closed": {
       "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 58,
-        "end": 97
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 122,
+        "end": 132
       },
       "symbol_dependencies": [
         {
-          "symbol": "_yaml_code",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "finish",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "finish": {
-      "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 65,
-        "end": 185
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_checkout_input_violations",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_yaml_code",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ci_trust_policy_digest",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_action_pinning_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 379,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_exact_job_steps_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 236,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_step_inputs_env_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_workflow",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 183,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_workflow_expression_policy_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_permissions_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_run_commands_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 351,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_runtime_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_schema_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 155,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_yaml_surface_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "workflow_job_ids_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 391,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "workflow_semantic_manifest_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 17
-    },
-    "validate_step_inputs_env_text": {
-      "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 100,
-        "end": 117
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_checkout_input_violations",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "workflow_semantic_manifest_text": {
-      "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 120,
-        "end": 140
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "validate_workflow_text": {
-      "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 143,
-        "end": 180
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ci_trust_policy_digest",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_action_pinning_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 379,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_exact_job_steps_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 236,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_step_inputs_env_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_workflow_expression_policy_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_permissions_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_run_commands_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 351,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_runtime_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_workflow_schema_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 155,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_yaml_surface_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "workflow_job_ids_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy_v11.py",
-              "line": 391,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "workflow_semantic_manifest_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 13
-    },
-    "validate_workflow": {
-      "source": {
-        "file": "studio/replacement_ci_policy.py",
-        "start": 183,
-        "end": 184
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "ReplacementCIPolicyTests": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 10,
-        "end": 391
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "test_checkout_inputs_are_fail_closed",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 311,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_concurrency_cancellation_must_be_enabled",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 347,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_concurrency_group_must_be_exact",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 343,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_container_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 185,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_continue_on_error_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_exact_job_steps_accept_repository_ci",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 351,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_exact_job_steps_reject_changed_command",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 367,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_exact_job_steps_reject_extra_job",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 356,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_exact_job_steps_reject_reordered_steps",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 361,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_expression_policy_rejects_untrusted_contexts",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 200,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_extra_sensitive_permission_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 153,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_extra_trigger_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 327,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_job_needs_and_if_are_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_job_permission_override_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_local_action_is_fail_closed",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 138,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_matrix_strategy_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 205,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_missing_explicit_permissions_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 171,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_missing_required_check_is_detected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_mutable_action_ref_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 99,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_non_main_push_branch_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 339,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_pull_request_target_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 181,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_repository_ci_exposes_required_check_ids",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_repository_ci_yaml_surface_is_unambiguous",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 269,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_required_check_runs_must_be_trusted_and_successful",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_required_checks_from_multiple_workflow_runs_are_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_required_runner_and_timeout_are_exact",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_run_env_only_allows_static_pythonpath",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 316,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_run_policy_accepts_repository_ci",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 226,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_run_policy_rejects_expression_in_command",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 243,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_run_policy_rejects_github_command_file",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
+              "file": "tests/test_production_os_actions_worker_workflow.py",
               "line": 239,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_actions_worker_bootstraps_remote_asset_forge_before_preflight": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 135,
+        "end": 145
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_actions_worker_resolves_only_ci_green_current_production_os_main": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 148,
+        "end": 171
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "test_run_policy_rejects_network_download",
+          "symbol": "run",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 174,
+        "end": 280
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 228,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
               "line": 231,
               "kind": "function",
               "language": "python"
@@ -896,11 +286,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_run_policy_rejects_runtime_dependency_install",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 235,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
               "kind": "function",
               "language": "python"
             }
@@ -908,11 +298,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_run_policy_rejects_untrusted_shell",
+          "symbol": "read",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 247,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 225,
               "kind": "function",
               "language": "python"
             }
@@ -920,11 +310,57 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_runtime_policy_accepts_repository_ci",
+          "symbol": "run_resolver",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 176,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "Response": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 221,
+        "end": 341
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 228,
               "kind": "function",
               "language": "python"
             }
@@ -932,10 +368,932 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_schema_accepts_repository_ci",
+          "symbol": "__exit__",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 225,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "__init__": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 222,
+        "end": 342
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 228,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 225,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "read": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 225,
+        "end": 345
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 228,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "__enter__": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 228,
+        "end": 348
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "__exit__": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 231,
+        "end": 351
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "ScopedTransport": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 234,
+        "end": 354
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "open": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 239,
+        "end": 359
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Denied",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 288,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Response",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 221,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_resolver",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "run_resolver": {
+      "source": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 252,
+        "end": 372
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScopedTransport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 234,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_fails_ci_when_production_result_failed",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 361,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_has_resilient_model_provider_fallbacks",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 297,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_actions_worker_preflight_uses_runtime_capability_detection",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_actions_worker_workflow.py",
               "line": 284,
               "kind": "function",
               "language": "python"
@@ -944,11 +1302,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_schema_allowlists_are_reported",
+          "symbol": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 289,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 365,
               "kind": "function",
               "language": "python"
             }
@@ -956,47 +1314,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_schema_rejects_unknown_root_job_and_step_keys",
+          "symbol": "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci",
           "definitions": [
             {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_secret_expression_is_rejected",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 189,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_semantic_digest_is_stable_for_repository_ci",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 372,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_semantic_digest_refuses_untrusted_workflow",
-          "definitions": [
-            {
-              "file": "tests/test_replacement_ci_policy.py",
-              "line": 388,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 371,
               "kind": "function",
               "language": "python"
             }
@@ -1004,777 +1326,120 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 40
+      "dependency_count": 8
     },
-    "test_repository_ci_exposes_required_check_ids": {
+    "test_actions_worker_preflight_uses_runtime_capability_detection": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 11,
-        "end": 15
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 183,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_missing_required_check_is_detected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 17,
-        "end": 23
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 183,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_required_check_runs_must_be_trusted_and_successful": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 25,
-        "end": 32
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_untrusted_check_run_does_not_satisfy_policy": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 34,
-        "end": 41
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_stale_check_run_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 43,
-        "end": 50
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_wrong_sha_check_run_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 52,
-        "end": 59
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_required_checks_from_multiple_workflow_runs_are_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 61,
-        "end": 70
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_workflow_text_requires_canonical_name_and_jobs": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 72,
-        "end": 75
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_workflow_text_rejects_wrong_name": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 77,
-        "end": 79
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_workflow_text_rejects_missing_required_job": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 81,
-        "end": 84
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_workflow_actions_must_be_allowlisted_and_sha_pinned": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 86,
-        "end": 97
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_mutable_action_ref_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 99,
-        "end": 110
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_third_party_action_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 112,
-        "end": 123
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_unapproved_sha_for_trusted_action_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 125,
-        "end": 136
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_local_action_is_fail_closed": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 138,
-        "end": 141
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_workflow_permissions_are_exact_least_privilege": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 143,
-        "end": 146
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_workflow_write_permission_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 148,
-        "end": 151
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_extra_sensitive_permission_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 153,
-        "end": 157
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_job_permission_override_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 159,
-        "end": 169
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_missing_explicit_permissions_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 171,
-        "end": 174
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_runtime_policy_accepts_repository_ci": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 176,
-        "end": 179
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_pull_request_target_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 181,
-        "end": 183
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_container_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 185,
-        "end": 187
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_secret_expression_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 189,
-        "end": 191
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_required_runner_and_timeout_are_exact": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 193,
-        "end": 198
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_expression_policy_rejects_untrusted_contexts": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 200,
-        "end": 203
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_matrix_strategy_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 205,
-        "end": 208
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_job_needs_and_if_are_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 210,
-        "end": 215
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_continue_on_error_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 217,
-        "end": 219
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_static_safe_workflow_has_no_expression_violations": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 221,
-        "end": 224
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_accepts_repository_ci": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 226,
-        "end": 229
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_rejects_network_download": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 231,
-        "end": 233
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_rejects_runtime_dependency_install": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 235,
-        "end": 237
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_rejects_github_command_file": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 239,
-        "end": 241
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_rejects_expression_in_command": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 243,
-        "end": 245
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_run_policy_rejects_untrusted_shell": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 247,
-        "end": 249
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_yaml_surface_rejects_anchors_aliases_and_merge_keys": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 251,
-        "end": 254
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_yaml_surface_rejects_tags": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 256,
-        "end": 258
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_yaml_surface_rejects_duplicate_mapping_keys": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 260,
-        "end": 263
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_yaml_surface_rejects_tab_indentation": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 265,
-        "end": 267
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_repository_ci_yaml_surface_is_unambiguous": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 269,
-        "end": 272
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_schema_rejects_unknown_root_job_and_step_keys": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 274,
-        "end": 282
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_schema_accepts_repository_ci": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "start": 284,
-        "end": 287
+        "end": 289
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_schema_allowlists_are_reported": {
+    "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 289,
-        "end": 293
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 292,
+        "end": 294
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_step_inputs_env_accepts_repository_ci": {
+    "test_actions_worker_has_resilient_model_provider_fallbacks": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 295,
-        "end": 298
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 297,
+        "end": 358
       },
       "symbol_dependencies": [
         {
-          "symbol": "validate_step_inputs_env_text",
+          "symbol": "run",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 324,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1
     },
-    "test_setup_python_only_accepts_312": {
+    "run": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 300,
-        "end": 304
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 324,
+        "end": 444
       },
       "symbol_dependencies": [
         {
-          "symbol": "validate_step_inputs_env_text",
+          "symbol": "test_actions_worker_fails_ci_when_production_result_failed",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 361,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_unknown_action_input_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 306,
-        "end": 309
-      },
-      "symbol_dependencies": [
+          "relation": "same_file"
+        },
         {
-          "symbol": "validate_step_inputs_env_text",
+          "symbol": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 365,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_checkout_inputs_are_fail_closed": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 311,
-        "end": 314
-      },
-      "symbol_dependencies": [
+          "relation": "same_file"
+        },
         {
-          "symbol": "validate_step_inputs_env_text",
+          "symbol": "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci",
           "definitions": [
             {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
+              "file": "tests/test_production_os_actions_worker_workflow.py",
+              "line": 371,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 3
     },
-    "test_run_env_only_allows_static_pythonpath": {
+    "test_actions_worker_fails_ci_when_production_result_failed": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 316,
-        "end": 320
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_step_inputs_env_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_trigger_concurrency_accepts_repository_ci": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 322,
-        "end": 325
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_extra_trigger_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 327,
-        "end": 337
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_non_main_push_branch_is_rejected": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 339,
-        "end": 341
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_concurrency_group_must_be_exact": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 343,
-        "end": 345
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_concurrency_cancellation_must_be_enabled": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 347,
-        "end": 349
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_trigger_concurrency_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_exact_job_steps_accept_repository_ci": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 351,
-        "end": 354
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_exact_job_steps_reject_extra_job": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 356,
-        "end": 359
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_exact_job_steps_reject_reordered_steps": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "start": 361,
-        "end": 365
+        "end": 363
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_exact_job_steps_reject_changed_command": {
+    "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 367,
-        "end": 370
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 365,
+        "end": 368
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_semantic_digest_is_stable_for_repository_ci": {
+    "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci": {
       "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 372,
-        "end": 379
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "start": 371,
+        "end": 384
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "workflow_semantic_manifest_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_validate_workflow_exposes_semantic_digest": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 381,
-        "end": 386
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "validate_workflow",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 183,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_semantic_digest_refuses_untrusted_workflow": {
-      "source": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "start": 388,
-        "end": 391
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "workflow_semantic_manifest_text",
-          "definitions": [
-            {
-              "file": "studio/replacement_ci_policy.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "symbol_dependencies": [],
+      "dependency_count": 0
     }
   }
 }

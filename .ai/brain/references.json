@@ -5,672 +5,1357 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "ci_trust_policy_digest": {
+    "test_actions_worker_has_no_codespace_dependency": {
       "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 18,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 9,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 170,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest",
-          "definition_candidate": false
-        },
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 9,
+          "preview": "def test_actions_worker_has_no_codespace_dependency():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_polls_production_os_on_schedule": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 15,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 173,
-          "preview": "if target.get(\"ci_trust_policy_digest\")!=ci_trust_policy_digest():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
           "line": 15,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, REQUIRED_WORKFLOW_PATH, ci_trust_policy_digest, validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 88,
-          "preview": "\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 16,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, REQUIRED_WORKFLOW_PATH, ci_trust_policy_digest",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 432,
-          "preview": "\"ci_trust_policy_version\",\"ci_trust_policy_digest\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 449,
-          "preview": "if target.get(\"ci_trust_policy_digest\")!=ci_trust_policy_digest():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 660,
-          "preview": "\"github_ci_trust_policy_digest\":plan[\"github_review_target\"][\"ci_trust_policy_digest\"],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 18,
-          "preview": "def ci_trust_policy_digest() -> str:",
+          "preview": "def test_actions_worker_polls_production_os_on_schedule():",
           "definition_candidate": true
-        },
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_uses_existing_secure_credentials": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 33,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 21,
-          "preview": "\"base_policy_digest\":_base.ci_trust_policy_digest(),",
-          "definition_candidate": false
-        },
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 33,
+          "preview": "def test_actions_worker_uses_existing_secure_credentials():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 174,
-          "preview": "\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
-          "definition_candidate": false
-        },
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 41,
+          "preview": "def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 57,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 61,
-          "preview": "def ci_trust_policy_digest() -> str:",
-          "definition_candidate": false
-        },
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 57,
+          "preview": "def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_is_single_flight_and_bounded": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 69,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 414,
-          "preview": "result={\"valid\":yaml_surface[\"valid\"] and schema[\"valid\"] and step_env[\"valid\"] and trigger[\"valid\"] and exact[\"valid\"] and not missing and workflow_name==REQUIRED_WORKFLOW_NAME an",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 11,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest, validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
           "line": 69,
-          "preview": "\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
+          "preview": "def test_actions_worker_is_single_flight_and_bounded():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_retains_hidden_autonomy_diagnostics": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 77,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 77,
+          "preview": "def test_actions_worker_retains_hidden_autonomy_diagnostics():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 85,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 85,
+          "preview": "def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_skips_base_pass_for_mobile_only_work": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 96,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 96,
+          "preview": "def test_actions_worker_skips_base_pass_for_mobile_only_work():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_does_not_prepare_android_for_base_only_claim_race": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 109,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 109,
+          "preview": "def test_actions_worker_does_not_prepare_android_for_base_only_claim_race():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_reports_rejected_worker_token_without_exposing_it": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 115,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 115,
+          "preview": "def test_actions_worker_reports_rejected_worker_token_without_exposing_it():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_availability_probe_fails_closed": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 122,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 122,
+          "preview": "def test_actions_worker_availability_probe_fails_closed():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_bootstraps_remote_asset_forge_before_preflight": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 135,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 135,
+          "preview": "def test_actions_worker_bootstraps_remote_asset_forge_before_preflight():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_resolves_only_ci_green_current_production_os_main": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 148,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 148,
+          "preview": "def test_actions_worker_resolves_only_ci_green_current_production_os_main():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 174,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 174,
+          "preview": "def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "Response": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 221,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_godot_android_export.py",
+          "line": 24,
+          "preview": "class Response(io.BytesIO):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 170,
-          "preview": "\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
+          "file": "tests/test_godot_android_export.py",
+          "line": 32,
+          "preview": "target=gae.install_android_templates(Path(td), opener=lambda *a,**k:Response(data))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 182,
-          "preview": "\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
+          "file": "tests/test_godot_android_export.py",
+          "line": 37,
+          "preview": "gae.install_android_templates(Path(td), opener=lambda *a,**k:Response(data))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 426,
-          "preview": "target={\"repository\":\"dbrckk/ai-dev-server\",\"pull_request\":42,\"commit_sha\":\"a\"*40,\"head_ref\":\"policy/migration\",\"base_ref\":\"main\",\"author\":\"reviewer-a\",\"workflow_path\":\".github/wor",
+          "file": "tests/test_godot_release_artifact.py",
+          "line": 20,
+          "preview": "class Response(io.BytesIO):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 432,
-          "preview": "target={\"repository\":\"dbrckk/ai-dev-server\",\"pull_request\":42,\"commit_sha\":\"a\"*40,\"head_ref\":\"policy/migration\",\"base_ref\":\"main\",\"author\":\"reviewer-a\",\"workflow_path\":\".github/wor",
+          "file": "tests/test_godot_release_artifact.py",
+          "line": 35,
+          "preview": "target=gra.install_source_template(Path(td),opener=lambda *a,**k:Response(data))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration_cli.py",
+          "file": "tests/test_godot_release_artifact.py",
+          "line": 38,
+          "preview": "with self.assertRaises(StudioError): gra.install_source_template(Path(td),opener=lambda *a,**k:Response(data))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 18,
+          "preview": "class Response(io.BytesIO):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 40,
+          "preview": "binary = godot_runtime.install(Path(tmp), opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 48,
+          "preview": "godot_runtime.install(Path(tmp), opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 53,
+          "preview": "binary = godot_runtime.install(Path(tmp), opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 62,
+          "preview": "binary = godot_runtime.install(base / 'cache', opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 76,
+          "preview": "base = Path(tmp); source = project(base); binary = godot_runtime.install(base / 'cache', opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 114,
+          "preview": "base=Path(tmp); source=project(base); binary=godot_runtime.install(base/'cache', opener=lambda request, timeout: Response(raw))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 15,
+          "preview": "class Response(io.BytesIO):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 37,
+          "preview": "return Response(json.dumps({\"id\":\"edit-1\"}).encode())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 39,
+          "preview": "return Response(json.dumps({\"versionCode\":123}).encode())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 41,
+          "preview": "return Response(json.dumps({\"track\":\"internal\"}).encode())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 43,
+          "preview": "return Response(b\"{}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 45,
+          "preview": "return Response(b\"{}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 70,
+          "preview": "if req.full_url.endswith(\"/edits\"): return Response(b'{\"id\":\"e\"}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 71,
+          "preview": "if \"upload/androidpublisher\" in req.full_url: return Response(b'{\"versionCode\":\"7\"}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 72,
+          "preview": "if \"/tracks/beta\" in req.full_url: return Response(b'{\"track\":\"beta\"}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 73,
+          "preview": "return Response(b\"{}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 91,
+          "preview": "if req.full_url.endswith(\"/edits\"): return Response(b'{\"id\":\"edit\"}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 92,
+          "preview": "if \"upload/androidpublisher\" in req.full_url: return Response(b'{\"versionCode\":1}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 93,
+          "preview": "if \"/tracks/internal\" in req.full_url: return Response(b'{\"track\":\"internal\"}')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 94,
+          "preview": "return Response(b\"{}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 221,
+          "preview": "class Response:",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 247,
+          "preview": "return Response(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 29
+    },
+    "__init__": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 222,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 28,
+          "preview": "def __init__(self, spec: AgentSpec):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/registry.py",
+          "line": 73,
+          "preview": "def __init__(self, specs: Iterable[AgentSpec] = _DEFAULTS):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 335,
+          "preview": "def __init__(self, status, *, pending_accepted=False):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 340,
+          "preview": "super().__init__('API HTTP ' + str(status))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 351,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 440,
+          "preview": "def __init__(self, limit, avoid_providers=()):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 929,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 120,
+          "preview": "(root/\"studio/__init__.py\").write_text(\"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 121,
+          "preview": "(root/\"studio/capabilities/__init__.py\").write_text(\"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 122,
+          "preview": "(root/\"tests/__init__.py\").write_text(\"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 27,
+          "preview": "def __init__(self,github,repo:str,project_id:str):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 37,
+          "preview": "def __init__(self, github, target_repo, project_id):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_session.py",
           "line": 16,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest, validate_workflow_text",
+          "preview": "def __init__(self, root: Path):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-          "line": 51,
-          "preview": "\"ci_trust_policy_version\":CI_TRUST_POLICY_VERSION,\"ci_trust_policy_digest\":ci_trust_policy_digest(),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 21
-    },
-    "validate_trigger_concurrency_text": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 29,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 29,
-          "preview": "def validate_trigger_concurrency_text(text: str) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 50,
-          "preview": "result=_base.validate_trigger_concurrency_text(\"\\n\".join(cleaned))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 147,
-          "preview": "trigger=validate_trigger_concurrency_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 182,
-          "preview": "def validate_trigger_concurrency_text(text: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 411,
-          "preview": "yaml_surface=validate_yaml_surface_text(text); schema=validate_workflow_schema_text(text); step_env=validate_step_inputs_env_text(text); trigger=validate_trigger_concurrency_text(t",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 324,
-          "preview": "result=validate_trigger_concurrency_text((root/\".github/workflows/ci.yml\").read_text())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 329,
-          "preview": "self.assertTrue(validate_trigger_concurrency_text(text)[\"valid\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 336,
-          "preview": "self.assertFalse(validate_trigger_concurrency_text(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 341,
-          "preview": "self.assertFalse(validate_trigger_concurrency_text(text)[\"valid\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 345,
-          "preview": "self.assertFalse(validate_trigger_concurrency_text(text)[\"valid\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 349,
-          "preview": "self.assertFalse(validate_trigger_concurrency_text(text)[\"valid\"])",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "_checkout_input_violations": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 58,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 58,
-          "preview": "def _checkout_input_violations(text: str) -> list[dict]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 110,
-          "preview": "violations.extend(_checkout_input_violations(text))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "finish": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 65,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 781,
-          "preview": "waiting for the entire goal cycle to finish.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 181,
-          "preview": "finish = choices[0].get(\"finish_reason\") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 182,
-          "preview": "if finish in {\"stop\", \"length\", \"content_filter\", \"tool_calls\"}:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 183,
-          "preview": "record[\"finish_reason\"] = finish",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 46,
-          "preview": "\"autonomous checkpoint branch, and finish the task successfully.\"",
+          "file": "studio/play_publisher.py",
+          "line": 38,
+          "preview": "def __init__(self, access_token: str, opener=urllib.request.urlopen):",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 739,
-          "preview": "\"--result-file <result.json>. The command must finish successfully, \"",
+          "line": 218,
+          "preview": "def __init__(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 13,
+          "preview": "def __init__(self, out):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 60,
+          "preview": "def __init__(self, repo):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 61,
+          "preview": "super().__init__('https://api.github.com', os.environ.get('STUDIO_GITHUB_TOKEN', ''))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/source_delivery_checkpoint.py",
+          "line": 18,
+          "preview": "def __init__(self, stage: str, status: int):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/source_delivery_checkpoint.py",
+          "line": 23,
+          "preview": "super().__init__(status)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_artwork_stage.py",
+          "line": 12,
+          "preview": "def __init__(self,*args,**kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 13,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_review.py",
+          "line": 21,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_review.py",
+          "line": 15,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 10,
+          "preview": "def __init__(self, responses):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 15,
+          "preview": "def __init__(self, size=1, default_paths=None, checkpoint_paths=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_research.py",
+          "line": 14,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 8,
+          "preview": "def __init__(self,payload): self.payload=payload; self.calls=[]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 20,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 8,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 12,
+          "preview": "def __init__(self, pulls=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 117,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 23,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 12,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 18,
+          "preview": "def __init__(self, responses): self.responses = list(responses); self.calls = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 20,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 52,
+          "preview": "def __init__(self,limit): self.calls=0; self.models_used={}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 64,
+          "preview": "def __init__(self,root): self.root=root",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 17,
+          "preview": "def __init__(self, root): self.root = root",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 15,
+          "preview": "def __init__(self,limit): self.models_used={}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_idempotent_model.py",
+          "line": 14,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 58,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 72,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 9",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 82,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 111,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 122,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 10",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 441,
+          "preview": "def __init__(self, *_args): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 561,
+          "preview": "def __init__(self, runs, jobs=None, final_run=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 12,
+          "preview": "def __init__(self, payload):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 56,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 41,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 222,
+          "preview": "def __init__(self, payload):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 235,
+          "preview": "def __init__(self, *, deny_public=False):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 125,
+          "preview": "def __init__(self, *args):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 141,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 22,
+          "preview": "def __init__(self, jobs=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 11,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 20,
+          "preview": "def __init__(self, statuses=(\"succeeded\",), wake_status=\"dispatched\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_cli.py",
+          "line": 13,
+          "preview": "def __init__(self, base_url, token):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 43,
+          "preview": "def __init__(self, job):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 84,
+          "preview": "def __init__(self, status, payload=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 22,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release.py",
+          "line": 11,
+          "preview": "def __init__(self, root, fail_at=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 28,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 158,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 251,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 312,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 371,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 431,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 484,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 538,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 595,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 660,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 740,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 28,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 110,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 117,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 180,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 13,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 31,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 43,
+          "preview": "def __init__(self, *a, **k):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 22,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 51,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 62,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 273,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 289,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 90
+    },
+    "read": {
+      "definition": {
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 225,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/agents/codex.py",
+          "line": 24,
+          "preview": "an implementation run into a read-only review.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 68,
+          "preview": "\"read\":\"allow\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 58,
+          "preview": "data = src.read(info.filename)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 60,
+          "preview": "# Final TOCTOU re-read immediately before the write.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge_gate.py",
+          "line": 3,
+          "preview": "This module is read-only. It does not call GitHub and does not merge. Its output can only",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 38,
+          "preview": "return json.loads(response.read().decode(\"utf-8\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 3,
+          "preview": "This module performs read-only GitHub API calls. It never approves, merges, or mutates a PR.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 50,
+          "preview": "the existing lock. This read-only view prevents the model router from",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 417,
+          "preview": "help=\"Timeout in seconds for the OmniRoute capacity read\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 128,
+          "preview": "raw = response.read(2_000_001)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 149,
+          "preview": "raw = response.read(2_000_001)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 28,
+          "preview": "'tests': 'Senior Flutter QA engineer: read the supplied app source and acceptance journeys. Return real unit/widget tests covering primary actions, navigation and timer/state chang",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 386,
+          "preview": "raw = res.read(4000001)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 4,
+          "preview": "removed, a read-only workspace, dropped Linux capabilities and no production",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 56,
+          "preview": "command=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','1024m','--cpus','2','--tmpf",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 33,
+          "preview": "return json.loads(response.read().decode())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 115,
+          "preview": "body = response.read(max_bytes + 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 78,
+          "preview": "\"docker\",\"run\",\"--rm\",\"--network\",\"none\",\"--read-only\",\"--cap-drop\",\"ALL\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 299,
+          "preview": "head = handle.read(32)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 314,
+          "preview": "return handle.read(2) == b\"\\xff\\xd9\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 59,
+          "preview": "chunk = response.read(1024 * 1024)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_baseline.py",
+          "line": 95,
+          "preview": "data = response.read(200_000_001)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_baseline.py",
+          "line": 106,
+          "preview": "binary.write_bytes(z.read(name))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 164,
+          "preview": "not a synthetic claim that the whole source has been independently read.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 257,
+          "preview": "sample = source.read()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 45,
+          "preview": "chunk=response.read(1024*1024)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 23,
+          "preview": "# Only forward the read-only Actions token to the canonical GitHub API.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 43,
+          "preview": "raw = response.read(MAX_RESPONSE_BYTES + 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 63,
+          "preview": "chunk = response.read(1024 * 1024)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_capacity.py",
+          "line": 82,
+          "preview": "raw = response.read(300_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/omniroute_capacity.py",
+          "line": 159,
+          "preview": "raw = response.read()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/play_publisher.py",
+          "line": 54,
+          "preview": "raw = response.read()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 13,
+          "preview": "\"\"\"Bounded read-only Render warmup before probing operator credentials.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 94,
+          "preview": "# Re-read immediately before mutation to avoid resuming stale list entries.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 286,
+          "preview": "raw = response.read(1_000_001)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1441,
+          "preview": "# and the persisted CI deadline bound this read-only wait.",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 157,
-          "preview": "\"Verify the file content, persist the normal autonomous checkpoint branch, and finish the task successfully.\"",
+          "line": 25,
+          "preview": "GitHub grants this canary workflow only actions:write and contents:read.",
           "definition_candidate": false
         },
         {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 65,
-          "preview": "def finish():",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 77,
-          "preview": "finish()",
+          "file": "studio/production_os_worker_canary.py",
+          "line": 284,
+          "preview": "# another read when the remaining budget cannot contain that request.",
           "definition_candidate": false
         },
         {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 96,
-          "preview": "finish()",
+          "file": "studio/production_os_worker_canary.py",
+          "line": 321,
+          "preview": "uses read-only requests and leaves the actual submission exactly once.",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_autonomous_project.py",
-          "line": 275,
-          "preview": "# can still finish the original goal, without reauthorizing",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_codex_adapter.py",
-          "line": 15,
-          "preview": "argv, extra_env = codex_invocation(\"finish the repository\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_codex_adapter.py",
-          "line": 26,
-          "preview": "\"finish the repository\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_codex_adapter.py",
-          "line": 84,
-          "preview": "\"finish the repository\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_codex_adapter.py",
-          "line": 110,
-          "preview": "\"finish the repository\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 161,
-          "preview": "\"autonomous checkpoint branch, and finish the task successfully.\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 206,
-          "preview": "# must not finish the delivery canary.",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_capability_runtime.py",
-          "line": 12,
-          "preview": "goal=new_goal(\"g\",\"finish\",[{\"name\":\"done\",\"required_evidence\":[\"done\"]}],max_attempts=4)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 19,
-          "preview": "\"finish autonomously\",",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 19
-    },
-    "validate_step_inputs_env_text": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 100,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 100,
-          "preview": "def validate_step_inputs_env_text(text: str) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 101,
-          "preview": "base=_base.validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 146,
-          "preview": "step_env=validate_step_inputs_env_text(text)",
+          "file": "studio/provider_router.py",
+          "line": 85,
+          "preview": "raw = response.read(200000)",
           "definition_candidate": false
         },
         {
           "file": "studio/replacement_ci_policy_v11.py",
-          "line": 205,
-          "preview": "def validate_step_inputs_env_text(text: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 411,
-          "preview": "yaml_surface=validate_yaml_surface_text(text); schema=validate_workflow_schema_text(text); step_env=validate_step_inputs_env_text(text); trigger=validate_trigger_concurrency_text(t",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_checkout_credentials_policy.py",
-          "line": 7,
-          "preview": "from replacement_ci_policy import validate_step_inputs_env_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_checkout_credentials_policy.py",
-          "line": 21,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_checkout_credentials_policy.py",
-          "line": 32,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_checkout_credentials_policy.py",
-          "line": 45,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_checkout_credentials_policy.py",
-          "line": 59,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 297,
-          "preview": "result=validate_step_inputs_env_text((root/\".github/workflows/ci.yml\").read_text())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 302,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 308,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 313,
-          "preview": "result=validate_step_inputs_env_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 319,
-          "preview": "self.assertTrue(validate_step_inputs_env_text(good)[\"valid\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 320,
-          "preview": "self.assertFalse(validate_step_inputs_env_text(bad)[\"valid\"])",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 17
-    },
-    "workflow_semantic_manifest_text": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 120,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 120,
-          "preview": "def workflow_semantic_manifest_text(text: str) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 177,
-          "preview": "semantic=workflow_semantic_manifest_text(text) if valid else {\"manifest\":None,\"digest\":None}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 403,
-          "preview": "def workflow_semantic_manifest_text(text: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 416,
-          "preview": "semantic=workflow_semantic_manifest_text(text) if result[\"valid\"] else {\"valid\":False,\"manifest\":None,\"digest\":None,\"violations\":[\"workflow_not_trusted\"]}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 375,
-          "preview": "first=workflow_semantic_manifest_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 376,
-          "preview": "second=workflow_semantic_manifest_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 389,
-          "preview": "result=workflow_semantic_manifest_text(\"name: Other\\njobs:\\n\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "validate_workflow_text": {
-      "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 143,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 216,
-          "preview": "from replacement_ci_policy import validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 217,
-          "preview": "workflow_policy_validation=validate_workflow_text(workflow_text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 15,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, REQUIRED_WORKFLOW_PATH, ci_trust_policy_digest, validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 41,
-          "preview": "validation=validate_workflow_text(text)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 121,
-          "preview": "validation=validate_workflow_text(text,include_semantic=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 143,
-          "preview": "def validate_workflow_text(text: str, *, include_semantic: bool=True) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 184,
-          "preview": "return validate_workflow_text(path.read_text(encoding=\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 404,
-          "preview": "validation=validate_workflow_text(text,include_semantic=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 410,
-          "preview": "def validate_workflow_text(text: str, *, include_semantic: bool=True) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 420,
-          "preview": "def validate_workflow(path: Path) -> dict: return validate_workflow_text(path.read_text(encoding=\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_approval.py",
-          "line": 10,
-          "preview": "from replacement_ci_policy import validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_approval.py",
-          "line": 41,
-          "preview": "validation=validate_workflow_text(raw.decode(\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-          "line": 9,
-          "preview": "from replacement_ci_policy import validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_attestation.py",
-          "line": 13,
-          "preview": "validation=validate_workflow_text(raw.decode(\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 11,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest, validate_workflow_text",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_migration.py",
-          "line": 52,
-          "preview": "validation=validate_workflow_text(raw.decode(\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_migration_cli.py",
           "line": 16,
-          "preview": "from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest, validate_workflow_text",
+          "preview": "REQUIRED_WORKFLOW_PERMISSIONS={\"contents\":\"read\"}",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_reputation_policy_migration_cli.py",
-          "line": 33,
-          "preview": "validation=validate_workflow_text(raw.decode(\"utf-8\"))",
+          "file": "studio/replacement_ci_policy_v11.py",
+          "line": 272,
+          "preview": "if value in {\"read\",\"write\",\"none\"}: return value",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 68,
+          "preview": "value = json.loads(response.read().decode(\"utf-8\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 49,
+          "preview": "value=json.loads(response.read().decode(\"utf-8\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/star_scanner.py",
+          "line": 20,
+          "preview": "return response.read().decode(\"utf-8\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_approval.py",
+          "line": 66,
+          "preview": "a=self.github_attestation();a[\"reviewer\"][\"permission\"]=\"read\";a[\"attestation_digest\"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!=\"attestation_digest\"}).encode()).he",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_ledger.py",
+          "line": 121,
+          "preview": "# This routing view is read-only; the writer still owns durable",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_isolated_runner.py",
+          "line": 35,
+          "preview": "self.assertIn('--read-only', command)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 36,
+          "preview": "response.__enter__.return_value.read.return_value = b'{}'",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_local_capacity.py",
+          "line": 17,
+          "preview": "response.read.return_value = json.dumps(payload).encode()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 21,
+          "preview": "def read(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_patch_safety_rebuild.py",
+          "line": 66,
+          "preview": "gh.get=Mock(side_effect=AssertionError(\"remote read\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_patch_safety_rebuild.py",
+          "line": 79,
+          "preview": "gh.get=Mock(side_effect=AssertionError(\"remote read\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 191,
+          "preview": "# deliberately lacks Actions-read access to the other public repository.",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 225,
+          "preview": "def read(self, *_args):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 34,
+          "preview": "payload = json.loads(self.rfile.read(length) or b\"{}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 354,
+          "preview": "assert \"contents: read\" in workflow",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 98,
+          "preview": "def read(self, limit=-1):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_replacement_ci_policy.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 78,
-          "preview": "result=validate_workflow_text(\"name: Other\\njobs:\\n  validate:\\n  python-tests:\\n\")",
+          "line": 73,
+          "preview": "text=\"name: CI\\npermissions:\\n  contents: read\\njobs:\\n  validate:\\n  python-tests:\\n\"",
           "definition_candidate": false
         },
         {
@@ -678,1118 +1363,1787 @@
           "line": 82,
           "preview": "result=validate_workflow_text(\"name: CI\\npermissions:\\n  contents: read\\njobs:\\n  python-tests:\\n\")",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_replacement_ci_policy.py",
+          "line": 144,
+          "preview": "result=validate_workflow_permissions_text(\"permissions:\\n  contents: read\\njobs:\\n\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_replacement_ci_policy.py",
+          "line": 146,
+          "preview": "self.assertEqual(result[\"workflow_permissions\"],{\"contents\":\"read\"})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_replacement_ci_policy.py",
+          "line": 155,
+          "preview": "\"permissions:\\n  contents: read\\n  id-token: write\\njobs:\\n\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_replacement_ci_policy.py",
+          "line": 162,
+          "preview": "\"  contents: read\\n\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_replacement_ci_policy.py",
+          "line": 261,
+          "preview": "result=validate_yaml_surface_text(\"permissions:\\n  contents: read\\n  contents: write\\n\")",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 21
+      "occurrence_count": 65
     },
-    "validate_workflow": {
+    "__enter__": {
       "definition": {
-        "file": "studio/replacement_ci_policy.py",
-        "line": 183,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 228,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/replacement_ci_policy.py",
-          "line": 183,
-          "preview": "def validate_workflow(path: Path) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/replacement_ci_policy_check.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import validate_workflow",
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 371,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
           "definition_candidate": false
         },
         {
-          "file": "studio/replacement_ci_policy_check.py",
-          "line": 14,
-          "preview": "result=validate_workflow(path)",
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 399,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
           "definition_candidate": false
         },
         {
-          "file": "studio/replacement_ci_policy_v11.py",
-          "line": 420,
-          "preview": "def validate_workflow(path: Path) -> dict: return validate_workflow_text(path.read_text(encoding=\"utf-8\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 8,
-          "preview": "from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 13,
-          "preview": "result=validate_workflow(root/\".github/workflows/ci.yml\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 21,
-          "preview": "result=validate_workflow(path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 383,
-          "preview": "result=validate_workflow(root/\".github/workflows/ci.yml\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "ReplacementCIPolicyTests": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 10,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 10,
-          "preview": "class ReplacementCIPolicyTests(unittest.TestCase):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_repository_ci_exposes_required_check_ids": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 11,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 11,
-          "preview": "def test_repository_ci_exposes_required_check_ids(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_missing_required_check_is_detected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 17,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 17,
-          "preview": "def test_missing_required_check_is_detected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_required_check_runs_must_be_trusted_and_successful": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 25,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
+          "file": "tests/test_godot_android_export.py",
           "line": 25,
-          "preview": "def test_required_check_runs_must_be_trusted_and_successful(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_untrusted_check_run_does_not_satisfy_policy": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 34,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "preview": "def __enter__(self): return self",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 34,
-          "preview": "def test_untrusted_check_run_does_not_satisfy_policy(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_stale_check_run_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 43,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_godot_release_artifact.py",
+          "line": 21,
+          "preview": "def __enter__(self): return self",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 43,
-          "preview": "def test_stale_check_run_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_wrong_sha_check_run_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 52,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 36,
+          "preview": "response.__enter__.return_value.read.return_value = b'{}'",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 52,
-          "preview": "def test_wrong_sha_check_run_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_required_checks_from_multiple_workflow_runs_are_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 61,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_godot_runtime.py",
+          "line": 19,
+          "preview": "def __enter__(self): return self",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 61,
-          "preview": "def test_required_checks_from_multiple_workflow_runs_are_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_text_requires_canonical_name_and_jobs": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 72,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_local_capacity.py",
+          "line": 18,
+          "preview": "response.__enter__.return_value = response",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 72,
-          "preview": "def test_workflow_text_requires_canonical_name_and_jobs(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_text_rejects_wrong_name": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 77,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 599,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 77,
-          "preview": "def test_workflow_text_rejects_wrong_name(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_text_rejects_missing_required_job": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 81,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 15,
+          "preview": "def __enter__(self):",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 81,
-          "preview": "def test_workflow_text_rejects_missing_required_job(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_actions_must_be_allowlisted_and_sha_pinned": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 86,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_play_publisher.py",
+          "line": 16,
+          "preview": "def __enter__(self): return self",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 86,
-          "preview": "def test_workflow_actions_must_be_allowlisted_and_sha_pinned(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 228,
+          "preview": "def __enter__(self):",
           "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_mutable_action_ref_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 99,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 99,
-          "preview": "def test_mutable_action_ref_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_third_party_action_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 112,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 116,
+          "preview": "def __enter__(self):",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 112,
-          "preview": "def test_third_party_action_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_unapproved_sha_for_trusted_action_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 125,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 247,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 125,
-          "preview": "def test_unapproved_sha_for_trusted_action_is_rejected(self):",
-          "definition_candidate": true
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 92,
+          "preview": "def __enter__(self):",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 14
     },
-    "test_local_action_is_fail_closed": {
+    "__exit__": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 138,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 138,
-          "preview": "def test_local_action_is_fail_closed(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_permissions_are_exact_least_privilege": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 143,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 143,
-          "preview": "def test_workflow_permissions_are_exact_least_privilege(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_workflow_write_permission_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 148,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 148,
-          "preview": "def test_workflow_write_permission_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_extra_sensitive_permission_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 153,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 153,
-          "preview": "def test_extra_sensitive_permission_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_job_permission_override_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 159,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 159,
-          "preview": "def test_job_permission_override_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_missing_explicit_permissions_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 171,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 171,
-          "preview": "def test_missing_explicit_permissions_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_runtime_policy_accepts_repository_ci": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 176,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 176,
-          "preview": "def test_runtime_policy_accepts_repository_ci(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_pull_request_target_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 181,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 181,
-          "preview": "def test_pull_request_target_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_container_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 185,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 185,
-          "preview": "def test_container_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_secret_expression_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 189,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 189,
-          "preview": "def test_secret_expression_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_required_runner_and_timeout_are_exact": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 193,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 193,
-          "preview": "def test_required_runner_and_timeout_are_exact(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_expression_policy_rejects_untrusted_contexts": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 200,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 200,
-          "preview": "def test_expression_policy_rejects_untrusted_contexts(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_matrix_strategy_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 205,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 205,
-          "preview": "def test_matrix_strategy_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_job_needs_and_if_are_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 210,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 210,
-          "preview": "def test_job_needs_and_if_are_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_continue_on_error_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 217,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 217,
-          "preview": "def test_continue_on_error_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_static_safe_workflow_has_no_expression_violations": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 221,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 221,
-          "preview": "def test_static_safe_workflow_has_no_expression_violations(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_run_policy_accepts_repository_ci": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 226,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 226,
-          "preview": "def test_run_policy_accepts_repository_ci(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_run_policy_rejects_network_download": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "line": 231,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
+          "file": "tests/test_godot_android_export.py",
+          "line": 26,
+          "preview": "def __exit__(self,*args): return False",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact.py",
+          "line": 22,
+          "preview": "def __exit__(self,*args): return False",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime.py",
+          "line": 20,
+          "preview": "def __exit__(self, *args): self.close()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_local_capacity.py",
+          "line": 19,
+          "preview": "response.__exit__.return_value = False",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 18,
+          "preview": "def __exit__(self, exc_type, exc, tb):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_publisher.py",
+          "line": 17,
+          "preview": "def __exit__(self, *args): return False",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
           "line": 231,
-          "preview": "def test_run_policy_rejects_network_download(self):",
+          "preview": "def __exit__(self, *_args):",
           "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 120,
+          "preview": "def __exit__(self, exc_type, exc, tb):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 95,
+          "preview": "def __exit__(self, exc_type, exc, tb):",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 9
     },
-    "test_run_policy_rejects_runtime_dependency_install": {
+    "ScopedTransport": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 235,
-        "kind": "function",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 234,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 235,
-          "preview": "def test_run_policy_rejects_runtime_dependency_install(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 234,
+          "preview": "class ScopedTransport:",
           "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 263,
+          "preview": "working = ScopedTransport()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 271,
+          "preview": "assert \"scoped-test-token\" not in run_resolver(ScopedTransport())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 273,
+          "preview": "blocked = ScopedTransport(deny_public=True)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 4
     },
-    "test_run_policy_rejects_github_command_file": {
+    "open": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "line": 239,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 239,
-          "preview": "def test_run_policy_rejects_github_command_file(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_run_policy_rejects_expression_in_command": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 243,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/adaptation.py",
+          "line": 46,
+          "preview": "{'kind': 'github_source', 'query': 'well-maintained open-source reference implementations and tests'},",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 243,
-          "preview": "def test_run_policy_rejects_expression_in_command(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_run_policy_rejects_untrusted_shell": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 247,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 62,
+          "preview": "if not isinstance(pr,dict) or pr.get(\"state\")!=\"open\" or pr.get(\"draft\") is True:",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 247,
-          "preview": "def test_run_policy_rejects_untrusted_shell(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_yaml_surface_rejects_anchors_aliases_and_merge_keys": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 251,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 63,
+          "preview": "raise ReplacementMergeError(\"replacement PR is no longer open and ready\")",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 251,
-          "preview": "def test_yaml_surface_rejects_anchors_aliases_and_merge_keys(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_yaml_surface_rejects_tags": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 256,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 70,
+          "preview": "if not isinstance(pr,dict) or pr.get(\"state\")!=\"open\":",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 256,
-          "preview": "def test_yaml_surface_rejects_tags(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_yaml_surface_rejects_duplicate_mapping_keys": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 260,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 71,
+          "preview": "raise ReplacementPRValidationError(\"replacement PR is not open\")",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 260,
-          "preview": "def test_yaml_surface_rejects_duplicate_mapping_keys(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_yaml_surface_rejects_tab_indentation": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 265,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 120,
+          "preview": "if pr_identity.get(\"state\")!=\"open\":",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 265,
-          "preview": "def test_yaml_surface_rejects_tab_indentation(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_repository_ci_yaml_surface_is_unambiguous": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 269,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 121,
+          "preview": "raise ApprovalProvenanceError(\"github PR is not open\")",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 92,
+          "preview": "if pr.get(\"state\")!=\"open\" or pr.get(\"draft\") is True:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/atomic_file.py",
+          "line": 25,
+          "preview": "dir_fd = os.open(path.parent, os.O_RDONLY)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/candidates/jumpy_profile_save.gd",
+          "line": 83,
+          "preview": "var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/candidates/jumpy_profile_save.gd",
+          "line": 85,
+          "preview": "push_warning(\"Jumpy: unable to open save file; defaults preserved.\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/candidates/jumpy_profile_save.gd",
+          "line": 97,
+          "preview": "var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/candidates/jumpy_profile_save.gd",
+          "line": 99,
+          "preview": "push_warning(\"Jumpy: unable to open save file for writing. Error %s\" % FileAccess.get_open_error())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 53,
+          "preview": "if state == \"open\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 37,
+          "preview": "if state==\"open\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 99,
+          "preview": "opener = urllib.request.build_opener(_NoRedirect).open",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 379,
+          "preview": "response = opener.open(req, timeout=min(180, remaining))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 124,
+          "preview": "with screenshot.open('wb') as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 58,
+          "preview": "if not isinstance(pr,dict) or pr.get('state')!='open' or pr.get('draft') is True: raise AutoMergeError('Promotion pull request is not open and ready')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 50,
+          "preview": "elif pr.get('state') == 'open':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 109,
+          "preview": "with build_opener(_SafeRedirect()).open(request, timeout=timeout) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 114,
+          "preview": "\"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/file_lock.py",
+          "line": 23,
+          "preview": "fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/free_capacity_recommendations.py",
+          "line": 1,
+          "preview": "\"\"\"Discover self-hosted/open-source capacity sources from star-list.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 28,
+          "preview": "FORBIDDEN_CALLS={\"eval\",\"exec\",\"compile\",\"__import__\",\"open\",\"os.system\",\"os.popen\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_delivery.py",
+          "line": 70,
+          "preview": "and pr[\"number\"] > 0 and pr.get(\"state\") == \"open\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 298,
+          "preview": "with path.open(\"rb\") as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
           "line": 269,
-          "preview": "def test_repository_ci_yaml_surface_is_unambiguous(self):",
+          "preview": "\"/pulls?state=open&head=\" + filter_head",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 293,
+          "preview": "\"state\":pr.get(\"state\") or \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 339,
+          "preview": "# GitHub allows only one open PR per same head/base. Do not",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 369,
+          "preview": "or created.get(\"state\") != \"open\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 379,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 424,
+          "preview": "with urllib.request.build_opener(NoRedirect()).open(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 204,
+          "preview": "return {\"number\": 1, \"state\": \"open\", \"url\": \"https://github.com/fixture/generic-smoke/pull/1\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_target_ci.py",
+          "line": 22,
+          "preview": "with urllib.request.build_opener(NoRedirect()).open(request, timeout=20) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 56,
+          "preview": "with opener(request, timeout=90) as response, partial.open('wb') as out:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 75,
+          "preview": "with zf.open(infos[member]) as src, (staged/output_name).open('wb') as dst: shutil.copyfileobj(src, dst)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 128,
+          "preview": "with screenshot.open('wb') as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 256,
+          "preview": "with path.open('r', encoding='utf-8') as source:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 42,
+          "preview": "with opener(req,timeout=90) as response, partial.open('wb') as out:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 67,
+          "preview": "with zf.open(info) as src, staged.open('wb') as dst: shutil.copyfileobj(src,dst)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 42,
+          "preview": "with opener.open(req, timeout=45) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 60,
+          "preview": "with opener(request, timeout=60) as response, tmp.open('wb') as out:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 79,
+          "preview": "with zf.open(members[0]) as src, extracted.open('wb') as dst:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/jumpy_baseline.gd",
+          "line": 63,
+          "preview": "var report = FileAccess.open(report_path, FileAccess.WRITE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/jumpy_save_checks.gd",
+          "line": 17,
+          "preview": "var file = FileAccess.open(\"user://jumpy_save.json\", FileAccess.WRITE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/jumpy_save_checks.gd",
+          "line": 62,
+          "preview": "var report = FileAccess.open(OS.get_environment(\"STUDIO_BASELINE_REPORT\"), FileAccess.WRITE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/platform_view_qa.py",
+          "line": 102,
+          "preview": "with first.open('wb') as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_provider_config.py",
+          "line": 73,
+          "preview": "with open(os.environ[\"GITHUB_ENV\"], \"a\", encoding=\"utf-8\") as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 211,
+          "preview": "return urllib.request.build_opener(_NoRedirect).open(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 49,
+          "preview": "urlopen = urllib.request.build_opener(NoRedirect()).open",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 120,
+          "preview": "\"Settings panel is open (settings_open == true), tapping empty space \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 122,
+          "preview": "\"tap-to-start while the settings panel is open. Keep the BACK button \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 356,
+          "preview": "with open(reliability_path, \"r\", encoding=\"utf-8\") as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/telemetry.py",
+          "line": 38,
+          "preview": "with path.open(\"ab\") as handle:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_replacement_merge.py",
+          "line": 72,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_replacement_pr_validator.py",
+          "line": 53,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_approval.py",
+          "line": 50,
+          "preview": "\"pr_identity\":{\"number\":42,\"state\":\"open\",\"draft\":False,\"head_ref\":\"policy/migration\",\"head_sha\":\"abc\",\"base_ref\":\"main\",\"author\":\"author\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_attestation.py",
+          "line": 26,
+          "preview": "return {\"number\":7,\"state\":\"open\",\"draft\":False,\"head_ref\":\"feature/policy\",\"head_sha\":\"abc\",\"base_ref\":\"main\",\"author\":\"author\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 36,
+          "preview": "\"state\":\"open\",\"draft\":False,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_migration.py",
+          "line": 110,
+          "preview": "pr_identity={\"number\":42,\"state\":\"open\",\"draft\":False,\"head_ref\":\"policy/migration\",\"head_sha\":\"a\"*40,\"base_ref\":\"main\",\"author\":\"reviewer-a\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_migration_cli.py",
+          "line": 92,
+          "preview": "pr_identity={\"number\":7,\"state\":\"open\",\"draft\":False,\"head_ref\":\"policy/migration\",\"head_sha\":\"a\"*40,\"base_ref\":\"main\",\"author\":\"alice\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_review.py",
+          "line": 33,
+          "preview": "def pr(state=\"open\",merged=False):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_review.py",
+          "line": 27,
+          "preview": "def pr(state=\"open\",merged=False):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge.py",
+          "line": 27,
+          "preview": "if url.endswith('/pulls/12'): return {'state':'open','draft':False,'mergeable':True,'mergeable_state':'clean','base':{'ref':'main'},'head':{'ref':BRANCH,'sha':head}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_pending.py",
+          "line": 18,
+          "preview": "def pr(state='open',merged_at=None,sha=COMMIT,ref=None,number=9):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 90,
+          "preview": "\"number\": 1, \"state\": \"open\", \"url\": \"https://github.com/owner/app/pull/1\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 158,
+          "preview": "\"number\": 3, \"state\": \"open\", \"url\": \"https://github.com/owner/app/pull/3\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 21,
+          "preview": "if path.startswith(\"/pulls?state=open&head=\") and path.endswith(\"&base=main&per_page=100\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 30,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 57,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 183,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 219,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 247,
+          "preview": "raise AssertionError(\"Stale open PR was accepted as the published checkpoint\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 255,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 262,
+          "preview": "# author's open PR as this worker's own verified delivery.",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 264,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 272,
+          "preview": "\"state\":\"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 287,
+          "preview": "assert (\"GET\", \"/pulls?state=open&head=owner%3Astudio%2Fmp-abc&base=main&per_page=100\") in github.calls",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 298,
+          "preview": "\"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 312,
+          "preview": "\"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 371,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 373,
+          "preview": "request = opener.return_value.open.call_args.args[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 399,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 401,
+          "preview": "request = opener.return_value.open.call_args.args[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 72,
+          "preview": "\"number\": 7, \"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 186,
+          "preview": "\"number\": 42, \"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 190,
+          "preview": "\"number\": 42, \"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 229,
+          "preview": "\"number\": 43, \"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 106,
+          "preview": "rejected['journeys'][0]['id'] = 'jumpy-settings-open-tap-empty-prevents-start'",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 39,
+          "preview": "make_opener.return_value.open.return_value = response",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 46,
+          "preview": "request = make_opener.return_value.open.call_args.args[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 52,
+          "preview": "self.assertEqual(make_opener.return_value.open.call_count, 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 599,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 601,
+          "preview": "opener.return_value.open.assert_called_once()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 602,
+          "preview": "opener.return_value.open.reset_mock()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 603,
+          "preview": "opener.return_value.open.side_effect = TimeoutError(\"accepted POST response lost\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 605,
+          "preview": "opener.return_value.open.assert_called_once()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 131,
+          "preview": "assert \"with opener.open(request, timeout=10) as response:\" in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 186,
+          "preview": "assert \"with opener.open(request, timeout=20) as response:\" in resolver",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 239,
+          "preview": "def open(self, request, *, timeout):",
           "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_result_contract.py",
+          "line": 114,
+          "preview": "\"state\": \"open\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_result_contract.py",
+          "line": 193,
+          "preview": "{\"number\": 201, \"state\": \"open\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 247,
+          "preview": "opener.return_value.open.return_value.__enter__.return_value.status = 204",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 255,
+          "preview": "request = opener.return_value.open.call_args.args[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 553,
+          "preview": "\"pull_request\":{\"number\":12,\"state\":\"open\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 1,
+          "preview": "\"\"\"A 429 should open the transient provider circuit after HTTP transport retries.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 22,
+          "preview": "opener.open.side_effect = replies",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 30,
+          "preview": "requests = [call.args[0] for call in opener.open.call_args_list]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 55,
+          "preview": "opener.open.return_value = response(200, {\"ok\": True})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 64,
+          "preview": "self.assertLessEqual(opener.open.call_args.kwargs[\"timeout\"], 7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 68,
+          "preview": "opener.open.return_value = response(200, {\"ok\": True})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_transport.py",
+          "line": 76,
+          "preview": "self.assertLessEqual(opener.open.call_args.kwargs[\"timeout\"], 180)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 113
     },
-    "test_schema_rejects_unknown_root_job_and_step_keys": {
+    "run_resolver": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 274,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 252,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 274,
-          "preview": "def test_schema_rejects_unknown_root_job_and_step_keys(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 252,
+          "preview": "def run_resolver(transport):",
           "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 264,
+          "preview": "assert run_resolver(working).strip() == qualified_sha",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 271,
+          "preview": "assert \"scoped-test-token\" not in run_resolver(ScopedTransport())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 275,
+          "preview": "run_resolver(blocked)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 4
     },
-    "test_schema_accepts_repository_ci": {
+    "test_actions_worker_preflight_uses_runtime_capability_detection": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "line": 284,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
           "line": 284,
-          "preview": "def test_schema_accepts_repository_ci(self):",
+          "preview": "def test_actions_worker_preflight_uses_runtime_capability_detection():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_schema_allowlists_are_reported": {
+    "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 289,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 292,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 289,
-          "preview": "def test_schema_allowlists_are_reported(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 292,
+          "preview": "def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_step_inputs_env_accepts_repository_ci": {
+    "test_actions_worker_has_resilient_model_provider_fallbacks": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 295,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 297,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 295,
-          "preview": "def test_step_inputs_env_accepts_repository_ci(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 297,
+          "preview": "def test_actions_worker_has_resilient_model_provider_fallbacks():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_setup_python_only_accepts_312": {
+    "run": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 300,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 324,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 300,
-          "preview": "def test_setup_python_only_accepts_312(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_unknown_action_input_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 306,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 181,
+          "preview": "proc = subprocess.run([sys.executable, str(artifact)], check=True,",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 306,
-          "preview": "def test_unknown_action_input_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_checkout_inputs_are_fail_closed": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 311,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 58,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 311,
-          "preview": "def test_checkout_inputs_are_fail_closed(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_run_env_only_allows_static_pythonpath": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 316,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 80,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 316,
-          "preview": "def test_run_env_only_allows_static_pythonpath(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_trigger_concurrency_accepts_repository_ci": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 322,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 3,
+          "preview": "Uses a unique synthetic workflow ID for this Actions run. Does not claim a",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 322,
-          "preview": "def test_trigger_concurrency_accepts_repository_ci(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_extra_trigger_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 327,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 40,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 327,
-          "preview": "def test_extra_trigger_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_non_main_push_branch_is_rejected": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 339,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 52,
+          "preview": "raise RuntimeError(\"Live resume proof requires an authenticated GitHub Actions run\")",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 339,
-          "preview": "def test_non_main_push_branch_is_rejected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_concurrency_group_must_be_exact": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 343,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 53,
+          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 343,
-          "preview": "def test_concurrency_group_must_be_exact(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_concurrency_cancellation_must_be_enabled": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 347,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/agents/adapters.py",
+          "line": 34,
+          "preview": "def run(",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 347,
-          "preview": "def test_concurrency_cancellation_must_be_enabled(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_exact_job_steps_accept_repository_ci": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 351,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/agents/adapters.py",
+          "line": 77,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 351,
-          "preview": "def test_exact_job_steps_accept_repository_ci(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_exact_job_steps_reject_extra_job": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 356,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/agents/codex.py",
+          "line": 24,
+          "preview": "an implementation run into a read-only review.",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 356,
-          "preview": "def test_exact_job_steps_reject_extra_job(self):",
-          "definition_candidate": true
+          "file": "studio/agents/orchestrator.py",
+          "line": 61,
+          "preview": "argv=[\"opencode\",\"run\",\"--auto\",\"--format\",\"json\"]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 152,
+          "preview": "def _completion_verified(run)->bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 153,
+          "preview": "\"\"\"Do not accept an agent run without its supported completion receipt.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 159,
+          "preview": "if run.returncode != 0:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 161,
+          "preview": "if run.agent == \"codex\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 164,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 172,
+          "preview": "if run.agent == \"hermes\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 176,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 191,
+          "preview": "if run.agent != \"opencode\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 193,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 213,
+          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 214,
+          "preview": "evidence={\"agent\":run.agent,\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 215,
+          "preview": "\"duration_seconds\":run.duration_seconds,\"stdout_tail\":run.stdout_tail,\"stderr_tail\":run.stderr_tail}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 216,
+          "preview": "if run.agent in {\"opencode\", \"hermes\", \"codex\"}:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 217,
+          "preview": "evidence[\"completion_verified\"] = _completion_verified(run)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 218,
+          "preview": "if run.returncode == 0 and not evidence[\"completion_verified\"]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 222,
+          "preview": "if run.agent==\"codex\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 223,
+          "preview": "usage=parse_codex_usage(run.stdout_tail)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 329,
+          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 330,
+          "preview": "ok=_completion_verified(run)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 331,
+          "preview": "evidence=_run_evidence(run,capacity_source)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 335,
+          "preview": "if ok: return {\"status\":\"passed\",\"selected\":run.agent,\"attempts\":attempts}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 414,
+          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 418,
+          "preview": "ok=_completion_verified(run)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 419,
+          "preview": "evidence=_run_evidence(run,capacity_source)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 422,
+          "preview": "return {\"status\":\"passed\" if ok else \"failed\",\"selected\":run.agent if ok else None,\"attempts\":[evidence]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 112,
+          "preview": "runner=subprocess.run,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 4,
+          "preview": "Candidate code is materialized only in a detached worktree. Validation commands run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 50,
+          "preview": "result=subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 154,
+          "preview": "\"docker\",\"run\",\"--rm\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 191,
+          "preview": "run=_docker_command(root,command)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 194,
+          "preview": "\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 195,
+          "preview": "\"passed\":run.returncode==0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 196,
+          "preview": "\"stdout_sha256\":hashlib.sha256((run.stdout or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 197,
+          "preview": "\"stderr_sha256\":hashlib.sha256((run.stderr or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 211,
+          "preview": "with tempfile.TemporaryDirectory(prefix=\"replacement-run-\") as tmp:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 20,
+          "preview": "def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 55,
+          "preview": "result=run(Path(args.work_order),Path(args.repo_root),out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_planner.py",
+          "line": 567,
+          "preview": "\"run unit, integration, visual and release regression gates\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 32,
+          "preview": "def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path, token: str, repository: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 105,
+          "preview": "result=run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 101,
+          "preview": "raise ReplacementPRValidationError(\"GitHub check-run evidence malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 32,
+          "preview": "result=subprocess.run([\"git\",\"rev-parse\",\"HEAD\"],cwd=root,text=True,capture_output=True,check=False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 144,
+          "preview": "raise ApprovalProvenanceError(\"required GitHub checks lack a common workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 146,
+          "preview": "raise ApprovalProvenanceError(\"required checks do not bind attested workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 163,
+          "preview": "raise ApprovalProvenanceError(\"required GitHub check workflow run mismatch\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 78,
+          "preview": "def _workflow_path(run: dict) -> str | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 79,
+          "preview": "if not isinstance(run,dict): return None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 80,
+          "preview": "raw=run.get(\"path\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 86,
+          "preview": "for run in runs if isinstance(runs,list) else []:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 87,
+          "preview": "if run.get(\"head_sha\")!=commit_sha or str(run.get(\"conclusion\") or \"\").lower()!=\"success\": continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 88,
+          "preview": "if run.get(\"name\")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 89,
+          "preview": "if required_run_id is not None and run.get(\"id\")!=required_run_id: continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 90,
+          "preview": "created=_timestamp(run.get(\"run_started_at\") or run.get(\"created_at\") or run.get(\"updated_at\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 92,
+          "preview": "candidates.append({**run,\"_validated_timestamp\":created})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 94,
+          "preview": "run=sorted(candidates,key=lambda x:int(x.get(\"id\") or 0),reverse=True)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 95,
+          "preview": "return {\"id\":run.get(\"id\"),\"head_sha\":commit_sha,\"conclusion\":\"success\",\"name\":run.get(\"name\"),\"path\":_workflow_path(run),\"timestamp\":run.get(\"_validated_timestamp\")}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 119,
+          "preview": "if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError(\"required checks do not share one workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 1,
+          "preview": "\"\"\"Dry-run and explicitly authorized migration of persisted replacement reputation policy.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 3,
+          "preview": "Policy migrations never silently promote a replacement. A dry-run computes the exact",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 1,
+          "preview": "\"\"\"CLI for dry-run and explicitly authorized reputation policy migrations.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_handoff.py",
+          "line": 1,
+          "preview": "\"\"\"Trusted selection of prior autonomous-run artifacts for release handoff.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 9,
+          "preview": "from .capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 11,
+          "preview": "from capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 45,
+          "preview": "first=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 46,
+          "preview": "second=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 92,
+          "preview": "\"course\", \"run\", \"walk\", \"attack\", \"idle\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 383,
+          "preview": "# original sealed goal attempt budget for a *later* run.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capabilities/asset_artwork.py",
+          "line": 74,
+          "preview": "def run(context):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 60,
+          "preview": "run = getattr(module, \"run\", None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 61,
+          "preview": "if not callable(run):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 62,
+          "preview": "raise CapabilityRuntimeError(\"provider must expose callable run(context)\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 63,
+          "preview": "return run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 78,
+          "preview": "run = _load_provider(provider, Path(repo_root))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 84,
+          "preview": "result_box[\"value\"] = (\"ok\", run(context))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 188,
+          "preview": "run for run in runs",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 189,
+          "preview": "if isinstance(run, dict)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 190,
+          "preview": "and str(run.get(\"status\") or \"\").lower() == \"completed\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 191,
+          "preview": "and str(run.get(\"conclusion\") or \"\").lower() in _FAILURES",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 196,
+          "preview": "key=lambda run: str(run.get(\"updated_at\") or run.get(\"created_at\") or \"\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 199,
+          "preview": "run = failed_runs[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 200,
+          "preview": "run_id = run.get(\"id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 233,
+          "preview": "html_url = str(run.get(\"html_url\") or \"\").strip()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 237,
+          "preview": "\"workflow\": str(run.get(\"name\") or \"\").strip()[:300] or None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 41,
+          "preview": "containers = subprocess.run(['docker', 'ps', '-aq', '--filter',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 42,
+          "preview": "'label=mobile-studio-run=' + run_id], capture_output=True, text=True,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 45,
+          "preview": "subprocess.run(['docker', 'rm', '-f', *containers],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 932,
+          "preview": "def run(self, args, network=False, timeout=600):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 937,
+          "preview": "cmd = ['docker', 'run', '--name', name, '--rm', '--init', '--cap-drop=ALL', '--security-opt=no-new-privileges',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 945,
+          "preview": "raise StudioError('Invalid sandbox run identifier')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 946,
+          "preview": "cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 951,
+          "preview": "r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 953,
+          "preview": "# A timed-out docker run cannot execute the in-container chmod",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 959,
+          "preview": "subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 972,
+          "preview": "'docker', 'run', '--name', recovery_name, '--rm',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 980,
+          "preview": "recovery[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 982,
+          "preview": "recovered = subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 991,
+          "preview": "removed = subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1009,
+          "preview": "rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1019,
+          "preview": "rc, out = self.run(args, network=True, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1026,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1034,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1071,
+          "preview": "rc, out = self.run(args, network=network, timeout=command_timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 21,
+          "preview": "return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 67,
+          "preview": "created = subprocess.run(['avdmanager', 'create', 'avd', '-n', AVD_NAME, '-k', SYSTEM_IMAGE,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 125,
+          "preview": "shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 120
     },
-    "test_exact_job_steps_reject_reordered_steps": {
+    "test_actions_worker_fails_ci_when_production_result_failed": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
+        "file": "tests/test_production_os_actions_worker_workflow.py",
         "line": 361,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
           "line": 361,
-          "preview": "def test_exact_job_steps_reject_reordered_steps(self):",
+          "preview": "def test_actions_worker_fails_ci_when_production_result_failed():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_exact_job_steps_reject_changed_command": {
+    "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 367,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 365,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 367,
-          "preview": "def test_exact_job_steps_reject_changed_command(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 365,
+          "preview": "def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_semantic_digest_is_stable_for_repository_ci": {
+    "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci": {
       "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 372,
+        "file": "tests/test_production_os_actions_worker_workflow.py",
+        "line": 371,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 372,
-          "preview": "def test_semantic_digest_is_stable_for_repository_ci(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_validate_workflow_exposes_semantic_digest": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 381,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 381,
-          "preview": "def test_validate_workflow_exposes_semantic_digest(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_semantic_digest_refuses_untrusted_workflow": {
-      "definition": {
-        "file": "tests/test_replacement_ci_policy.py",
-        "line": 388,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_replacement_ci_policy.py",
-          "line": 388,
-          "preview": "def test_semantic_digest_refuses_untrusted_workflow(self):",
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 371,
+          "preview": "def test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci():",
           "definition_candidate": true
         }
       ],

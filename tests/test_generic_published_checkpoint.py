@@ -160,6 +160,13 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 self.assertEqual(awaiting_ci["status"], "deferred")
                 self.assertFalse(awaiting_ci["report"]["completion"]["finished"])
                 self.assertEqual(translate_orchestrator_result(awaiting_ci), {"yield_run": True})
+                from core import APIError
+                for outage in (APIError(503), StudioError("API unavailable or timed out")):
+                    ci.side_effect = outage
+                    unavailable = run_project(request, out, Path(temp) / "ci-outage")
+                    self.assertEqual(unavailable["status"], "deferred")
+                    self.assertFalse(unavailable["report"]["completion"]["finished"])
+                ci.side_effect = None
                 ci.return_value = {"status": "passed", "sha": "b" * 40}
                 complete = run_project(request, out, Path(temp) / "resume")
                 self.assertEqual(complete["status"], "complete")

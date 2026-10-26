@@ -38,7 +38,10 @@ they never count as successful delivery.
 7. A repaired publication gets its own CI proof. Success records the observed
    workflow, definition blob, run, attempt, source SHA and URL.
 
-Waiting expires after one hour instead of silently looping forever. A definite
+CI waiting expires after one hour instead of silently looping forever. A
+temporary CI read failure remains pending; missing configuration or permission
+evidence is surfaced for correction. PR handoff waiting also preserves the
+implementation-continuation budget. A definite
 dispatch rejection can be attempted again after its permissions/configuration are
 fixed; an ambiguous POST is only observed. Cancellation, skipped execution or
 unavailable evidence require attention rather than speculative model repairs.

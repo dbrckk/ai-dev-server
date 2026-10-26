@@ -3,7 +3,7 @@ from pathlib import Path
 from copy import deepcopy
 import time
 
-from core import StudioError, canonical
+from core import APIError, StudioError, canonical
 from execution_checkpoint import advance, save
 from source_delivery_checkpoint import request_fingerprint, SourceCheckpointError
 from generic_target_ci import inspect as inspect_ci, dispatch as dispatch_ci
@@ -73,8 +73,11 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
     if confirmed:
         try:
             ci = inspect_ci(repo, sha)
-        except StudioError:
-            ci = {"status": "unavailable", "reason": "independent_CI_evidence_unavailable"}
+        except StudioError as exc:
+            transient = ((isinstance(exc, APIError) and exc.status in {408, 429, 500, 502, 503, 504})
+                         or str(exc) == "API unavailable or timed out")
+            ci = {"status": "pending" if transient else "unavailable",
+                  "reason": "independent_CI_temporarily_unavailable" if transient else "independent_CI_evidence_unavailable"}
         receipt = verification["managed_review_delivery"]
         if ci.get("reason") == "exact_commit_ci_not_started" and not receipt["ci_dispatch_attempted"]:
             # Seal intent first. Never replay an ambiguous mutation on restart.

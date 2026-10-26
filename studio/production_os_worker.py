@@ -1433,7 +1433,7 @@ def run_once(
                 and summary.get("finished") is not True
                 and not cancel_event.is_set()
             ):
-                if (summary.get("next_stage") == "independent_target_ci"
+                if (summary.get("next_stage") in {"review_handoff", "independent_target_ci"}
                         and isinstance(summary.get("ci"), dict)
                         and summary["ci"].get("status") == "pending"):
                     # CI scheduling is not a model-repair continuation. Keep

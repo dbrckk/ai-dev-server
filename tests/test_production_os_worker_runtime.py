@@ -698,7 +698,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         def runner(request_path, out, **kwargs):
             calls.append((request_path, out))
             stage = next(stages)
-            if stage == "independent_target_ci":
+            if stage in {"review_handoff", "independent_target_ci"}:
                 kwargs["cancel_event"].wait = lambda seconds: waits.append(seconds) or False
             return {
                 "status": "active" if stage else "complete",
@@ -721,7 +721,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual([name for name, *_ in client.calls].count("ack"), 1)
         self.assertEqual([name for name, *_ in client.calls].count("complete"), 1)
         self.assertEqual([name for name, *_ in client.calls].count("fail"), 0)
-        stages = iter(("independent_target_ci", "independent_target_ci", "independent_target_ci", None))
+        stages = iter(("review_handoff", "independent_target_ci", "independent_target_ci", None))
         calls.clear()
         client = _FakeClient(sample_job())
         with tempfile.TemporaryDirectory() as td:

@@ -1,4 +1,4 @@
-"""CI trust policy v12: v11 plus fail-closed checkout credential handling."""
+"""CI trust policy v13: credential-free checkout and input-free CI dispatch."""
 from __future__ import annotations
 
 import hashlib
@@ -9,7 +9,7 @@ from pathlib import Path
 import replacement_ci_policy_v11 as _base
 from replacement_ci_policy_v11 import *
 
-CI_TRUST_POLICY_VERSION=12
+CI_TRUST_POLICY_VERSION=13
 REQUIRED_ACTION_INPUT_VALUES={"actions/checkout":{"persist-credentials":"false"}}
 ACTION_WITH_ALLOWLIST=dict(_base.ACTION_WITH_ALLOWLIST)
 ACTION_WITH_ALLOWLIST["actions/checkout"]=frozenset({"persist-credentials"})
@@ -21,8 +21,38 @@ def ci_trust_policy_digest() -> str:
         "base_policy_digest":_base.ci_trust_policy_digest(),
         "action_with_allowlist":{k:sorted(v) for k,v in sorted(ACTION_WITH_ALLOWLIST.items())},
         "required_action_input_values":REQUIRED_ACTION_INPUT_VALUES,
+        "optional_workflow_triggers":{"workflow_dispatch":None},
     }
     return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")).hexdigest()
+
+
+def validate_trigger_concurrency_text(text: str) -> dict:
+    # Dispatch runs the same jobs without inputs or event-dependent steps.
+    # Keep mandatory push/PR and concurrency constraints from the base policy.
+    cleaned=[]; dispatch=False; in_on=False; in_dispatch=False; violations=[]
+    for line in text.splitlines():
+        code=_base._yaml_code(line)
+        if code=="on:":
+            in_on=True
+        elif code and not code.startswith(" "):
+            in_on=False; in_dispatch=False
+        if in_on and re.match(r"^  workflow_dispatch:",code):
+            if dispatch or code.strip()!="workflow_dispatch:":
+                violations.append({"reason":"dispatch_must_be_unique_and_input_free"})
+            dispatch=True; in_dispatch=True
+            continue
+        if in_dispatch and code.strip():
+            if code.startswith("    "):
+                violations.append({"reason":"dispatch_must_be_unique_and_input_free"})
+            else:
+                in_dispatch=False
+        cleaned.append(line)
+    result=_base.validate_trigger_concurrency_text("\n".join(cleaned))
+    if dispatch:
+        result["triggers"]=sorted([*result["triggers"],"workflow_dispatch"])
+    result["violations"].extend(violations)
+    result["valid"]=not result["violations"]
+    return result
 
 
 def _checkout_input_violations(text: str) -> list[dict]:

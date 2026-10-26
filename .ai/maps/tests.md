@@ -5482,7 +5482,13 @@ saved_path = out / ".autonomy/generic-execution-checkpoint.json"
 ⋮----
 pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
 ⋮----
+awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+⋮----
+unavailable = run_project(request, out, Path(temp) / "ci-outage")
+⋮----
 complete = run_project(request, out, Path(temp) / "resume")
+⋮----
+failed = run_project(request, out, Path(temp) / "ci-failed")
 ```
 
 ## File: test_generic_published_round_checkpoint.py
@@ -8315,7 +8321,7 @@ source_sha = "f" * 40
 review_branch = "studio/mp-" + "a" * 24
 workflow_path = ".github/workflows/validate.yml"
 required_steps = (
-good_run = {"id": 12, "run_attempt": 1, "head_sha": source_sha,
+good_run = {"id": 12, "run_attempt": 1, "workflow_id": 7, "head_sha": source_sha,
 good_job = {"run_id": 12, "run_attempt": 1, "head_sha": source_sha,
 ⋮----
 class ReadOnlyGitHub
@@ -8325,6 +8331,10 @@ def get(self, endpoint)
 ⋮----
 def inspect(client)
 verified = inspect(ReadOnlyGitHub([good_run]))
+⋮----
+generic_repo = SimpleNamespace(github=ReadOnlyGitHub([good_run]),
+⋮----
+failed_run = {**good_run, "conclusion": "failure"}
 ⋮----
 rerunning = ReadOnlyGitHub([good_run], final_run={
 ```
@@ -9837,7 +9847,13 @@ def test_active_checkpoint_continues_same_claim_until_complete(self)
 ⋮----
 stages = iter(("design", "preview", None))
 ⋮----
+waits = []
+⋮----
 stage = next(stages)
+⋮----
+stages = iter(("review_handoff", "independent_target_ci", "independent_target_ci", None))
+⋮----
+result = run_once(client, worker_id="ai-dev-1", output_root=Path(td),
 ⋮----
 def test_active_checkpoint_limit_fails_with_explicit_reason(self)
 ⋮----

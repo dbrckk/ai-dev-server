@@ -308,35 +308,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-25T18:45:02Z
+Generated: 2026-10-26T06:15:55Z
 
 ### Git
 - Branch: `main`
-- Head: `3d5e617d428d`
-- Commit date: 2026-10-25T14:44:40-04:00
-- Commit: fix: bind independent CI evidence to a stable run attempt (#401)
-- Tracked files: 877
+- Head: `04c155252930`
+- Commit date: 2026-10-26T02:15:39-04:00
+- Commit: feat: independently qualify and repair managed generic deliveries (#402)
+- Tracked files: 879
 
 ### Recently changed files
-- `studio/source_delivery_checkpoint.py`
-- `studio/target_ci_verification.py`
-- `tests/test_multi_engine_orchestrator.py`
+- `docs/managed-generic-delivery.md`
 - `studio/autonomous_project.py`
-- `studio/core.py`
 - `studio/generic_delivery.py`
 - `studio/generic_project.py`
+- `studio/generic_repository.py`
 - `studio/generic_smoke.py`
+- `studio/generic_target_ci.py`
 - `studio/production_os_worker.py`
-- `tests/test_autonomous_project.py`
 - `tests/test_generic_published_checkpoint.py`
+- `tests/test_generic_repository_pull_request.py`
+- `tests/test_generic_worker_canary_resume.py`
+- `tests/test_multi_engine_orchestrator.py`
+- `tests/test_production_os_worker_runtime.py`
+- `studio/source_delivery_checkpoint.py`
+- `studio/target_ci_verification.py`
+- `studio/core.py`
+- `tests/test_autonomous_project.py`
 - `tests/test_production_os_local_e2e.py`
 - `tests/test_production_os_worker.py`
 - `.github/workflows/production-os-worker-integration.yml`
-- `tests/test_studio.py`
-- `studio/github_runner.py`
-- `studio/production_os_bounded_source_repair.py`
-- `studio/production_os_jumpy_source_repair.py`
-- `tests/test_github_runner_persistent.py`
 
 ### Project signals
 - No common build descriptor detected

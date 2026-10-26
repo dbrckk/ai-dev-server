@@ -188,6 +188,7 @@ generic_project.py
 generic_repository.py
 generic_sandbox.py
 generic_smoke.py
+generic_target_ci.py
 generic_toolchain.py
 generic_verifier_adaptation.py
 generic_verify.py
@@ -4434,6 +4435,8 @@ report = result.get("report")
 next_stage = result.get("next_stage")
 ⋮----
 completion = report.get("completion") if isinstance(report, dict) else None
+⋮----
+ci = report.get("ci")
 ⋮----
 action = next_stage if isinstance(next_stage, str) and next_stage else "external_human_action"
 ⋮----
@@ -8803,7 +8806,7 @@ changed = previous.get("changed_files", [])
 ⋮----
 changed = sorted({name for row in state["rounds"] if isinstance(row, dict)
 ⋮----
-checkpoint = advance(checkpoint, phase="published", last_verification=verification)
+checkpoint = advance(checkpoint, phase="published", last_verification=deepcopy(verification))
 path = out / ".autonomy/generic-execution-checkpoint.json"
 # Persist before contacting GitHub: a failed POST must not erase completed work.
 ⋮----
@@ -8813,11 +8816,33 @@ denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
 handoff = repo.request_trusted_review_handoff(sha) if denied else None
 pr = (repo.await_trusted_review(sha)
 confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
-checkpoint = advance(checkpoint, phase="complete" if confirmed else "published")
+ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
-status = "complete" if confirmed else "deferred"
-next_stage = None if confirmed else "review_handoff"
-blockers = [] if confirmed else ["Exact-commit review PR not confirmed"]
+ci = inspect_ci(repo, sha)
+⋮----
+transient = ((isinstance(exc, APIError) and exc.status in {408, 429, 500, 502, 503, 504})
+ci = {"status": "pending" if transient else "unavailable",
+receipt = verification["managed_review_delivery"]
+⋮----
+# Seal intent first. Never replay an ambiguous mutation on restart.
+⋮----
+checkpoint = advance(checkpoint, last_verification=deepcopy(verification))
+⋮----
+dispatch = dispatch_ci(repo, ci["workflow_id"])
+⋮----
+ci = {**ci, "status": "unavailable", "reason": dispatch["reason"]}
+⋮----
+ci = {**ci, "status": "unavailable", "reason": "independent_CI_wait_expired"}
+⋮----
+ci = {**ci, "status": "pending", "reason": "review_commit_changed_during_CI"}
+complete = confirmed and ci.get("status") == "passed"
+repair = ci.get("status") == "failed"
+⋮----
+checkpoint = advance(checkpoint, phase="complete" if complete else "published", last_verification=verification)
+⋮----
+status = ("complete" if complete else "blocked" if repair else
+next_stage = (None if complete else "generic_ci_repair" if repair else
+blockers = [] if complete else [ci["reason"]]
 report = {
 ````
 
@@ -9350,8 +9375,12 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 catalog_integration = bool(req.get("production_os")) and bool(
 github = GitHub(req["target_repo"])
 repo = GenericRepository(
-⋮----
 checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+saved = load_checkpoint(checkpoint_path)
+⋮----
+head = repo.delivery_head()
+⋮----
 safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
 contextual_routing_path = out / ".autonomy" / "contextual-routing-memory.json"
 provider_cost_path = out / ".autonomy" / "provider-cost.json"
@@ -9374,6 +9403,8 @@ checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else 
 checkpoint = new_checkpoint(req["id"], "generic", base_sha)
 ⋮----
 existing_canary_verification = _existing_worker_canary_verification(req, work)
+⋮----
+checkpoint = advance_checkpoint(checkpoint, base_sha=base_sha,
 ⋮----
 # Restored file content proves implementation only, not review delivery.
 # Reuse/create the review with the same exact-SHA guard as normal rounds.
@@ -9868,6 +9899,15 @@ def _tree(self,sha:str)->dict
 ⋮----
 tree=self.github.get("/git/trees/"+sha+"?recursive=1")
 ⋮----
+def delivery_head(self) -> str
+⋮----
+"""Confirm the published branch without downloading its source tree."""
+⋮----
+refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+exact = [r for r in refs if isinstance(r, dict)
+obj = exact[0].get("object") if len(exact) == 1 else None
+sha = obj.get("sha") if isinstance(obj, dict) else None
+⋮----
 def restore(self,root:Path)->tuple[str,dict]
 ⋮----
 metadata=self.github.get("")
@@ -9908,8 +9948,6 @@ def restore_approved_source(self, root: Path, path: str) -> tuple[str, dict]
         """
 ⋮----
 metadata = self.github.get("")
-⋮----
-refs = self.github.get("/git/matching-refs/heads/" + self.branch)
 ⋮----
 matches = [r for r in refs if isinstance(r, dict)
 ⋮----
@@ -10147,20 +10185,94 @@ orchestration=orchestration_smoke(out)
 # External model/GitHub boundaries remain explicitly deterministic fixtures.
 managed_out = Path(tempfile.mkdtemp(prefix="managed-", dir=out))
 request = {"id": "managed-smoke", "target_repo": "fixture/generic-smoke",
-publication = {"sha": "a" * 40, "count": 0, "available": False}
+publication = {"sha": "a" * 40, "count": 0, "available": False,
+class ManagedGitHub
+⋮----
+repo = "/repos/fixture/generic-smoke"
+def dispatch(self, repo, wid)
+def get(self, path)
+⋮----
+workflow = {"id": 7, "name": "CI", "state": "active", "path": ".github/workflows/ci.yml"}
+run = {"id": 12, "run_attempt": 1, "head_sha": publication["sha"],
+⋮----
 class ManagedRepository(FakeRepository)
 ⋮----
+def delivery_head(self)
 def restore(self, work)
 def publish(self, base_sha, work, message)
 def ensure_pull_request(self, **kwargs)
 def request_trusted_review_handoff(self, sha)
+def _find_open_pull_request(self, **kwargs)
 ⋮----
 pending = generic_project.run_project(request, managed_out, out / "managed-work", max_rounds=1)
 calls = model.call_count
 ⋮----
+awaiting_ci = generic_project.run_project(request, managed_out, out / "managed-ci-wait", max_rounds=1)
+⋮----
+waiting_again = generic_project.run_project(request, managed_out, out / "managed-ci-wait-again", max_rounds=1)
+⋮----
 resumed = generic_project.run_project(request, managed_out, out / "managed-resume", max_rounds=1)
 managed = {
+# Inject an independent CI failure, then exercise another real local
+# implementation/verifier cycle using explicit deterministic responses.
+⋮----
+rejected = generic_project.run_project(request, managed_out, out / "managed-rejected", max_rounds=1)
+⋮----
+seen_failure = []
+def repair_ask(system, user, **kwargs)
+⋮----
+repaired = generic_project.run_project(request, managed_out, out / "managed-repair", max_rounds=1)
+⋮----
+repair_calls = model.call_count
+⋮----
+accepted = generic_project.run_project(request, managed_out, out / "managed-repaired-ci", max_rounds=1)
+⋮----
 evidence={
+````
+
+## File: generic_target_ci.py
+````python
+"""Observe an independently executed, unchanged repository CI workflow."""
+⋮----
+def dispatch(repo, workflow_id)
+⋮----
+"""One POST only; an ambiguous transport result must be observed, not replayed."""
+token = getattr(repo.github, "key", "")
+⋮----
+request = urllib.request.Request(
+⋮----
+def inspect(repo, sha)
+⋮----
+github = repo.github
+⋮----
+inventory = github.get("/actions/workflows?per_page=100")
+workflows = inventory.get("workflows") if isinstance(inventory, dict) else None
+⋮----
+candidates = [w for w in workflows if isinstance(w, dict)
+⋮----
+workflow = candidates[0]
+⋮----
+default = repo.default_branch
+⋮----
+definitions = [github.get("/contents/" + path + "?ref=" + quote(ref, safe=""))
+⋮----
+proof = {"provider": "github_actions", "sha": sha, "workflow": path,
+inventory = github.get(f"/actions/workflows/{wid}/runs?head_sha={sha}&per_page=100")
+runs = inventory.get("workflow_runs") if isinstance(inventory, dict) else None
+⋮----
+eligible = [r for r in runs if isinstance(r, dict) and r.get("head_sha") == sha
+⋮----
+run = max(eligible, key=lambda r: r["id"])
+⋮----
+response = github.get(f"/actions/runs/{rid}/attempts/{attempt}/jobs?per_page=100")
+jobs = response.get("jobs") if isinstance(response, dict) else None
+⋮----
+current = github.get(f"/actions/runs/{rid}")
+keys = ("id", "run_attempt", "head_sha", "head_branch", "path", "event", "workflow_id", "status", "conclusion")
+⋮----
+failed = [str(j.get("name") or "unnamed")[:160] for j in jobs
+⋮----
+repairable = run.get("conclusion") == "failure" and any(j.get("conclusion") == "failure" for j in jobs)
 ````
 
 ## File: generic_toolchain.py
@@ -17640,6 +17752,11 @@ summary = {
 summary = run_project(
 ⋮----
 delay = retry_backoff * (2 ** (retry_count - 1))
+⋮----
+# CI scheduling is not a model-repair continuation. Keep
+# heartbeats/cancellation alive while the wall-clock limit
+# and the persisted CI deadline bound this read-only wait.
+wait_seconds = min(30, max(0, runtime_limit - (float(clock()) - started) - 30))
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----

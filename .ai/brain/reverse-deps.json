@@ -1565,6 +1565,7 @@
         "studio/generic_repository.py",
         "studio/generic_sandbox.py",
         "studio/generic_smoke.py",
+        "studio/generic_target_ci.py",
         "studio/generic_toolchain.py",
         "studio/generic_verifier_adaptation.py",
         "studio/github_full_gate_cache_store.py",
@@ -1728,7 +1729,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 229,
+      "in_degree": 230,
       "out_degree": 19
     },
     "studio/cost_drift.py": {
@@ -2347,6 +2348,7 @@
       "dependencies": [
         "studio/core.py",
         "studio/execution_checkpoint.py",
+        "studio/generic_target_ci.py",
         "studio/source_delivery_checkpoint.py",
         "tests/test_studio.py"
       ],
@@ -2355,7 +2357,7 @@
         "tests/test_generic_published_checkpoint.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/generic_model.py": {
       "dependencies": [
@@ -2540,6 +2542,20 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 7
+    },
+    "studio/generic_target_ci.py": {
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/generic_delivery.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 4
     },
     "studio/generic_toolchain.py": {
       "dependencies": [
@@ -4294,8 +4310,7 @@
     },
     "studio/provider_health.py": {
       "dependencies": [
-        "studio/core.py",
-        "tests/test_unified_routing_score.py"
+        "studio/core.py"
       ],
       "dependents": [
         "studio/capacity_scheduler.py",
@@ -4314,7 +4329,7 @@
         "tests/test_provider_verified_feedback.py"
       ],
       "in_degree": 14,
-      "out_degree": 2
+      "out_degree": 1
     },
     "studio/provider_metrics.py": {
       "dependencies": [],
@@ -4661,15 +4676,13 @@
       "out_degree": 1
     },
     "studio/repo_maintenance.py": {
-      "dependencies": [
-        "tests/test_multi_engine_orchestrator.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "studio/orchestrator.py",
         "tests/test_repo_maintenance.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 0
     },
     "studio/repo_version_probe.py": {
       "dependencies": [],
@@ -7201,6 +7214,7 @@
         "studio/core.py",
         "studio/execution_checkpoint.py",
         "studio/generic_repository.py",
+        "studio/generic_target_ci.py",
         "studio/multi_engine_orchestrator.py",
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_jumpy_source_repair.py",
@@ -7251,6 +7265,7 @@
         "studio/generic_project.py",
         "studio/generic_repository.py",
         "studio/generic_smoke.py",
+        "studio/generic_target_ci.py",
         "studio/generic_verifier_adaptation.py",
         "studio/generic_verify.py",
         "studio/github_runner.py",
@@ -7273,11 +7288,10 @@
         "studio/project_context.py",
         "studio/project_engine.py",
         "studio/provider_probe.py",
-        "studio/replacement_ci_policy_v11.py",
-        "studio/repo_maintenance.py"
+        "studio/replacement_ci_policy_v11.py"
       ],
       "in_degree": 64,
-      "out_degree": 12
+      "out_degree": 13
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [
@@ -8146,6 +8160,7 @@
         "studio/generic_model.py",
         "studio/generic_project.py",
         "studio/generic_repository.py",
+        "studio/generic_target_ci.py",
         "studio/generic_verify.py",
         "studio/github_artifact_cas_audit_store.py",
         "studio/github_artifact_cas_stats_store.py",
@@ -8211,7 +8226,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 118,
+      "in_degree": 119,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {
@@ -8313,6 +8328,7 @@
         "studio/generic_project.py",
         "studio/generic_sandbox.py",
         "studio/generic_smoke.py",
+        "studio/generic_target_ci.py",
         "studio/github_provider_health_store.py",
         "studio/github_provider_metrics_store.py",
         "studio/github_routing_history_store.py",
@@ -8339,8 +8355,7 @@
         "studio/production_os_worker.py",
         "studio/production_os_worker_canary.py",
         "studio/promoted_capabilities.py",
-        "studio/provider_cost.py",
-        "studio/provider_health.py"
+        "studio/provider_cost.py"
       ],
       "in_degree": 64,
       "out_degree": 1

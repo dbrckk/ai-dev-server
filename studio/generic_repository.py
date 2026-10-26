@@ -21,6 +21,8 @@ TRUSTED_REVIEW_TARGETS = frozenset({
     "dbrckk/star-list",
     "dbrckk/Ai-trading",
     "dbrckk/Production-OS",
+    # File-only canaries have their own exact-marker review handoff.
+    "dbrckk/ai-dev-server",
 })
 
 class GenericRepository:

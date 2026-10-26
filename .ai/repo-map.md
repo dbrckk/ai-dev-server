@@ -1106,6 +1106,7 @@ on:
     paths-ignore:
       - "control/**"
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25552,15 +25553,33 @@ run_ids=sorted({row.get("workflow_run_id") for row in evidence.values() if isins
 
 ## File: studio/replacement_ci_policy.py
 ````python
-"""CI trust policy v12: v11 plus fail-closed checkout credential handling."""
+"""CI trust policy v13: credential-free checkout and input-free CI dispatch."""
 ⋮----
-CI_TRUST_POLICY_VERSION=12
+CI_TRUST_POLICY_VERSION=13
 REQUIRED_ACTION_INPUT_VALUES={"actions/checkout":{"persist-credentials":"false"}}
 ACTION_WITH_ALLOWLIST=dict(_base.ACTION_WITH_ALLOWLIST)
 ⋮----
 def ci_trust_policy_digest() -> str
 ⋮----
 payload={
+⋮----
+def validate_trigger_concurrency_text(text: str) -> dict
+⋮----
+# Dispatch runs the same jobs without inputs or event-dependent steps.
+# Keep mandatory push/PR and concurrency constraints from the base policy.
+cleaned=[]; dispatch=False; in_on=False; in_dispatch=False; violations=[]
+⋮----
+code=_base._yaml_code(line)
+⋮----
+in_on=True
+⋮----
+in_on=False; in_dispatch=False
+⋮----
+dispatch=True; in_dispatch=True
+⋮----
+in_dispatch=False
+⋮----
+result=_base.validate_trigger_concurrency_text("\n".join(cleaned))
 ⋮----
 def _checkout_input_violations(text: str) -> list[dict]
 ⋮----
@@ -25573,8 +25592,6 @@ in_with=False
 def finish()
 ⋮----
 value=inputs.get("persist-credentials")
-⋮----
-code=_base._yaml_code(line)
 ⋮----
 current_action=None;inputs={};action_line=None;in_with=False
 uses=re.match(r"^        uses:\s*([^#\s]+)",code) or re.match(r"^      -\s+uses:\s*([^#\s]+)",code)

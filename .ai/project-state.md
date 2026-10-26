@@ -314,17 +314,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-26T06:15:55Z
+Generated: 2026-10-26T12:53:19Z
 
 ### Git
 - Branch: `main`
-- Head: `04c155252930`
-- Commit date: 2026-10-26T02:15:39-04:00
-- Commit: feat: independently qualify and repair managed generic deliveries (#402)
+- Head: `3b456daec9c7`
+- Commit date: 2026-10-26T08:52:57-04:00
+- Commit: fix: allow explicit independent CI dispatch (#403)
 - Tracked files: 879
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
 - `docs/managed-generic-delivery.md`
+- `studio/replacement_ci_policy.py`
+- `tests/test_replacement_ci_policy.py`
 - `studio/autonomous_project.py`
 - `studio/generic_delivery.py`
 - `studio/generic_project.py`
@@ -341,9 +344,6 @@ Generated: 2026-10-26T06:15:55Z
 - `studio/target_ci_verification.py`
 - `studio/core.py`
 - `tests/test_autonomous_project.py`
-- `tests/test_production_os_local_e2e.py`
-- `tests/test_production_os_worker.py`
-- `.github/workflows/production-os-worker-integration.yml`
 
 ### Project signals
 - No common build descriptor detected

@@ -34,6 +34,7 @@ from github_memory_store import GitHubMemoryError, persist_local as persist_memo
 from github_agent_performance_store import AgentPerformanceStoreError, persist_local as persist_agent_performance_local, restore_local as restore_agent_performance_local
 from github_provider_health_store import ProviderHealthStoreError, persist_local as persist_provider_health_local, restore_local as restore_provider_health_local
 from github_execution_checkpoint_store import ExecutionCheckpointStoreError, persist_local as persist_execution_checkpoint_local, restore_local as restore_execution_checkpoint_local
+from execution_checkpoint import ExecutionCheckpointError, load as load_execution_checkpoint
 from github_provider_metrics_store import ProviderMetricsStoreError, persist_local as persist_provider_metrics_local, restore_local as restore_provider_metrics_local
 from github_routing_history_store import RoutingHistoryStoreError, persist_local as persist_routing_history_local, restore_local as restore_routing_history_local
 from github_verification_cost_store import VerificationCostStoreError, persist_local as persist_verification_cost_local, restore_local as restore_verification_cost_local
@@ -958,6 +959,34 @@ def run(
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary
     last_result={}
+    confirmed_execution_checkpoint_digest = None
+
+    def persist_execution_checkpoint_if_changed():
+        """Do not reissue GitHub writes for an already confirmed sealed state.
+
+        The publication observer writes the exact round checkpoint first.
+        Cycle and final flushes must still validate the local checksum, but
+        should not burn GitHub API quota re-reading an identical checkpoint.
+        A changed phase/digest always requires another acknowledged remote save.
+        """
+        nonlocal confirmed_execution_checkpoint_digest
+        path = out/'.autonomy/generic-execution-checkpoint.json'
+        if not path.is_file():
+            # Preserve existing non-generic engine behavior.
+            return persist_execution_checkpoint_local(remote_github, request['id'], path)
+        try:
+            checkpoint = load_execution_checkpoint(path)
+        except ExecutionCheckpointError as exc:
+            raise ExecutionCheckpointStoreError(str(exc)) from None
+        if checkpoint['project_id'] != request['id']:
+            raise ExecutionCheckpointStoreError('checkpoint project identity changed')
+        digest = checkpoint['sha256']
+        if digest == confirmed_execution_checkpoint_digest:
+            return
+        persisted = persist_execution_checkpoint_local(remote_github, request['id'], path)
+        if not isinstance(persisted, str) or len(persisted) != 40:
+            raise ExecutionCheckpointStoreError('checkpoint persistence unacknowledged')
+        confirmed_execution_checkpoint_digest = digest
 
     def persist_published_round(checkpoint):
         if remote_github is None:
@@ -969,10 +998,7 @@ def run(
         # exist. Mirror that exact checkpoint before another expensive round.
         # The goal stays active until its separate evidence gate passes.
         try:
-            persist_execution_checkpoint_local(
-                remote_github, request['id'],
-                out/'.autonomy/generic-execution-checkpoint.json',
-            )
+            persist_execution_checkpoint_if_changed()
         except Exception as exc:
             # Network/API failures are not necessarily converted into
             # ExecutionCheckpointStoreError by the GitHub wrapper. Treat all
@@ -1001,10 +1027,7 @@ def run(
         # several verified cycles even when the GitHub state branch is healthy.
         try:
             persist_local(remote_github, request['id'], out)
-            persist_execution_checkpoint_local(
-                remote_github, request['id'],
-                out/'.autonomy/generic-execution-checkpoint.json',
-            )
+            persist_execution_checkpoint_if_changed()
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous cycle checkpoint failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
@@ -1085,7 +1108,7 @@ def run(
                         raise
                     telemetry_degraded_from = component
                     break
-            persist_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
+            persist_execution_checkpoint_if_changed()
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
         except GitHubMemoryError as exc:

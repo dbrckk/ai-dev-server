@@ -405,8 +405,9 @@ def test_canary_workflow_verifies_terminal_worker_completion():
             return False
 
     class Transport:
-        def __init__(self, *, content=expected):
+        def __init__(self, *, content=expected, existing_ci=False):
             self.content = content
+            self.existing_ci = existing_ci
             self.calls = []
 
         def open(self, request, timeout=20):
@@ -446,6 +447,14 @@ def test_canary_workflow_verifies_terminal_worker_completion():
                     "html_url": api_base.replace("api.github.com/repos", "github.com")
                                 + "/pull/46",
                 })
+            if (method == "GET" and path ==
+                    "/actions/workflows/ci.yml/runs?head_sha=" + head + "&per_page=100"):
+                rows = [{
+                    "head_sha": head, "head_branch": branch,
+                    "path": ".github/workflows/ci.yml",
+                    "event": "workflow_dispatch",
+                }] if self.existing_ci else []
+                return FakeResponse({"total_count": len(rows), "workflow_runs": rows})
             if method == "POST" and path == "/actions/workflows/ci.yml/dispatches":
                 assert json.loads(request.data) == {"ref": branch}
                 return FakeResponse(status=204)
@@ -470,6 +479,10 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     assert ("POST", "/pulls") in transport.calls
     assert ("POST", "/actions/workflows/ci.yml/dispatches") in transport.calls
     assert all(url.startswith("/") for _, url in transport.calls)
+    prequalified = Transport(existing_ci=True)
+    run_trusted(prequalified)
+    assert ("POST", "/pulls") in prequalified.calls
+    assert ("POST", "/actions/workflows/ci.yml/dispatches") not in prequalified.calls
 
     for bad in (
         Transport(content=b"tampered marker\n"),

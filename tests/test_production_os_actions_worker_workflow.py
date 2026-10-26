@@ -186,23 +186,98 @@ def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_
     assert "with opener.open(request, timeout=20) as response:" in resolver
     assert "urllib.request.urlopen(request, timeout=20)" not in resolver
 
+    # Exercise the embedded production resolver itself with deterministic
+    # public GitHub responses, not just source-string assertions. The PAT
+    # deliberately lacks Actions-read access to the other public repository.
+    import contextlib
+    import io
+    import json
+    import os
+    import urllib.error
+    import urllib.request
+    from textwrap import dedent
+    from unittest.mock import patch
 
+    script = dedent(
+        resolver.split("<<'PY'\n", 1)[1].split("\n          PY", 1)[0]
+    )
+    qualified_sha = "d" * 40
+    branch_url = "https://api.github.com/repos/dbrckk/Production-OS/branches/main"
+    runs_url = (
+        "https://api.github.com/repos/dbrckk/Production-OS/actions/runs"
+        "?branch=main&per_page=100"
+    )
+    success_payload = {
+        "workflow_runs": [{
+            "path": ".github/workflows/ci.yml",
+            "conclusion": "success",
+            "event": "push",
+            "head_branch": "main",
+            "head_repository": {"full_name": "dbrckk/Production-OS"},
+            "head_sha": qualified_sha,
+        }]
+    }
 
-def test_qualified_revision_lookup_retries_public_reads_after_scoped_token_denial():
-    # The token used to edit ai-dev-server need not have Actions-read access
-    # to the separate public Production-OS repository.
-    resolver = WORKFLOW.split(
-        "- name: Resolve qualified Production-OS revision", 1
-    )[1].split("- name: Checkout Production-OS tools", 1)[0]
-    assert "import urllib.error" in resolver
-    assert "except urllib.error.HTTPError as exc:" in resolver
-    assert "exc.code not in {401, 403} or not token" in resolver
-    assert 'if key != "Authorization"' in resolver
-    assert "public_request = urllib.request.Request(" in resolver
-    assert "with opener.open(public_request, timeout=20)" in resolver
-    assert "opener = urllib.request.build_opener(NoRedirect())" in resolver
-    assert 'if url not in {runs_url, branch_url}:' in resolver
-    assert 'if sha == main_before:' in resolver
+    class Response:
+        def __init__(self, payload):
+            self.raw = json.dumps(payload).encode("utf-8")
+
+        def read(self, *_args):
+            return self.raw
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+    class ScopedTransport:
+        def __init__(self, *, deny_public=False):
+            self.calls = []
+            self.deny_public = deny_public
+
+        def open(self, request, *, timeout):
+            url = request.full_url
+            authorization = request.get_header("Authorization")
+            self.calls.append((url, authorization, timeout))
+            assert url in {branch_url, runs_url}
+            assert timeout == 20
+            if authorization or self.deny_public:
+                raise urllib.error.HTTPError(url, 403, "Denied", {}, None)
+            return Response(
+                {"commit": {"sha": qualified_sha}}
+                if url == branch_url else success_payload
+            )
+
+    def run_resolver(transport):
+        capture = io.StringIO()
+        with patch.dict(os.environ, {"GITHUB_TOKEN": "scoped-test-token"}):
+            with patch("urllib.request.build_opener", return_value=transport):
+                with contextlib.redirect_stdout(capture):
+                    exec(
+                        compile(script, "production-os-revision-resolver", "exec"),
+                        {"__name__": "__main__"},
+                    )
+        return capture.getvalue()
+
+    working = ScopedTransport()
+    assert run_resolver(working).strip() == qualified_sha
+    assert [url for url, _, _ in working.calls] == [
+        branch_url, branch_url, runs_url, runs_url, branch_url, branch_url,
+    ]
+    for first, retry in zip(working.calls[::2], working.calls[1::2]):
+        assert first[1] == "Bearer scoped-test-token"
+        assert retry[1] is None
+    assert "scoped-test-token" not in run_resolver(ScopedTransport())
+
+    blocked = ScopedTransport(deny_public=True)
+    try:
+        run_resolver(blocked)
+    except urllib.error.HTTPError as exc:
+        assert exc.code == 403
+    else:
+        raise AssertionError("Public 403 must fail closed without a qualified SHA")
+    assert len(blocked.calls) == 2
 
 
 

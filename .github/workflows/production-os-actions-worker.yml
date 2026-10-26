@@ -57,6 +57,7 @@ jobs:
             env -u PYTHONPATH python3 - <<'PY'
           import json
           import os
+          import urllib.error
           import urllib.request
           import time
 
@@ -88,8 +89,26 @@ jobs:
               if url not in {runs_url, branch_url}:
                   raise SystemExit("Unexpected Production-OS GitHub API URL")
               request = urllib.request.Request(url, headers=headers)
-              with opener.open(request, timeout=20) as response:
-                  return json.load(response)
+              try:
+                  with opener.open(request, timeout=20) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as exc:
+                  if exc.code not in {401, 403} or not token:
+                      raise
+                  # The worker's PAT can be scoped to ai-dev-server and
+                  # denied access to the other repository's Actions API.
+                  # These fixed Production-OS endpoints are public reads.
+                  # Retry without *any* credential; retain exact-SHA CI
+                  # qualification and never follow redirects.
+                  public_headers = {
+                      key: value for key, value in headers.items()
+                      if key != "Authorization"
+                  }
+                  public_request = urllib.request.Request(
+                      url, headers=public_headers
+                  )
+                  with opener.open(public_request, timeout=20) as response:
+                      return json.load(response)
 
           # A just-deployed main revision can still have running CI.
           # Wait for its exact-head gate rather than failing a fresh worker.

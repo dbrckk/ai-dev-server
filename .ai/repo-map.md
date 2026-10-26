@@ -55,6 +55,7 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
+    production-os-canary-review-handoff.yml
     production-os-live-diagnostics.yml
     production-os-live-resume-proof.yml
     production-os-objective-recovery.yml
@@ -2685,6 +2686,218 @@ jobs:
           path: build/asset-forge-e2e/
           if-no-files-found: error
           retention-days: 14
+````
+
+## File: .github/workflows/production-os-canary-review-handoff.yml
+````yaml
+name: Trusted Production-OS Canary Review
+
+# Trusted default-branch workflow. Never checks out or executes unreviewed code.
+on:
+  repository_dispatch:
+    types: [production_os_review_handoff]
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: production-os-canary-review
+  cancel-in-progress: false
+
+jobs:
+  create-review:
+    if: github.repository == 'dbrckk/ai-dev-server'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      REVIEW_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify exact marker change and create draft PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          if repo != "dbrckk/ai-dev-server":
+              raise SystemExit("Trusted canary review requires its own repository")
+          with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as handle:
+              event = json.load(handle)
+          payload = event.get("client_payload")
+          if not isinstance(payload, dict) or set(payload) != {"branch", "commit_sha"}:
+              raise SystemExit("Unexpected canary review payload")
+          branch, sha = payload["branch"], payload["commit_sha"]
+          if (not isinstance(branch, str)
+                  or not re.fullmatch(r"studio/mp-[a-f0-9]{24}", branch)
+                  or not isinstance(sha, str)
+                  or not re.fullmatch(r"[a-f0-9]{40}", sha)):
+              raise SystemExit("Canary review branch or commit invalid")
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+          api_base = "https://api.github.com/repos/" + repo
+          headers = {
+              "Authorization": "Bearer " + os.environ["REVIEW_TOKEN"],
+              "Accept": "application/vnd.github+json",
+              "Content-Type": "application/json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "production-os-trusted-canary-review",
+          }
+
+          def api(method, path, data=None):
+              request = urllib.request.Request(
+                  api_base + path,
+                  method=method,
+                  headers=headers,
+                  data=json.dumps(data).encode("utf-8") if data is not None else None,
+              )
+              try:
+                  with opener.open(request, timeout=20) as response:
+                      body = response.read(1000001)
+                      if len(body) > 1000000:
+                          raise SystemExit("Canary review API response exceeds limit")
+                      return json.loads(body) if body else {}
+              except urllib.error.HTTPError as exc:
+                  if method == "POST" and path == "/pulls" and exc.code in {401, 403}:
+                      raise SystemExit(
+                          "Trusted review PR creation denied (HTTP " + str(exc.code)
+                          + "). Enable Actions > General > Allow GitHub Actions "
+                            "to create and approve pull requests, if authorized."
+                      ) from None
+                  raise SystemExit("Trusted review " + method + " request failed: HTTP "
+                                   + str(exc.code)) from None
+
+          def exact_head():
+              ref = api("GET", "/git/ref/heads/" + branch)
+              return (ref.get("object") or {}).get("sha")
+
+          if exact_head() != sha:
+              raise SystemExit("Canary branch tip does not match dispatch SHA")
+
+          diff = api("GET", "/compare/main..." + sha)
+          files = diff.get("files")
+          if (diff.get("status") not in {"ahead", "diverged"}
+                  or not isinstance(files, list) or len(files) != 1):
+              raise SystemExit("Canary must change exactly one file beyond main")
+          change = files[0]
+          path = change.get("filename")
+          match = re.fullmatch(
+              r"\.production-os/worker-canary-([1-9][0-9]{0,8}|1000000000)\.txt",
+              str(path),
+          )
+          if (not match or change.get("status") != "added"
+                  or change.get("additions") != 1
+                  or change.get("deletions") != 0
+                  or change.get("changes") != 1):
+              raise SystemExit("Unapproved canary file change")
+          sequence = int(match.group(1))
+          if not 1 <= sequence <= 1_000_000_000:
+              raise SystemExit("Canary sequence outside bounds")
+
+          source = api("GET", "/contents/" + path + "?ref=" + sha)
+          if (not isinstance(source, dict) or source.get("type") != "file"
+                  or source.get("path") != path
+                  or source.get("encoding") != "base64"
+                  or not isinstance(source.get("content"), str)
+                  or not re.fullmatch(r"[a-f0-9]{40}", str(source.get("sha") or ""))):
+              raise SystemExit("Canary file evidence missing")
+          try:
+              raw = base64.b64decode(source["content"], validate=False)
+          except ValueError:
+              raise SystemExit("Invalid canary file encoding") from None
+          expected = ("production-os-worker-canary sequence " + str(sequence)).encode()
+          if raw not in {expected, expected + b"\n"}:
+              raise SystemExit("Canary file contents do not match exact marker")
+
+          # Close the branch-movement window before any external side effect.
+          if exact_head() != sha:
+              raise SystemExit("Canary branch moved before review")
+          query = urllib.parse.urlencode({
+              "state": "open", "head": "dbrckk:" + branch,
+              "base": "main", "per_page": "100",
+          })
+          existing = api("GET", "/pulls?" + query)
+          if not isinstance(existing, list):
+              raise SystemExit("Canary existing PR listing invalid")
+          valid = [
+              pr for pr in existing
+              if isinstance(pr, dict)
+              and (pr.get("head") or {}).get("ref") == branch
+              and (pr.get("head") or {}).get("sha") == sha
+              and (pr.get("base") or {}).get("ref") == "main"
+              and ((pr.get("head") or {}).get("repo") or {}).get("full_name") == repo
+              and ((pr.get("base") or {}).get("repo") or {}).get("full_name") == repo
+              and pr.get("draft") is True
+              and pr.get("html_url") == "https://github.com/" + repo + "/pull/" + str(pr.get("number"))
+          ]
+          if len(valid) > 1:
+              raise SystemExit("Ambiguous matching canary PRs")
+          if valid:
+              pr = valid[0]
+              print("Reusing exact-SHA draft review: " + pr["html_url"])
+          else:
+              if existing:
+                  raise SystemExit("Canary branch already has a different open review")
+              pr = api("POST", "/pulls", {
+                  "title": "Review Production-OS autonomous canary " + str(sequence),
+                  "head": branch,
+                  "base": "main",
+                  "draft": True,
+                  "body": (
+                      "Trusted worker canary marker; verify exact SHA and CI. "
+                      "Created by the constrained target-repository handoff. "
+                      "No automatic merge.\n\nCheckpoint: `" + sha + "`"
+                  ),
+              })
+              if (not isinstance(pr, dict) or pr.get("state") != "open"
+                      or pr.get("draft") is not True
+                      or (pr.get("head") or {}).get("sha") != sha
+                      or (pr.get("head") or {}).get("ref") != branch
+                      or (pr.get("base") or {}).get("ref") != "main"
+                      or ((pr.get("head") or {}).get("repo") or {}).get("full_name") != repo
+                      or ((pr.get("base") or {}).get("repo") or {}).get("full_name") != repo
+                      or pr.get("html_url") != "https://github.com/" + repo + "/pull/" + str(pr.get("number"))):
+                  raise SystemExit("Canary PR creation receipt is unverified")
+              print("Opened exact-SHA draft review: " + pr["html_url"])
+
+          if exact_head() != sha:
+              raise SystemExit("Canary branch moved before CI dispatch")
+          # GITHUB_TOKEN-created PRs do not trigger ordinary pull_request
+          # workflows. Dispatch existing CI only if this exact commit has
+          # not already received an eligible run. A duplicate dispatch would
+          # cancel an in-progress run under the existing CI concurrency group.
+          runs = api(
+              "GET", "/actions/workflows/ci.yml/runs?head_sha=" + sha + "&per_page=100",
+          )
+          inventory = runs.get("workflow_runs") if isinstance(runs, dict) else None
+          if (not isinstance(inventory, list) or len(inventory) > 100
+                  or runs.get("total_count") != len(inventory)):
+              raise SystemExit("Exact canary CI inventory incomplete")
+          observed = [
+              run for run in inventory
+              if isinstance(run, dict) and run.get("head_sha") == sha
+              and run.get("head_branch") == branch
+              and run.get("path") == ".github/workflows/ci.yml"
+              and run.get("event") in {"workflow_dispatch", "pull_request", "push"}
+          ]
+          if observed:
+              print("Exact-head CI already exists for " + sha, flush=True)
+          else:
+              api("POST", "/actions/workflows/ci.yml/dispatches", {"ref": branch})
+              print("Requested independent existing CI for " + sha, flush=True)
+          PY
 ````
 
 ## File: .github/workflows/production-os-live-diagnostics.yml
@@ -15747,6 +15960,8 @@ MAX_TOTAL=6_000_000
 # Only targets that have an independently reviewed default-branch
 # repository_dispatch workflow may request a GitHub-token PR handoff.
 TRUSTED_REVIEW_TARGETS = frozenset({
+⋮----
+# File-only canaries have their own exact-marker review handoff.
 ⋮----
 class GenericRepository
 ⋮----
@@ -36802,6 +37017,56 @@ workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(e
 # The canary enqueues first and dispatches only if the control plane did
 # not already wake a worker. A push trigger would race the queue.
 worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
+⋮----
+# Exercise the real trusted default-branch handoff script through a
+# deterministic GitHub transport; do not create a separate unit test.
+⋮----
+trusted = Path(".github/workflows/production-os-canary-review-handoff.yml").read_text(
+⋮----
+source = dedent(
+compiled = compile(source, "trusted-canary-review-handoff", "exec")
+head = "a" * 40
+branch = "studio/mp-" + "b" * 24
+marker = ".production-os/worker-canary-46.txt"
+expected = b"production-os-worker-canary sequence 46\n"
+api_base = "https://api.github.com/repos/dbrckk/ai-dev-server"
+⋮----
+class FakeResponse
+⋮----
+status = 200
+⋮----
+def __init__(self, payload=None, *, status=200)
+⋮----
+def read(self, *_args)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_args)
+⋮----
+class Transport
+⋮----
+def __init__(self, *, content=expected, existing_ci=False)
+⋮----
+def open(self, request, timeout=20)
+⋮----
+method = request.get_method()
+path = request.full_url[len(api_base):]
+⋮----
+posted = json.loads(request.data)
+⋮----
+rows = [{
+⋮----
+def run_trusted(transport, *, payload=None)
+⋮----
+event = {"client_payload": payload or {"branch": branch, "commit_sha": head}}
+⋮----
+event_file = Path(td) / "event.json"
+⋮----
+transport = Transport()
+⋮----
+prequalified = Transport(existing_ci=True)
+⋮----
+denied = Transport()
 ````
 
 ## File: tests/test_production_os_worker_cli.py

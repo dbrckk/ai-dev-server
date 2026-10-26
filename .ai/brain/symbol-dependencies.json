@@ -5,11 +5,384 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_prepare_capability_promotion_handoff": {
+    "GenericRepository": {
       "source": {
-        "file": "studio/github_runner.py",
-        "start": 58,
-        "end": 95
+        "file": "studio/generic_repository.py",
+        "start": 28,
+        "end": 496
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_approved_source_path",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 259,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reject_reserved_generic_branch",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "await_trusted_review",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "delivery_head",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "editable",
+          "definitions": [
+            {
+              "file": "studio/generic_policy.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "publish",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 437,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "publish_approved_source",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_trusted_review_handoff",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 388,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restore",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restore_approved_source",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 19
+    },
+    "__init__": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 29,
+        "end": 31
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_approved_source_path": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 33,
+        "end": 38
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "editable",
+          "definitions": [
+            {
+              "file": "studio/generic_policy.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_reject_reserved_generic_branch": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 40,
+        "end": 53
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "publish",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 437,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restore",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_tree": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 55,
+        "end": 59
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "delivery_head": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 61,
+        "end": 71
       },
       "symbol_dependencies": [
         {
@@ -25,11 +398,69 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical",
+          "symbol": "_reject_reserved_generic_branch",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "restore": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 73,
+        "end": 125
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 38,
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_reject_reserved_generic_branch",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
               "kind": "function",
               "language": "python"
             }
@@ -37,35 +468,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "get",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_candidate_envelope",
-          "definitions": [
-            {
-              "file": "studio/capability_synthesis.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_isolated_validation_result",
-          "definitions": [
-            {
-              "file": "studio/generic_capability_isolated_validation.py",
-              "line": 172,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -75,28 +482,31 @@
       ],
       "dependency_count": 5
     },
-    "_usage_count": {
+    "restore_approved_source": {
       "source": {
-        "file": "studio/github_runner.py",
-        "start": 98,
-        "end": 104
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "collect_agent_usage": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 107,
-        "end": 169
+        "file": "studio/generic_repository.py",
+        "start": 127,
+        "end": 185
       },
       "symbol_dependencies": [
         {
-          "symbol": "_usage_count",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 98,
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_approved_source_path",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
@@ -104,11 +514,69 @@
           "relation": "same_file"
         },
         {
-          "symbol": "get",
+          "symbol": "publish",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 65,
+              "file": "studio/generic_repository.py",
+              "line": 437,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restore",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "publish_approved_source": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 187,
+        "end": 257
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_approved_source_path",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
               "kind": "function",
               "language": "python"
             }
@@ -116,21 +584,231 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "_source_delivery_error": {
+    "_find_open_pull_request": {
       "source": {
-        "file": "studio/github_runner.py",
-        "start": 172,
-        "end": 182
+        "file": "studio/generic_repository.py",
+        "start": 259,
+        "end": 301
       },
       "symbol_dependencies": [
         {
-          "symbol": "get",
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "await_trusted_review": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 303,
+        "end": 327
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
           "definitions": [
             {
               "file": "studio/run.py",
-              "line": 65,
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 259,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "ensure_pull_request": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 329,
+        "end": 386
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 259,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "request_trusted_review_handoff": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 388,
+        "end": 435
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 1008,
               "kind": "function",
               "language": "python"
             }
@@ -141,42 +819,66 @@
           "symbol": "publish",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 140,
+              "file": "studio/generic_repository.py",
+              "line": 437,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "publish": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 437,
+        "end": 496
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "restore",
+          "symbol": "_reject_reserved_generic_branch",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "write_production_os_result": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 185,
-        "end": 575
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_source_delivery_error",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 172,
+              "file": "studio/generic_repository.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -184,11 +886,75 @@
           "relation": "same_file"
         },
         {
-          "symbol": "canonical",
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 38,
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "editable",
+          "definitions": [
+            {
+              "file": "studio/generic_policy.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "FakeClient": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 19,
+        "end": 43
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
               "kind": "function",
               "language": "python"
             }
@@ -199,600 +965,54 @@
           "symbol": "get",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 65,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
               "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_stop_bounded_process": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 578,
-        "end": 611
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "run",
+          "symbol": "launch",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 660,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "bounded_run": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 614,
-        "end": 639
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_stop_bounded_process",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 578,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_update_improvements": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 642,
-        "end": 657
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "activate_next",
-          "definitions": [
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "merge_assessment",
-          "definitions": [
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "new_backlog",
-          "definitions": [
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 4
     },
-    "run": {
+    "submit": {
       "source": {
-        "file": "studio/github_runner.py",
-        "start": 660,
-        "end": 780
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 27,
+        "end": 35
       },
       "symbol_dependencies": [
         {
-          "symbol": "AgentPerformanceStoreError",
+          "symbol": "launch",
           "definitions": [
             {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasAuditStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasStatsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ContextualStrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FullGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_full_gate_cache_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHubMemoryError",
-          "definitions": [
-            {
-              "file": "studio/github_memory_store.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PhaseCostBaselineStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_phase_cost_baseline_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderHealthStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_health_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderMetricsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_metrics_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QuickGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_quick_gate_cache_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RoutingHistoryStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_routing_history_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_strategy_efficiency_store.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "VerificationCostStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_verification_cost_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "bounded_run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 614,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_repository_providers",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 45,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "enabled",
-          "definitions": [
-            {
-              "file": "studio/ci_provider.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fetch_provider",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capability_registry.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prerequisite_satisfied",
-          "definitions": [
-            {
-              "file": "studio/human_input_request.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "restore_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 158,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 165,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 121,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "resume_human_action",
-          "definitions": [
-            {
-              "file": "studio/goal_engine.py",
-              "line": 114,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "search_provider",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/capability_adaptation_state.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/capability_registry.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/goal_engine.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 33,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -800,2546 +1020,126 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 32
+      "dependency_count": 1
     },
-    "effective_runner": {
+    "get": {
       "source": {
-        "file": "studio/github_runner.py",
-        "start": 670,
-        "end": 790
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AgentPerformanceStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasAuditStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasStatsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ContextualStrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FullGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_full_gate_cache_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHubMemoryError",
-          "definitions": [
-            {
-              "file": "studio/github_memory_store.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PhaseCostBaselineStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_phase_cost_baseline_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderHealthStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_health_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderMetricsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_metrics_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QuickGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_quick_gate_cache_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RoutingHistoryStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_routing_history_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_strategy_efficiency_store.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "VerificationCostStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_verification_cost_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "bounded_run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 614,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_repository_providers",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 45,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enabled",
-          "definitions": [
-            {
-              "file": "studio/ci_provider.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fetch_provider",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capability_registry.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prerequisite_satisfied",
-          "definitions": [
-            {
-              "file": "studio/human_input_request.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "research_missing_capability",
-          "definitions": [
-            {
-              "file": "studio/adaptation_research.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "restore",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "restore_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 158,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 165,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 121,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "resume_human_action",
-          "definitions": [
-            {
-              "file": "studio/goal_engine.py",
-              "line": 114,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "search_provider",
-          "definitions": [
-            {
-              "file": "studio/repository_research_provider.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/capability_adaptation_state.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/capability_registry.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/goal_engine.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 31
-    },
-    "persist_execution_checkpoint_if_changed": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 964,
-        "end": 1084
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 349,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "DurableCheckpointError",
-          "definitions": [
-            {
-              "file": "studio/goal_loop.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointError",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_update_improvements",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 642,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "improvement_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1060,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ingest_run",
-          "definitions": [
-            {
-              "file": "studio/memory_lifecycle.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 175,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 141,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_published_round",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 991,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_verified_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1022,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_active_improvement",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save",
-          "definitions": [
-            {
-              "file": "studio/capability_registry.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 102,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate",
-          "definitions": [
-            {
-              "file": "studio/capability_adaptation_state.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/capability_registry.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/goal_engine.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/improvement_backlog.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verified_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 23
-    },
-    "persist_published_round": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 991,
-        "end": 1111
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 349,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 334,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "DurableCheckpointError",
-          "definitions": [
-            {
-              "file": "studio/goal_loop.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_update_improvements",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 642,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "improvement_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1060,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ingest_run",
-          "definitions": [
-            {
-              "file": "studio/memory_lifecycle.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_checkpoint_if_changed",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 964,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 175,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 141,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_verified_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1022,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_active_improvement",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verified_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 21
-    },
-    "run_once": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 1012,
-        "end": 1132
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 334,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "AgentPerformanceStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ContextualStrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHubMemoryError",
-          "definitions": [
-            {
-              "file": "studio/github_memory_store.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PhaseCostBaselineStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_phase_cost_baseline_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderHealthStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_health_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderMetricsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_metrics_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QuickGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_quick_gate_cache_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RoutingHistoryStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_routing_history_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_strategy_efficiency_store.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "VerificationCostStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_verification_cost_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_update_improvements",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 642,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "improvement_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1060,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ingest_run",
-          "definitions": [
-            {
-              "file": "studio/memory_lifecycle.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_checkpoint_if_changed",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 964,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 175,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 141,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_published_round",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 991,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_verified_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1022,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_active_improvement",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verified_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 28
-    },
-    "persist_verified_cycle": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 1022,
-        "end": 1142
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 334,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "AgentPerformanceStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasAuditStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasStatsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ContextualStrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FullGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_full_gate_cache_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHubMemoryError",
-          "definitions": [
-            {
-              "file": "studio/github_memory_store.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PhaseCostBaselineStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_phase_cost_baseline_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderHealthStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_health_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderMetricsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_metrics_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QuickGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_quick_gate_cache_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RoutingHistoryStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_routing_history_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_strategy_efficiency_store.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "VerificationCostStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_verification_cost_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_update_improvements",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 642,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "improvement_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1060,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ingest_run",
-          "definitions": [
-            {
-              "file": "studio/memory_lifecycle.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_checkpoint_if_changed",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 964,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 175,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 141,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_active_improvement",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_persistent_project",
-          "definitions": [
-            {
-              "file": "studio/autonomous_project.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verified_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 30
-    },
-    "improvement_project_cycle": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 1060,
-        "end": 1180
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 334,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "AgentPerformanceStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasAuditStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ArtifactCasStatsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ContextualStrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ExecutionCheckpointStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FullGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_full_gate_cache_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHubMemoryError",
-          "definitions": [
-            {
-              "file": "studio/github_memory_store.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PhaseCostBaselineStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_phase_cost_baseline_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderHealthStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_health_store.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderMetricsStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_provider_metrics_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QuickGateCacheStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_quick_gate_cache_store.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RemoteStateError",
-          "definitions": [
-            {
-              "file": "studio/github_goal_store.py",
-              "line": 29,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RoutingHistoryStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_routing_history_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrategyEfficiencyStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_strategy_efficiency_store.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "VerificationCostStoreError",
-          "definitions": [
-            {
-              "file": "studio/github_verification_cost_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_source_delivery_error",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 565,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "collect_agent_usage",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 107,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "effective_runner",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 670,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ingest_run",
-          "definitions": [
-            {
-              "file": "studio/memory_lifecycle.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_checkpoint_if_changed",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 964,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "persist_local",
-          "definitions": [
-            {
-              "file": "studio/github_agent_performance_store.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_audit_store.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_artifact_cas_stats_store.py",
-              "line": 175,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_contextual_strategy_efficiency_store.py",
-              "line": 141,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_execution_checkpoint_store.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_active_improvement",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "snapshot",
-          "definitions": [
-            {
-              "file": "studio/native_model_usage.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verified_project_cycle",
-          "definitions": [
-            {
-              "file": "studio/improvement_executor.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 29
-    },
-    "main": {
-      "source": {
-        "file": "studio/github_runner.py",
-        "start": 1287,
-        "end": 1407
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enabled",
-          "definitions": [
-            {
-              "file": "studio/ci_provider.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "requires_human_input",
-          "definitions": [
-            {
-              "file": "studio/human_input_request.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "GithubRunnerRoundPersistenceTests": {
-      "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 17,
-        "end": 183
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "advance",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 75,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "bad_generic",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 155,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "emulate_generic",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 83,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "emulate_goal_loop",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 98,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 165,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "new",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save",
-          "definitions": [
-            {
-              "file": "studio/execution_checkpoint.py",
-              "line": 105,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_remote_generic_published_round_is_flushed_before_cycle_finishes",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wrong_project_round_checkpoint_is_refused",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "request": {
-      "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 18,
-        "end": 27
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 37,
+        "end": 43
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_remote_generic_published_round_is_flushed_before_cycle_finishes": {
+    "WorkerCanaryTests": {
       "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 29,
-        "end": 129
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 46,
+        "end": 340
       },
       "symbol_dependencies": [
         {
-          "symbol": "advance",
+          "symbol": "API",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 75,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 349,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "emulate_generic",
+          "symbol": "APIError",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 83,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "emulate_goal_loop",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 98,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 165,
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
               "kind": "function",
               "language": "python"
             }
@@ -3347,11 +1147,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "new",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 29,
+              "file": "studio/core.py",
+              "line": 405,
               "kind": "function",
               "language": "python"
             }
@@ -3359,11 +1159,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "request",
+          "symbol": "canary_instruction",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
               "kind": "function",
               "language": "python"
             }
@@ -3371,11 +1183,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "run",
+          "symbol": "dispatch_worker_after_enqueue",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 660,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 22,
               "kind": "function",
               "language": "python"
             }
@@ -3383,11 +1195,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_once",
+          "symbol": "expire",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 1012,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_source_tasks.py",
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -3395,11 +1219,155 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "save",
+          "symbol": "launch",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 105,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 81,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_control_is_strict",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 276,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 289,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_observes_real_terminal_success",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 262,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
               "kind": "function",
               "language": "python"
             }
@@ -3407,21 +1375,149 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 27
     },
-    "emulate_generic": {
+    "test_control_is_strict": {
       "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 83,
-        "end": 203
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 47,
+        "end": 79
       },
       "symbol_dependencies": [
         {
-          "symbol": "bad_generic",
+          "symbol": "validate_control",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 155,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_canary_instruction_is_bounded_and_sequence_specific": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 81,
+        "end": 121
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "canary_instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_source_tasks.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 63,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_launch_is_idempotent_and_uses_dashboard_api": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 123,
+        "end": 260
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
               "kind": "function",
               "language": "python"
             }
@@ -3429,17 +1525,965 @@
           "relation": "same_file"
         },
         {
-          "symbol": "emulate_goal_loop",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 98,
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "dispatch_worker_after_enqueue",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_source_tasks.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "test_wait_observes_real_terminal_success": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 262,
+        "end": 274
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "clock": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 265,
+        "end": 385
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 349,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "expire",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 347,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 276,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 289,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "sleep": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 267,
+        "end": 387
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 349,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "expire",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 347,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 276,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 289,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "test_terminal_failure_returns_without_retrying_mutation": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 276,
+        "end": 287
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_wait_is_bounded": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 289,
+        "end": 340
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 349,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "expire",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "expire": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 303,
+        "end": 423
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 349,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 334,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "FakeResponse",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 165,
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 265,
               "kind": "function",
               "language": "python"
             }
@@ -3447,11 +2491,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "request",
+          "symbol": "create",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
               "kind": "function",
               "language": "python"
             }
@@ -3459,11 +2515,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "run",
+          "symbol": "read",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 660,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 349,
               "kind": "function",
               "language": "python"
             }
@@ -3471,11 +2539,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_once",
+          "symbol": "sleep",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 1012,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 347,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
               "kind": "function",
               "language": "python"
             }
@@ -3483,11 +2575,123 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "save",
+          "symbol": "wait_for_workflow",
           "definitions": [
             {
-              "file": "studio/execution_checkpoint.py",
-              "line": 105,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 20
+    },
+    "test_canary_workflow_verifies_terminal_worker_completion": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 347,
+        "end": 506
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeResponse",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
               "kind": "function",
               "language": "python"
             }
@@ -3495,11 +2699,443 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_wrong_project_round_checkpoint_is_refused",
+          "symbol": "create",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 131,
+              "file": "studio/core.py",
+              "line": 1008,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "FakeResponse": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 391,
+        "end": 511
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "read": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 398,
+        "end": 518
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeResponse",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "__enter__": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 401,
+        "end": 521
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeResponse",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
               "kind": "function",
               "language": "python"
             }
@@ -3509,43 +3145,85 @@
       ],
       "dependency_count": 7
     },
-    "emulate_goal_loop": {
+    "__exit__": {
       "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 98,
-        "end": 218
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 404,
+        "end": 524
       },
       "symbol_dependencies": [
         {
-          "symbol": "bad_generic",
+          "symbol": "FakeResponse",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 155,
-              "kind": "function",
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "request",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "run",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 660,
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
               "kind": "function",
               "language": "python"
             }
@@ -3553,11 +3231,99 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_once",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "studio/github_runner.py",
-              "line": 1012,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "Transport": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 407,
+        "end": 527
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeResponse",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 335,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 351,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 929,
               "kind": "function",
               "language": "python"
             }
@@ -3565,11 +3331,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_wrong_project_round_checkpoint_is_refused",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 131,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_trusted",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
               "kind": "function",
               "language": "python"
             }
@@ -3579,145 +3357,97 @@
       ],
       "dependency_count": 5
     },
-    "test_wrong_project_round_checkpoint_is_refused": {
+    "open": {
       "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 131,
-        "end": 183
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 413,
+        "end": 533
       },
       "symbol_dependencies": [
         {
-          "symbol": "bad_generic",
+          "symbol": "FakeResponse",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 155,
-              "kind": "function",
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 391,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "emulate_goal_loop",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 98,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 165,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "bad_generic": {
-      "source": {
-        "file": "tests/test_github_runner_round_persistence.py",
-        "start": 155,
-        "end": 275
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "emulate_goal_loop",
-          "definitions": [
-            {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 98,
-              "kind": "function",
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
               "language": "python"
             },
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 165,
-              "kind": "function",
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "request",
+          "symbol": "run_trusted",
           "definitions": [
             {
-              "file": "tests/test_github_runner_round_persistence.py",
-              "line": 18,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 463,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 660,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_once",
-          "definitions": [
-            {
-              "file": "studio/github_runner.py",
-              "line": 1012,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 4
+    },
+    "run_trusted": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 463,
+        "end": 583
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Transport",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 407,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
     }
   }
 }

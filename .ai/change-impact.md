@@ -1,13 +1,15 @@
 # Change impact
 
-Base: e3a076f4968cc01a1af318aa0344c21f5cf4cf9f
-Head: 27326fe5c5f45ebb52376f93c21da118040906b5
+Base: aeee28439be488c1a11bc0f1be6f93607e716b3a
+Head: 3e103d870aae33827ca4bdbe2c90ff48205b0d4c
 
 ## Changed files
-- M studio/github_runner.py
-- M tests/test_github_runner_round_persistence.py
+- A .github/workflows/production-os-canary-review-handoff.yml
+- M studio/generic_repository.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
+- .github
 - studio
 - tests
 

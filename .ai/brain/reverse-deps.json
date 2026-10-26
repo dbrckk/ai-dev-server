@@ -1494,6 +1494,7 @@
         "studio/stage_registry.py",
         "tests/test_journeys.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -1730,7 +1731,7 @@
         "tests/test_transport.py"
       ],
       "in_degree": 230,
-      "out_degree": 19
+      "out_degree": 20
     },
     "studio/cost_drift.py": {
       "dependencies": [],
@@ -2081,7 +2082,8 @@
         "studio/core.py",
         "studio/project_engine.py",
         "tests/test_journeys.py",
-        "tests/test_multi_engine_orchestrator.py"
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py"
       ],
       "dependents": [
         "studio/godot_preview.py",
@@ -2089,7 +2091,7 @@
         "tests/test_existing_project.py"
       ],
       "in_degree": 3,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/fault_injection_smoke.py": {
       "dependencies": [
@@ -2549,6 +2551,7 @@
       "dependencies": [
         "studio/core.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -2557,7 +2560,7 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/generic_toolchain.py": {
       "dependencies": [
@@ -3048,6 +3051,7 @@
         "studio/provider_router.py",
         "tests/test_journeys.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -3057,7 +3061,7 @@
         "tests/test_provider_429_cooldown.py"
       ],
       "in_degree": 3,
-      "out_degree": 14
+      "out_degree": 15
     },
     "studio/godot_play_stage.py": {
       "dependencies": [
@@ -3685,6 +3689,7 @@
         "studio/core.py",
         "studio/file_lock.py",
         "studio/stage_registry.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
@@ -3699,7 +3704,7 @@
         "tests/test_godot_model.py"
       ],
       "in_degree": 9,
-      "out_degree": 7
+      "out_degree": 8
     },
     "studio/native_qa.py": {
       "dependencies": [
@@ -4174,6 +4179,7 @@
         "studio/production_os_resume_objectives.py",
         "studio/production_os_source_tasks.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -4185,7 +4191,7 @@
         "tests/test_production_os_worker_canary.py"
       ],
       "in_degree": 5,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/project_budget.py": {
       "dependencies": [
@@ -7487,11 +7493,12 @@
     "tests/test_production_os_actions_worker_workflow.py": {
       "dependencies": [
         "studio/core.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_production_os_live_diagnostics.py": {
       "dependencies": [
@@ -7563,8 +7570,17 @@
         "studio/production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/core.py",
+        "studio/existing_project.py",
+        "studio/generic_target_ci.py",
+        "studio/godot_model.py",
+        "studio/native_model_usage.py",
+        "studio/production_os_worker_canary.py",
+        "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_provider_429_cooldown.py"
+      ],
+      "in_degree": 8,
       "out_degree": 5
     },
     "tests/test_production_os_worker_cli.py": {
@@ -7663,11 +7679,12 @@
         "studio/godot_model.py",
         "studio/provider_health.py",
         "studio/provider_router.py",
-        "tests/test_journeys.py"
+        "tests/test_journeys.py",
+        "tests/test_production_os_worker_canary.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 6
+      "out_degree": 7
     },
     "tests/test_provider_cost.py": {
       "dependencies": [

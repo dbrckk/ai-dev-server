@@ -3,10 +3,10 @@
 - Index mode: incremental
 - Files indexed: 656
 - Files reparsed this run: 2
-- Symbols: 4803
+- Symbols: 4812
 - Internal import edges: 1422
 - Impacted files: 9
-- Selected tests: 7
+- Selected tests: 5
 
 ## Languages
 - python: 653 files
@@ -32,7 +32,7 @@
 - tests/test_autonomous_project.py: 25 symbols
 - studio/replacement_ci_policy_v11.py: 24 symbols
 - tests/test_goal_loop.py: 24 symbols
-- tests/test_architecture_feedback.py: 23 symbols
+- tests/test_production_os_worker_canary.py: 24 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.

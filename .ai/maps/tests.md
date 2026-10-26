@@ -9545,6 +9545,56 @@ workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(e
 # The canary enqueues first and dispatches only if the control plane did
 # not already wake a worker. A push trigger would race the queue.
 worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
+⋮----
+# Exercise the real trusted default-branch handoff script through a
+# deterministic GitHub transport; do not create a separate unit test.
+⋮----
+trusted = Path(".github/workflows/production-os-canary-review-handoff.yml").read_text(
+⋮----
+source = dedent(
+compiled = compile(source, "trusted-canary-review-handoff", "exec")
+head = "a" * 40
+branch = "studio/mp-" + "b" * 24
+marker = ".production-os/worker-canary-46.txt"
+expected = b"production-os-worker-canary sequence 46\n"
+api_base = "https://api.github.com/repos/dbrckk/ai-dev-server"
+⋮----
+class FakeResponse
+⋮----
+status = 200
+⋮----
+def __init__(self, payload=None, *, status=200)
+⋮----
+def read(self, *_args)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_args)
+⋮----
+class Transport
+⋮----
+def __init__(self, *, content=expected, existing_ci=False)
+⋮----
+def open(self, request, timeout=20)
+⋮----
+method = request.get_method()
+path = request.full_url[len(api_base):]
+⋮----
+posted = json.loads(request.data)
+⋮----
+rows = [{
+⋮----
+def run_trusted(transport, *, payload=None)
+⋮----
+event = {"client_payload": payload or {"branch": branch, "commit_sha": head}}
+⋮----
+event_file = Path(td) / "event.json"
+⋮----
+transport = Transport()
+⋮----
+prequalified = Transport(existing_ci=True)
+⋮----
+denied = Transport()
 ```
 
 ## File: test_production_os_worker_cli.py

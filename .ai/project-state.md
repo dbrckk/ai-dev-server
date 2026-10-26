@@ -314,16 +314,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-26T19:04:53Z
+Generated: 2026-10-26T20:20:59Z
 
 ### Git
 - Branch: `main`
-- Head: `27326fe5c5f4`
-- Commit date: 2026-10-26T15:04:41-04:00
-- Commit: fix(worker): avoid duplicate writes of confirmed execution checkpoints (#407)
-- Tracked files: 879
+- Head: `3e103d870aae`
+- Commit date: 2026-10-26T16:20:42-04:00
+- Commit: fix(worker): trusted exact-SHA canary PR handoff and CI (#409)
+- Tracked files: 880
 
 ### Recently changed files
+- `.github/workflows/production-os-canary-review-handoff.yml`
+- `studio/generic_repository.py`
+- `tests/test_production_os_worker_canary.py`
 - `studio/github_runner.py`
 - `tests/test_github_runner_round_persistence.py`
 - `.github/workflows/production-os-actions-worker.yml`
@@ -333,17 +336,6 @@ Generated: 2026-10-26T19:04:53Z
 - `docs/managed-generic-delivery.md`
 - `studio/replacement_ci_policy.py`
 - `tests/test_replacement_ci_policy.py`
-- `studio/autonomous_project.py`
-- `studio/generic_delivery.py`
-- `studio/generic_project.py`
-- `studio/generic_repository.py`
-- `studio/generic_smoke.py`
-- `studio/generic_target_ci.py`
-- `studio/production_os_worker.py`
-- `tests/test_generic_published_checkpoint.py`
-- `tests/test_generic_repository_pull_request.py`
-- `tests/test_generic_worker_canary_resume.py`
-- `tests/test_multi_engine_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

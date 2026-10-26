@@ -9878,6 +9878,8 @@ MAX_TOTAL=6_000_000
 # repository_dispatch workflow may request a GitHub-token PR handoff.
 TRUSTED_REVIEW_TARGETS = frozenset({
 ⋮----
+# File-only canaries have their own exact-marker review handoff.
+⋮----
 class GenericRepository
 ⋮----
 def __init__(self,github,repo:str,project_id:str)

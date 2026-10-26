@@ -439,8 +439,10 @@ def test_canary_workflow_verifies_terminal_worker_completion():
                 assert posted["draft"] is True
                 return FakeResponse({
                     "number": 46, "state": "open", "draft": True,
-                    "head": {"sha": head, "ref": branch},
-                    "base": {"ref": "main"},
+                    "head": {"sha": head, "ref": branch,
+                             "repo": {"full_name": "dbrckk/ai-dev-server"}},
+                    "base": {"ref": "main",
+                             "repo": {"full_name": "dbrckk/ai-dev-server"}},
                     "html_url": api_base.replace("api.github.com/repos", "github.com")
                                 + "/pull/46",
                 })

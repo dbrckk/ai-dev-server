@@ -1,9 +1,12 @@
 """Resume managed review delivery after implementation, without another model call."""
 from pathlib import Path
+from copy import deepcopy
+import time
 
-from core import StudioError, canonical
+from core import APIError, StudioError, canonical
 from execution_checkpoint import advance, save
 from source_delivery_checkpoint import request_fingerprint, SourceCheckpointError
+from generic_target_ci import inspect as inspect_ci, dispatch as dispatch_ci
 
 
 def _fingerprint(request: dict) -> str:
@@ -21,11 +24,11 @@ def resumable(checkpoint: dict, request: dict, commit_sha: str) -> bool:
             or checkpoint.get("engine") != "generic"
             or checkpoint.get("phase") not in {"published", "complete"}
             or checkpoint.get("base_sha") != commit_sha
-            or verification.get("passed") is not True
+            or (verification.get("passed") is not True and receipt.get("repair_required") is not True)
             or receipt.get("implementation_complete") is not True
             or receipt.get("request_fingerprint") != _fingerprint(request)):
         raise SourceCheckpointError("Managed review delivery checkpoint identity changed")
-    return True
+    return receipt.get("repair_required") is not True
 
 
 def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
@@ -43,8 +46,10 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
         "request_fingerprint": _fingerprint(request),
         "implementation_complete": True,
         "changed_files": changed,
+        "ci_wait_started": previous.get("ci_wait_started", time.time()),
+        "ci_dispatch_attempted": previous.get("ci_dispatch_attempted", False),
     }
-    checkpoint = advance(checkpoint, phase="published", last_verification=verification)
+    checkpoint = advance(checkpoint, phase="published", last_verification=deepcopy(verification))
     path = out / ".autonomy/generic-execution-checkpoint.json"
     # Persist before contacting GitHub: a failed POST must not erase completed work.
     save(path, checkpoint)
@@ -64,24 +69,58 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
     confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
                  and pr["number"] > 0 and pr.get("state") == "open"
                  and pr.get("url") == f"https://github.com/{request['target_repo']}/pull/{pr['number']}")
-    checkpoint = advance(checkpoint, phase="complete" if confirmed else "published")
+    ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
+    if confirmed:
+        try:
+            ci = inspect_ci(repo, sha)
+        except StudioError as exc:
+            transient = ((isinstance(exc, APIError) and exc.status in {408, 429, 500, 502, 503, 504})
+                         or str(exc) == "API unavailable or timed out")
+            ci = {"status": "pending" if transient else "unavailable",
+                  "reason": "independent_CI_temporarily_unavailable" if transient else "independent_CI_evidence_unavailable"}
+        receipt = verification["managed_review_delivery"]
+        if ci.get("reason") == "exact_commit_ci_not_started" and not receipt["ci_dispatch_attempted"]:
+            # Seal intent first. Never replay an ambiguous mutation on restart.
+            receipt["ci_dispatch_attempted"] = True
+            checkpoint = advance(checkpoint, last_verification=deepcopy(verification))
+            save(path, checkpoint)
+            if observer is not None:
+                observer(dict(checkpoint))
+            dispatch = dispatch_ci(repo, ci["workflow_id"])
+            if dispatch["status"] == "unavailable":
+                receipt["ci_dispatch_attempted"] = False
+                ci = {**ci, "status": "unavailable", "reason": dispatch["reason"]}
+        if ci.get("status") == "pending" and time.time() - receipt["ci_wait_started"] > 3600:
+            ci = {**ci, "status": "unavailable", "reason": "independent_CI_wait_expired"}
+        if ci.get("status") == "passed" and repo._find_open_pull_request(expected_sha=sha) is None:
+            ci = {**ci, "status": "pending", "reason": "review_commit_changed_during_CI"}
+    complete = confirmed and ci.get("status") == "passed"
+    repair = ci.get("status") == "failed"
+    verification["independent_ci"] = ci
+    if repair:
+        verification["passed"] = False
+        verification["managed_review_delivery"]["repair_required"] = True
+    checkpoint = advance(checkpoint, phase="complete" if complete else "published", last_verification=verification)
     save(path, checkpoint)
     if observer is not None:
         observer(dict(checkpoint))
-    status = "complete" if confirmed else "deferred"
-    next_stage = None if confirmed else "review_handoff"
-    blockers = [] if confirmed else ["Exact-commit review PR not confirmed"]
+    status = ("complete" if complete else "blocked" if repair else
+              "human_action_required" if ci.get("status") == "unavailable" else "deferred")
+    next_stage = (None if complete else "generic_ci_repair" if repair else
+                  "independent_target_ci" if confirmed else "review_handoff")
+    blockers = [] if complete else [ci["reason"]]
     report = {
         **state, "engine": "generic", "target_repo": request["target_repo"],
         "rounds": state.get("rounds") or [{"round": checkpoint["round"],
                                           "changed_files": changed, "verification": verification}],
         "status": status, "checkpoint_commit": sha,
         "verification": verification,
+        "ci": ci,
         "pull_request": pr if confirmed else {"state": "unavailable", "reason": "review_commit_unverified"},
         "resume_mode": "managed_generic_review_delivery",
         "execution_checkpoint": {key: checkpoint[key] for key in ("round", "phase", "base_sha")},
-        "completion": {"finished": confirmed, "next_stage": next_stage, "blockers": blockers},
-        "release_status": "source_review_pending_human_approval" if confirmed else "verified_branch_review_blocked",
+        "completion": {"finished": complete, "next_stage": next_stage, "blockers": blockers},
+        "release_status": "source_review_pending_human_approval" if complete else "verified_branch_review_blocked",
         "blockers": blockers,
     }
     (out / "generic-report.json").write_text(canonical(report), encoding="utf-8")

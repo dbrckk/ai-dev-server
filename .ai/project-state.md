@@ -1,3 +1,12 @@
+# 2026-10-25 — managed generic independent delivery
+
+- Oct26 follow-up: prevent pending CI from exhausting worker continuation limits;interruptible30-second polling retains heartbeat/runtime bounds. Read-only delivery resumes verify branch head without downloading source. Existing worker regression fails baseline;85 selected tests+47 subtests pass. PR402 initial head13152e7;follow-up publication pending.
+
+- Baseline falsely completes with a PR but no independent CI. Generic managed delivery now requires target CI success on the source SHA with unchanged workflow definition,attempt-specific jobs and a fresh PR/head confirmation. Existing canary resume also uses this gate.
+- Persist dispatch intent before one POST;ambiguous responses are observed rather than retried. Pending CI yields without model generation;one-hour expiry/configuration/permission blockers require attention. Failed CI jobs feed the existing bounded model-repair cycle;new commits require new proof.
+- Full1784 tests passed24.345s;6 actual worker/server integrations passed4.657s. CLI smoke covers publication/PR recovery/dispatch/wait/failure/model repair/new publication/qualified completion with real local verification and deterministic external boundaries. Real public API inspection accepts run40222698694 on3d5e617,attempt1. No new test functions.
+- Prerequisites and limits:docs/managed-generic-delivery.md. Remote qualification pending. No fresh hosted model goal,source PR305 merge or quota increase. PR401 all8 postmerge Actions andserver311 CI/standards passed.
+
 # 2026-10-25 — independent CI attempt consistency
 
 - PR400 postmerge all8 Actions and3 CircleCI passed. Managed generic PR recovery is delivered;arbitrary hosted independent qualification remains ungeneralized.

@@ -66,6 +66,18 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
     ]
     assert len(posts) == 1
     assert posts[0][2]["draft"] is True
+    with patch.object(github, "get", return_value=[{
+        "ref": "refs/heads/studio/mp-abc", "object": {"sha": "a" * 40},
+    }]) as get:
+        assert repository.delivery_head() == "a" * 40
+        get.assert_called_once_with("/git/matching-refs/heads/studio/mp-abc")
+    with patch.object(github, "get", return_value=[]):
+        try:
+            repository.delivery_head()
+        except StudioError:
+            pass
+        else:
+            raise AssertionError("Missing delivery branch must not resume")
 
     # Regression: a different generic task must never overwrite the managed
     # source-repair branch after a restricted model-authored checkpoint.
@@ -79,6 +91,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
         )):
             with TemporaryDirectory() as directory:
                 for op in (
+                    reserved.delivery_head,
                     lambda: reserved.restore(Path(directory)),
                     lambda: reserved.publish("a" * 40, Path(directory), "bad generic edit"),
                 ):

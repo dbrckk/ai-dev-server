@@ -137,9 +137,11 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                                  base_sha="b" * 40, round_index=1, phase="published",
                                  last_verification={"passed": True})
             with patch("generic_project.GitHub"), patch("generic_project.GenericRepository") as factory, \
+                 patch("generic_delivery.inspect_ci", return_value={"status": "pending", "reason": "exact_commit_ci_in_progress"}) as ci, \
                  patch("generic_project.ask", side_effect=AssertionError("delivery must not invoke model")) as model:
                 repo = factory.return_value
                 repo.restore.return_value = ("b" * 40, {"files": 1})
+                repo.delivery_head.return_value = "b" * 40
                 repo.ensure_pull_request.side_effect = StudioError("API HTTP 403")
                 repo.request_trusted_review_handoff.return_value = {"status": "unavailable"}
                 pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
@@ -154,6 +156,18 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 repo.ensure_pull_request.side_effect = None
                 repo.ensure_pull_request.return_value = {
                     "number": 3, "state": "open", "url": "https://github.com/owner/app/pull/3"}
+                awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+                self.assertEqual(awaiting_ci["status"], "deferred")
+                self.assertFalse(awaiting_ci["report"]["completion"]["finished"])
+                self.assertEqual(translate_orchestrator_result(awaiting_ci), {"yield_run": True})
+                from core import APIError
+                for outage in (APIError(503), StudioError("API unavailable or timed out")):
+                    ci.side_effect = outage
+                    unavailable = run_project(request, out, Path(temp) / "ci-outage")
+                    self.assertEqual(unavailable["status"], "deferred")
+                    self.assertFalse(unavailable["report"]["completion"]["finished"])
+                ci.side_effect = None
+                ci.return_value = {"status": "passed", "sha": "b" * 40}
                 complete = run_project(request, out, Path(temp) / "resume")
                 self.assertEqual(complete["status"], "complete")
                 self.assertEqual(load(saved_path)["phase"], "complete")
@@ -161,10 +175,19 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "b" * 40)
                 model.assert_not_called()
                 repo.publish.assert_not_called()
+                repo.restore.assert_not_called()
+                ci.return_value = {"status": "failed", "reason": "independent_CI_failed", "failed_jobs": ["test"]}
+                failed = run_project(request, out, Path(temp) / "ci-failed")
+                self.assertEqual(failed["next_stage"], "generic_ci_repair")
+                self.assertIn("failure", translate_orchestrator_result(failed))
+                from generic_delivery import resumable
+                self.assertFalse(resumable(load(saved_path), request, "b" * 40))
+                self.assertFalse(load(saved_path)["last_verification"]["passed"])
                 with self.assertRaises(SourceCheckpointError):
                     run_project({**request, "production_os": {**request["production_os"],
                                 "objective_sha256": "c" * 64}}, out, Path(temp) / "changed")
                 repo.restore.return_value = ("c" * 40, {"files": 1})
+                repo.delivery_head.return_value = "c" * 40
                 with self.assertRaises(SourceCheckpointError):
                     run_project(request, out, Path(temp) / "moved")
 

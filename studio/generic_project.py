@@ -801,8 +801,16 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         req["target_repo"],
         req.get("repository_branch_id") or req["id"],
     )
-    base_sha, restore = repo.restore(work)
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+    if req.get("production_os") and checkpoint_path.is_file():
+        saved = load_checkpoint(checkpoint_path)
+        if (saved.get("last_verification") or {}).get("managed_review_delivery"):
+            head = repo.delivery_head()
+            if resumable_managed_review(saved, req, head):
+                return deliver_managed_review(req, repo, saved,
+                                              {"restore": {"mode": "delivery_only", "source_sha": head}, "rounds": []},
+                                              out, checkpoint_observer)
+    base_sha, restore = repo.restore(work)
     safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
     contextual_routing_path = out / ".autonomy" / "contextual-routing-memory.json"
     provider_cost_path = out / ".autonomy" / "provider-cost.json"
@@ -855,6 +863,12 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     save_checkpoint(checkpoint_path, checkpoint)
 
     existing_canary_verification = _existing_worker_canary_verification(req, work)
+    if existing_canary_verification is not None and req.get("production_os"):
+        checkpoint = advance_checkpoint(checkpoint, base_sha=base_sha,
+                                        round_index=max(1, checkpoint.get("round", 0)),
+                                        phase="published", last_verification=existing_canary_verification)
+        return deliver_managed_review(req, repo, checkpoint, {"restore": restore, "rounds": []},
+                                      out, checkpoint_observer)
     if existing_canary_verification is not None:
         # Restored file content proves implementation only, not review delivery.
         # Reuse/create the review with the same exact-SHA guard as normal rounds.

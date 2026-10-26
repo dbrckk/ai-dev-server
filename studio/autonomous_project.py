@@ -120,6 +120,11 @@ def translate_orchestrator_result(result: dict) -> dict:
         completion = report.get("completion") if isinstance(report, dict) else None
         if isinstance(report, dict) and report.get("release_status") == "verified_branch_review_blocked":
             return {"blocked_reason": "orchestrator reported complete without review delivery"}
+        if isinstance(report, dict) and report.get("resume_mode") == "managed_generic_review_delivery":
+            ci = report.get("ci")
+            if (not isinstance(ci, dict) or ci.get("status") != "passed"
+                    or ci.get("sha") != report.get("checkpoint_commit")):
+                return {"blocked_reason": "managed generic completion lacks exact-commit independent CI"}
         if not isinstance(completion, dict) or completion.get("finished") is not True:
             return {"blocked_reason": "orchestrator reported complete without completion evidence"}
         return {
@@ -134,7 +139,7 @@ def translate_orchestrator_result(result: dict) -> dict:
             }
         }
 
-    if (status == "deferred" and next_stage == "review_handoff"
+    if (status == "deferred" and next_stage in {"review_handoff", "independent_target_ci"}
             and isinstance(report, dict)
             and report.get("resume_mode") == "managed_generic_review_delivery"):
         return {"yield_run": True}

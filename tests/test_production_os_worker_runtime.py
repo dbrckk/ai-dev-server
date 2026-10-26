@@ -693,15 +693,19 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         client = _FakeClient(sample_job())
         stages = iter(("design", "preview", None))
         calls = []
+        waits = []
 
         def runner(request_path, out, **kwargs):
             calls.append((request_path, out))
             stage = next(stages)
+            if stage in {"review_handoff", "independent_target_ci"}:
+                kwargs["cancel_event"].wait = lambda seconds: waits.append(seconds) or False
             return {
                 "status": "active" if stage else "complete",
                 "finished": stage is None,
                 "next_stage": stage,
                 "usage": {"total_tokens": 3},
+                "ci": {"status": "pending" if stage else "passed", "sha": "a" * 40},
             }
 
         with tempfile.TemporaryDirectory() as td:
@@ -717,6 +721,15 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual([name for name, *_ in client.calls].count("ack"), 1)
         self.assertEqual([name for name, *_ in client.calls].count("complete"), 1)
         self.assertEqual([name for name, *_ in client.calls].count("fail"), 0)
+        stages = iter(("review_handoff", "independent_target_ci", "independent_target_ci", None))
+        calls.clear()
+        client = _FakeClient(sample_job())
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(client, worker_id="ai-dev-1", output_root=Path(td),
+                              run_project=runner, clock=lambda: 10.0, max_continuations=0)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(len(calls), 4)
+        self.assertEqual(waits, [30, 30, 30])
 
     def test_active_checkpoint_limit_fails_with_explicit_reason(self):
         client = _FakeClient(sample_job())

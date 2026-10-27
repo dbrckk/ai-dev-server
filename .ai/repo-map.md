@@ -3727,9 +3727,9 @@ initial_prompt: |
 ## File: control/production-os-resume.json
 ````json
 {
-  "sequence": 4,
-  "failed_workflow_ids": [
-    "32aacc22549240148d8650711fae817c"
+  "sequence": 5,
+  "retry_jobs": [
+    {"workflow_id": "dd5bf4deca1e4cb89daf10182a68627b", "job_key": "81cf5bb356d3a35ac9b36f11"}
   ]
 }
 ````
@@ -3915,6 +3915,23 @@ project = control.managed_projects.create(repository='dbrckk/integration-fixture
 result = resume(client, [project['workflow_id']], apply=True)
 ⋮----
 updated = control.managed_projects.get(project['project_id'])
+⋮----
+exact = control.workflows.create(name='exact-checkpoint-retry', repository='dbrckk/integration-fixture',
+first = control.workflows.dispatch_ready(exact['id'])[0]
+⋮----
+before = control.workflows.get(exact['id'])
+⋮----
+retried = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
+# Older supported servers already queue the next attempt for
+# this blocked result; newer ones retain an explicitly failed
+# task. Both paths must keep identity and attempts bounded.
+⋮----
+current = control.workflows.get(exact['id'])
+second = control.queue.get(current['tasks'][0]['claimed_job_key'])
+⋮----
+queued = control.workflows.get(exact['id'])
+⋮----
+woken = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
 ⋮----
 def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
@@ -14872,6 +14889,8 @@ def synthesize_from_memory(memory, project_id, capability, *, api=None, model=No
 ````python
 """Resume managed review delivery after implementation, without another model call."""
 ⋮----
+CI_DISPATCH_GRACE_SECONDS = 60
+⋮----
 def _fingerprint(request: dict) -> str
 ⋮----
 objective = (request.get("production_os") or {}).get("objective_sha256")
@@ -14893,29 +14912,49 @@ checkpoint = advance(checkpoint, phase="published", last_verification=deepcopy(v
 path = out / ".autonomy/generic-execution-checkpoint.json"
 # Persist before contacting GitHub: a failed POST must not erase completed work.
 ⋮----
+pr_error = None
+receipt = verification["managed_review_delivery"]
+⋮----
 pr = repo.ensure_pull_request(
 ⋮----
 denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
-handoff = repo.request_trusted_review_handoff(sha) if denied else None
-pr = (repo.await_trusted_review(sha)
+pr = None
+⋮----
+checkpoint = advance(checkpoint, last_verification=deepcopy(verification))
+⋮----
+handoff = repo.request_trusted_review_handoff(sha)
+outcome = handoff.get("status") if isinstance(handoff, dict) else "invalid_response"
+⋮----
+pr = repo.await_trusted_review(sha)
+⋮----
+pr_error = "review_handoff_" + str(outcome)
+# An ambiguous POST is observed through ensure_pull_request on
+# subsequent resumes; never redispatch it automatically.
+⋮----
+pr_error = "review_creation_unavailable"
 confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
-ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
+ci = {"status": "unavailable" if pr_error else "pending", "reason": pr_error or "review_pr_not_confirmed"}
+⋮----
+ci = {"status": "unavailable", "reason": "review_handoff_wait_expired"}
 ⋮----
 ci = inspect_ci(repo, sha)
 ⋮----
 transient = ((isinstance(exc, APIError) and exc.status in {408, 429, 500, 502, 503, 504})
 ci = {"status": "pending" if transient else "unavailable",
-receipt = verification["managed_review_delivery"]
 ⋮----
+# The trusted handoff creates its PR before dispatching CI. Give
+# that receiver (and automatic PR events) time to start a run.
 # Seal intent first. Never replay an ambiguous mutation on restart.
-⋮----
-checkpoint = advance(checkpoint, last_verification=deepcopy(verification))
 ⋮----
 dispatch = dispatch_ci(repo, ci["workflow_id"])
 ⋮----
 ci = {**ci, "status": "unavailable", "reason": dispatch["reason"]}
 ⋮----
 ci = {**ci, "status": "unavailable", "reason": "independent_CI_wait_expired"}
+⋮----
+current_review = repo._find_open_pull_request(expected_sha=sha)
+⋮----
+ci = {**ci, "status": "pending" if transient else "unavailable",
 ⋮----
 ci = {**ci, "status": "pending", "reason": "review_commit_changed_during_CI"}
 complete = confirmed and ci.get("status") == "passed"
@@ -16271,6 +16310,7 @@ orchestration=orchestration_smoke(out)
 managed_out = Path(tempfile.mkdtemp(prefix="managed-", dir=out))
 request = {"id": "managed-smoke", "target_repo": "fixture/generic-smoke",
 publication = {"sha": "a" * 40, "count": 0, "available": False,
+delivery_clock = [1000.0]
 class ManagedGitHub
 ⋮----
 repo = "/repos/fixture/generic-smoke"
@@ -16294,6 +16334,10 @@ calls = model.call_count
 ⋮----
 awaiting_ci = generic_project.run_project(request, managed_out, out / "managed-ci-wait", max_rounds=1)
 ⋮----
+grace_wait = generic_project.run_project(request, managed_out, out / "managed-ci-grace", max_rounds=1)
+⋮----
+dispatched = generic_project.run_project(request, managed_out, out / "managed-ci-dispatched", max_rounds=1)
+⋮----
 waiting_again = generic_project.run_project(request, managed_out, out / "managed-ci-wait-again", max_rounds=1)
 ⋮----
 resumed = generic_project.run_project(request, managed_out, out / "managed-resume", max_rounds=1)
@@ -16309,6 +16353,8 @@ def repair_ask(system, user, **kwargs)
 repaired = generic_project.run_project(request, managed_out, out / "managed-repair", max_rounds=1)
 ⋮----
 repair_calls = model.call_count
+⋮----
+repair_dispatch = generic_project.run_project(request, managed_out, out / "managed-repair-ci-dispatch", max_rounds=1)
 ⋮----
 accepted = generic_project.run_project(request, managed_out, out / "managed-repaired-ci", max_rounds=1)
 ⋮----
@@ -23131,6 +23177,11 @@ def submit(self, path, payload)
 ⋮----
 request = urllib.request.Request(
 # One submission only: an uncertain mutation response must never be retried here.
+# Control-plane 202 means accepted work, not a pending NVIDIA response.
+⋮----
+raw = response.read(4_000_001)
+⋮----
+value = json.loads(raw)
 ⋮----
 def recover_legacy(client, workflow_id, projects, *, apply)
 ⋮----
@@ -23167,6 +23218,26 @@ record = {"workflow_id": workflow_id, "project_id": project_id, "status": "skipp
 response = client.continue_project(project_id)
 updated = response.get("project", {})
 ⋮----
+def retry_existing_jobs(client, entries, *, apply=False)
+⋮----
+"""Retry an exact failed task without changing its checkpoint identity."""
+⋮----
+job = client.get("/v1/jobs/" + entry["job_key"]).get("job", {})
+payload = job.get("payload") or {}
+⋮----
+workflow = client.get("/v1/workflows/" + entry["workflow_id"]).get("workflow", {})
+tasks = [t for t in workflow.get("tasks", []) if t.get("task_id") == payload.get("workflow_task_id")]
+record = {**entry, "status": "not_eligible"}
+⋮----
+response = client.submit("/v1/dashboard/workers/github-actions-worker/control",
+⋮----
+# runtime_limit already queues another bounded attempt on the
+# server. Wake that existing job instead of creating a generation.
+current = client.get("/v1/jobs/" + str(tasks[0].get("claimed_job_key") or "")).get("job", {})
+current_payload = current.get("payload") or {}
+⋮----
+response = client.submit("/v1/dashboard/workers/github-actions-worker/control", {"action": "kick"})
+⋮----
 def main(argv=None)
 ⋮----
 parser = argparse.ArgumentParser()
@@ -23176,7 +23247,11 @@ args = parser.parse_args(argv)
 control = json.loads(args.control.read_text())
 token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 ⋮----
-result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
+client = OperatorClient(os.environ["PRODUCTION_OS_URL"], token)
+⋮----
+result = retry_existing_jobs(client, control["retry_jobs"], apply=args.apply)
+⋮----
+result = resume(client, control["failed_workflow_ids"], apply=args.apply)
 ````
 
 ## File: studio/production_os_review_canary.py
@@ -32948,15 +33023,28 @@ checkpoint = advance(new("managed", "generic", "a" * 40),
 ⋮----
 repo = factory.return_value
 ⋮----
+blocked = deliver(request, repo, checkpoint, {"rounds": []}, out)
+⋮----
 pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
 ⋮----
 saved_path = out / ".autonomy/generic-execution-checkpoint.json"
 ⋮----
 pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
 ⋮----
+started = load(saved_path)["last_verification"]["managed_review_delivery"]["review_wait_started"]
+⋮----
+expired = run_project(request, out, Path(temp) / "expired-review")
+⋮----
 awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+started_ci = load(saved_path)["last_verification"]["managed_review_delivery"]["ci_wait_started"]
+⋮----
+handoff_starting_ci = run_project(request, out, Path(temp) / "handoff-starting-ci")
+⋮----
+receipt = load(saved_path)["last_verification"]["managed_review_delivery"]
 ⋮----
 unavailable = run_project(request, out, Path(temp) / "ci-outage")
+⋮----
+review_unavailable = run_project(request, out, Path(temp) / "review-outage-after-ci")
 ⋮----
 complete = run_project(request, out, Path(temp) / "resume")
 ⋮----
@@ -33211,7 +33299,8 @@ delivered = failure is None or failure == "confirmed handoff"
 ⋮----
 observed = []
 request = {**self._request(), "id": "canary-resume"}
-outcome = run_project(request, root / "output", root,
+outcome = run_project(request, root / ("output-" + str(index)), root,
+expected = "human_action_required" if failure == "Generic review pull request head revision unverified" else "deferred"
 ⋮----
 def test_rejects_wrong_content(self)
 ⋮----
@@ -36897,6 +36986,11 @@ def test_dry_run_does_not_mutate_and_apply_submits_only_once(self)
 client = self.client()
 ⋮----
 result = resume(client, ['a' * 32], apply=True)
+⋮----
+entry = {'workflow_id': 'a' * 32, 'job_key': 'd' * 24}
+exact = Mock()
+job = {'status': 'failed', 'payload': {'workflow_id': 'a' * 32,
+task = {'task_id': 'implementation', 'status': 'failed', 'attempts': 1, 'max_attempts': 3}
 ⋮----
 def test_active_successful_and_changed_workflows_are_never_resumed(self)
 ⋮----

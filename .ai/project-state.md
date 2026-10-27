@@ -323,16 +323,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-26T20:20:59Z
+Generated: 2026-10-27T15:11:01Z
 
 ### Git
 - Branch: `main`
-- Head: `3e103d870aae`
-- Commit date: 2026-10-26T16:20:42-04:00
-- Commit: fix(worker): trusted exact-SHA canary PR handoff and CI (#409)
+- Head: `fa22bb2e816e`
+- Commit date: 2026-10-27T11:10:47-04:00
+- Commit: fix: resume published generic objectives through draft PR and CI (#410)
 - Tracked files: 880
 
 ### Recently changed files
+- `control/production-os-resume.json`
+- `docs/managed-generic-delivery.md`
+- `integration_tests/test_production_os_server_integration.py`
+- `studio/generic_delivery.py`
+- `studio/generic_smoke.py`
+- `studio/production_os_resume_objectives.py`
+- `tests/test_generic_published_checkpoint.py`
+- `tests/test_generic_worker_canary_resume.py`
+- `tests/test_production_os_resume_objectives.py`
 - `.github/workflows/production-os-canary-review-handoff.yml`
 - `studio/generic_repository.py`
 - `tests/test_production_os_worker_canary.py`
@@ -341,10 +350,6 @@ Generated: 2026-10-26T20:20:59Z
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-worker-canary.json`
-- `.github/workflows/ci.yml`
-- `docs/managed-generic-delivery.md`
-- `studio/replacement_ci_policy.py`
-- `tests/test_replacement_ci_policy.py`
 
 ### Project signals
 - No common build descriptor detected

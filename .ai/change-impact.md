@@ -1,20 +1,28 @@
 # Change impact
 
-Base: aeee28439be488c1a11bc0f1be6f93607e716b3a
-Head: 3e103d870aae33827ca4bdbe2c90ff48205b0d4c
+Base: 3a3c03806cd1cb09d16e61585698b4f0ee362732
+Head: fa22bb2e816eaffbd7b1de1e34c3f331aa56b424
 
 ## Changed files
-- A .github/workflows/production-os-canary-review-handoff.yml
-- M studio/generic_repository.py
-- M tests/test_production_os_worker_canary.py
+- M control/production-os-resume.json
+- M docs/managed-generic-delivery.md
+- M integration_tests/test_production_os_server_integration.py
+- M studio/generic_delivery.py
+- M studio/generic_smoke.py
+- M studio/production_os_resume_objectives.py
+- M tests/test_generic_published_checkpoint.py
+- M tests/test_generic_worker_canary_resume.py
+- M tests/test_production_os_resume_objectives.py
 
 ## Affected areas
-- .github
+- control
+- docs
+- integration_tests
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_resume_objectives.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

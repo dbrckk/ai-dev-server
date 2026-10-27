@@ -4099,6 +4099,7 @@
     "studio/production_os_resume_objectives.py": {
       "dependencies": [
         "studio/core.py",
+        "studio/production_os_worker_canary.py",
         "tests/test_multi_engine_orchestrator.py"
       ],
       "dependents": [
@@ -4108,7 +4109,7 @@
         "tests/test_production_os_worker_canary.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/production_os_review_canary.py": {
       "dependencies": [
@@ -4185,12 +4186,13 @@
       ],
       "dependents": [
         "studio/production_os_jumpy_source_repair.py",
+        "studio/production_os_resume_objectives.py",
         "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_runner_persistent.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_canary.py"
       ],
-      "in_degree": 5,
+      "in_degree": 6,
       "out_degree": 7
     },
     "studio/project_budget.py": {

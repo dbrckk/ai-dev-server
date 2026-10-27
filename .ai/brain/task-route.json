@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 6,
+    "score_margin": 0,
     "tier": "narrow",
-    "top_score": 45
+    "top_score": 39
   },
   "cache": {
-    "fingerprint": "f874244b726f8163b320d4e73b674576564a471ca806a8a68eb39e64390cfada",
+    "fingerprint": "99bd3f31c4b179d512fc053375b9c0301e9db9acaa8960e3932276527090ba31",
     "hit": false
   },
-  "candidate_count": 101,
+  "candidate_count": 103,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -21,12 +21,29 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_multi_engine_orchestrator.py",
+      "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 45,
+      "score": 39,
+      "symbols": [
+        "_detect",
+        "_remaining",
+        "_run_stage",
+        "run_project"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_multi_engine_orchestrator.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 39,
       "symbols": [
         "MultiEngineOrchestratorTests",
         "ReadOnlyGitHub",
@@ -56,34 +73,19 @@
         "engine",
         "game"
       ],
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 39,
-      "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "studio/production_os_jumpy_source_repair.py",
+      "path": "tests/test_generic_worker_canary_resume.py",
       "reasons": [
         "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 35,
+      "score": 38,
       "symbols": [
-        "apply_model_guard",
-        "contract",
-        "run"
+        "ExistingWorkerCanaryVerificationTests",
+        "_request",
+        "test_accepts_exact_existing_canary_with_or_without_final_newline",
+        "test_rejects_non_canary_repository_or_missing_contract",
+        "test_rejects_wrong_content"
       ]
     }
   ],

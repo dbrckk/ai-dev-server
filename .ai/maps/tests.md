@@ -5476,15 +5476,28 @@ checkpoint = advance(new("managed", "generic", "a" * 40),
 ⋮----
 repo = factory.return_value
 ⋮----
+blocked = deliver(request, repo, checkpoint, {"rounds": []}, out)
+⋮----
 pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
 ⋮----
 saved_path = out / ".autonomy/generic-execution-checkpoint.json"
 ⋮----
 pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
 ⋮----
+started = load(saved_path)["last_verification"]["managed_review_delivery"]["review_wait_started"]
+⋮----
+expired = run_project(request, out, Path(temp) / "expired-review")
+⋮----
 awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+started_ci = load(saved_path)["last_verification"]["managed_review_delivery"]["ci_wait_started"]
+⋮----
+handoff_starting_ci = run_project(request, out, Path(temp) / "handoff-starting-ci")
+⋮----
+receipt = load(saved_path)["last_verification"]["managed_review_delivery"]
 ⋮----
 unavailable = run_project(request, out, Path(temp) / "ci-outage")
+⋮----
+review_unavailable = run_project(request, out, Path(temp) / "review-outage-after-ci")
 ⋮----
 complete = run_project(request, out, Path(temp) / "resume")
 ⋮----
@@ -5739,7 +5752,8 @@ delivered = failure is None or failure == "confirmed handoff"
 ⋮----
 observed = []
 request = {**self._request(), "id": "canary-resume"}
-outcome = run_project(request, root / "output", root,
+outcome = run_project(request, root / ("output-" + str(index)), root,
+expected = "human_action_required" if failure == "Generic review pull request head revision unverified" else "deferred"
 ⋮----
 def test_rejects_wrong_content(self)
 ⋮----
@@ -9425,6 +9439,11 @@ def test_dry_run_does_not_mutate_and_apply_submits_only_once(self)
 client = self.client()
 ⋮----
 result = resume(client, ['a' * 32], apply=True)
+⋮----
+entry = {'workflow_id': 'a' * 32, 'job_key': 'd' * 24}
+exact = Mock()
+job = {'status': 'failed', 'payload': {'workflow_id': 'a' * 32,
+task = {'task_id': 'implementation', 'status': 'failed', 'attempts': 1, 'max_attempts': 3}
 ⋮----
 def test_active_successful_and_changed_workflows_are_never_resumed(self)
 ⋮----

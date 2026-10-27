@@ -1,20 +1,28 @@
 {
   "files": {
-    ".github/workflows/production-os-canary-review-handoff.yml": {
-      "sha256": "18867143e8b77c2406db0096b622bdfd8ffd1d6dd83d4cdd5d8d6e03a7264e28",
-      "size": 9907
+    "control/production-os-resume.json": {
+      "sha256": "96ed83209ebbf2ce3c465b7b18bd591b3db20faaa4d13dff8c2a8ea91e614892",
+      "size": 138
+    },
+    "docs/managed-generic-delivery.md": {
+      "sha256": "31c7ca902897dbd133a7a5cc2a3ee1a9f95d581c663bd43086b26cc976230d42",
+      "size": 5710
+    },
+    "integration_tests/test_production_os_server_integration.py": {
+      "sha256": "2e702693861ad5f645d1f5e2bda47ccb69a1553c463a8e4d6327702aa663f2df",
+      "size": 16184
     },
     "studio/architecture_change_guard.py": {
       "sha256": "8d3d1c3143f27f0bd86a2dd42b0d9627d4c06c71aa993351d28fcebf873ff6ba",
       "size": 7408
     },
-    "studio/autonomous_project.py": {
-      "sha256": "3132412963cc97a014428b04daea1e565a2e25f833fec02dfb485516dbf151e0",
-      "size": 24323
-    },
     "studio/core.py": {
       "sha256": "a87ca090f7960cffdd64bde639417ccd13293ff93cf800f538ed2414c262465d",
       "size": 59906
+    },
+    "studio/cost_drift.py": {
+      "sha256": "99efb3ca666e4d210bb4f2738f9bc78176856034d3ce59e71cf3eb3fce1f0e5c",
+      "size": 3237
     },
     "studio/execution_checkpoint.py": {
       "sha256": "9ecee6302f6c4ecadafdf8e6b55dbea36945824e3a3ee07efe9c7916a83f64f2",
@@ -24,9 +32,9 @@
       "sha256": "d3c881f22cd1d08a430ed82d6bded394bbc619fae1e3a4dbf28fb121946f9b88",
       "size": 4301
     },
-    "studio/generic_model.py": {
-      "sha256": "37fd31b1f40b2234484690d0fb4037a2ca4df2364d8fe5e917e1249ef0dc6d3f",
-      "size": 34926
+    "studio/generic_delivery.py": {
+      "sha256": "e4aa3f5b142ac32ca7761b6b13a71d918d991a27080cb9887532bc5662ba2a06",
+      "size": 9871
     },
     "studio/generic_project.py": {
       "sha256": "6863ec3a69f5797d6b1fb1ad62bf4815666df7508a7938492a36b81636633b8f",
@@ -37,16 +45,20 @@
       "size": 25760
     },
     "studio/generic_smoke.py": {
-      "sha256": "f9548676c9eafc67aeb44c549c2c4b775066b993e9c55c7fe67c45efa2a4b718",
-      "size": 13160
+      "sha256": "8e4b2af1a23b9f5865f06f36a4483856eebf3fe5c5ae4d62e5a9a89d18fddea8",
+      "size": 14115
     },
     "studio/generic_target_ci.py": {
       "sha256": "74fbf730c43108bfb6ebe876eb1b13c50dfb1219436de2eaf9d500c06a634a14",
       "size": 6517
     },
-    "studio/github_runner.py": {
-      "sha256": "fb2e66fd9dc161a81e29d6dcf5d8b9e8f65f381824ea46cf0f07f07135d13c10",
-      "size": 70284
+    "studio/generic_toolchain.py": {
+      "sha256": "fe5c0a3ddbb1695e3f3bb64cc2d16622c6822217e6bcb9de86416591ff4aca4f",
+      "size": 3402
+    },
+    "studio/generic_verify.py": {
+      "sha256": "419045987202a28073ae21830bba0e7784d59058c752f9ad4d8854efd2baf4c3",
+      "size": 9061
     },
     "studio/godot_model.py": {
       "sha256": "b11d4c067e1ea73d863d7156139181dca3e99ba991223d744942df4ccb8f1aa2",
@@ -56,21 +68,17 @@
       "sha256": "ac533df989c2ef4f261cfcb18ada3dcd5d392be9a0e7ecdcc91c10a867a05dd8",
       "size": 16222
     },
-    "studio/production_os_bounded_source_repair.py": {
-      "sha256": "20b9fa3f2dacf9ff00442531c524d27f7e209c9cd7b9fb776555c33dac4ef0bd",
-      "size": 12041
+    "studio/native_model_usage.py": {
+      "sha256": "bc13a1196da2487cb2a32989b33ed895249b34b598d805221ed21b211c23f970",
+      "size": 12388
     },
     "studio/production_os_jumpy_source_repair.py": {
       "sha256": "ba4ba34886e28a538c6f68c5d680ab15af14e1cf5490f13669dbfa584be8df12",
       "size": 11769
     },
     "studio/production_os_resume_objectives.py": {
-      "sha256": "9c2ef4cdc275bbb91d182bfe2306bf3529312089d770bb61757fb8fb3ae04adf",
-      "size": 6106
-    },
-    "studio/production_os_review_canary.py": {
-      "sha256": "435b535dc8ea7750053a123829336a15ff707519e509b360c31a4f12e56c303b",
-      "size": 6520
+      "sha256": "ae341f97296a047d17ee2cc3bf3a747e1dde53a642183cf475d459fd00a7e6c6",
+      "size": 11249
     },
     "studio/production_os_source_tasks.py": {
       "sha256": "06dcd3a7198693e9288d1484a1471bfe898acdb7675990e96e64386936e9d130",
@@ -84,41 +92,33 @@
       "sha256": "2f7322e7b41f8ecd9764560c9505494c4a53af9bd6aff83787be24f09a5118b3",
       "size": 21582
     },
-    "studio/run.py": {
-      "sha256": "d9d8fdd506ddd70348899c57c29a2916f7d3b1355c2d1c67e360d4fa67bac8c0",
-      "size": 43522
+    "studio/run_cost_controller.py": {
+      "sha256": "7f72aef597889adf0b16a5ee7588ce4d5ea28d8f86a7e33195f120ed94a0d62d",
+      "size": 3122
     },
-    "studio/target_ci_verification.py": {
-      "sha256": "6655d1ba3851ad4ace949043299350f7f14f47d0694d131af8e896f118917212",
-      "size": 7612
+    "studio/source_delivery_checkpoint.py": {
+      "sha256": "635eb2ce8a69580e76b4d39c2e2434e978aa8af529bc31d7ee7d9f191d60aa97",
+      "size": 3764
     },
-    "tests/test_generic_repository_pull_request.py": {
-      "sha256": "a86ab14d59fe97319a71ef874e34508e6761d56f8aba0ba278213576a5eb18a2",
-      "size": 17167
+    "tests/test_generic_published_checkpoint.py": {
+      "sha256": "c9739bf0350f184938379c74c3bda48ee6bafe286b1c2ffa5ea5f3c7497e1e6e",
+      "size": 12863
     },
     "tests/test_generic_worker_canary_resume.py": {
-      "sha256": "aece1348535b581da0bc8bb869ec1c83f81e828a50f8cb1b48482632d588abdd",
-      "size": 13304
-    },
-    "tests/test_journeys.py": {
-      "sha256": "fe97280282a28a4b35d8c4fd500aa2af557bcc82791cd630e4450832fc9b67b0",
-      "size": 7220
+      "sha256": "a6ec62c8ee12741c63c9d55474963a23730680c9019ea86ccf7ed568778cf90a",
+      "size": 13480
     },
     "tests/test_multi_engine_orchestrator.py": {
       "sha256": "d35996373d9b72b423e478dfc98f7641dd3acf38781a506be60a013ce5a2208c",
       "size": 41772
     },
-    "tests/test_production_os_worker.py": {
-      "sha256": "a59da509e83a201fc75fe091f633954ee609112f04d891f610bc437d878a9387",
-      "size": 8744
+    "tests/test_production_os_resume_objectives.py": {
+      "sha256": "1e7ea9c18fc7b71a3e5c69edb51a03a2d4a2a23ac795a82213a1a17916b7c2ee",
+      "size": 5318
     },
     "tests/test_production_os_worker_canary.py": {
       "sha256": "6a67c1da270af776024bd930a2d21c7d393a20097b9227fc2b8f441cbc3b3dd2",
       "size": 24985
-    },
-    "tests/test_repository_branch_identity.py": {
-      "sha256": "bf37b1d052a50fba626cbd39762864d782d6603f42d31763f9ee560bf9b5b6e7",
-      "size": 4269
     },
     "tests/test_studio.py": {
       "sha256": "bcd0fa035c5549268d427145b3f9f5b6948360ec1c893a086457cf3ae29e2fa6",

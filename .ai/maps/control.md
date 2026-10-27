@@ -132,9 +132,9 @@ request.json
 ## File: production-os-resume.json
 ```json
 {
-  "sequence": 4,
-  "failed_workflow_ids": [
-    "32aacc22549240148d8650711fae817c"
+  "sequence": 5,
+  "retry_jobs": [
+    {"workflow_id": "dd5bf4deca1e4cb89daf10182a68627b", "job_key": "81cf5bb356d3a35ac9b36f11"}
   ]
 }
 ```

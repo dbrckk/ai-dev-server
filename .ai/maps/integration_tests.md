@@ -83,6 +83,23 @@ result = resume(client, [project['workflow_id']], apply=True)
 ⋮----
 updated = control.managed_projects.get(project['project_id'])
 ⋮----
+exact = control.workflows.create(name='exact-checkpoint-retry', repository='dbrckk/integration-fixture',
+first = control.workflows.dispatch_ready(exact['id'])[0]
+⋮----
+before = control.workflows.get(exact['id'])
+⋮----
+retried = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
+# Older supported servers already queue the next attempt for
+# this blocked result; newer ones retain an explicitly failed
+# task. Both paths must keep identity and attempts bounded.
+⋮----
+current = control.workflows.get(exact['id'])
+second = control.queue.get(current['tasks'][0]['claimed_job_key'])
+⋮----
+queued = control.workflows.get(exact['id'])
+⋮----
+woken = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
+⋮----
 def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
 def test_unreadable_result_is_reported_to_real_server(self)

@@ -103,8 +103,14 @@ class RealServerWorkerTests(unittest.TestCase):
                 control.workflows.record_result(exact['id'], 'implementation', succeeded=False, result={
                     'ai_dev_server_status': 'blocked', 'evidence': {'pipeline_status': 'blocked',
                     'next_stage': 'source_delivery_access_denied'}})
+                before = control.workflows.get(exact['id'])
+                control.dashboard_control.kick_worker = lambda worker_id: {'status': 'dispatched'}
                 retried = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
-                self.assertEqual(retried['objectives'][0]['status'], 'retried')
+                # Older supported servers already queue the next attempt for
+                # this blocked result; newer ones retain an explicitly failed
+                # task. Both paths must keep identity and attempts bounded.
+                self.assertEqual(retried['objectives'][0]['status'],
+                                 'retried' if before['tasks'][0]['status'] == 'failed' else 'woken')
                 current = control.workflows.get(exact['id'])
                 second = control.queue.get(current['tasks'][0]['claimed_job_key'])
                 self.assertEqual(build_studio_request(first)['id'], build_studio_request(second)['id'])

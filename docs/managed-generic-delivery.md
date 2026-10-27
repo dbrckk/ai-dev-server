@@ -35,15 +35,12 @@ they never count as successful delivery.
 
 ## Automatic progression
 
-This repository installs the trusted `production_os_review_handoff` receiver for
-credentials that can publish a branch but cannot create PRs directly. It runs
-only default-branch code, never checks out generated source, verifies the exact
-managed branch tip and bounded diff, rejects `.github` edits and opens a draft
-PR. Repository settings must permit Actions to create PRs. The receiver then
-explicitly dispatches CI after checking that its definition matches main, because
-a PR created by GITHUB_TOKEN does not generate automatic PR workflow runs. It
-grants no approval or merge authority. Source CI success remains a separate
-exact-commit requirement.
+This repository's existing `production_os_review_handoff` receiver accepts only
+the exact file-canary contract. It runs default-branch code, verifies the marker,
+managed branch and source SHA, opens a draft PR and explicitly dispatches CI.
+Repository settings must permit Actions to create PRs. Other generic objectives
+need direct PR permissions or their own reviewed target handoff. Independent
+source CI success remains required after the PR is confirmed.
 
 1. Generate and locally verify the implementation, then publish it.
 2. Seal a delivery checkpoint and confirm the PR at the same SHA.

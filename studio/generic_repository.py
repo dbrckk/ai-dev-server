@@ -16,7 +16,6 @@ MAX_TOTAL=6_000_000
 # Only targets that have an independently reviewed default-branch
 # repository_dispatch workflow may request a GitHub-token PR handoff.
 TRUSTED_REVIEW_TARGETS = frozenset({
-    "dbrckk/ai-dev-server",
     "dbrckk/repo-standards",
     "dbrckk/Jumpy",
     "dbrckk/star-list",

@@ -35,6 +35,16 @@ they never count as successful delivery.
 
 ## Automatic progression
 
+This repository installs the trusted `production_os_review_handoff` receiver for
+credentials that can publish a branch but cannot create PRs directly. It runs
+only default-branch code, never checks out generated source, verifies the exact
+managed branch tip and bounded diff, rejects `.github` edits and opens a draft
+PR. Repository settings must permit Actions to create PRs. The receiver then
+explicitly dispatches CI after checking that its definition matches main, because
+a PR created by GITHUB_TOKEN does not generate automatic PR workflow runs. It
+grants no approval or merge authority. Source CI success remains a separate
+exact-commit requirement.
+
 1. Generate and locally verify the implementation, then publish it.
 2. Seal a delivery checkpoint and confirm the PR at the same SHA.
 3. Observe the target's CI. If absent, persist dispatch intent before sending one
@@ -51,6 +61,11 @@ they never count as successful delivery.
    workflow, definition blob, run, attempt, source SHA and URL.
 
 CI waiting expires after one hour instead of silently looping forever. A
+separate one-hour deadline also bounds PR handoff waiting. Missing or rejected
+handoff configuration stops with an explicit reason; accepted or ambiguous
+handoff dispatches are not replayed on resume. CI receives its own wait period
+when the PR is confirmed, so a delayed handoff does not consume the CI window.
+A
 temporary CI read failure remains pending; missing configuration or permission
 evidence is surfaced for correction. PR handoff waiting also preserves the
 implementation-continuation budget. A definite

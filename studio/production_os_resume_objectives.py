@@ -109,6 +109,39 @@ def resume(client, workflow_ids, *, apply=False):
     return {"applied": apply, "objectives": outcomes}
 
 
+def retry_existing_jobs(client, entries, *, apply=False):
+    """Retry an exact failed task without changing its checkpoint identity."""
+    if (not isinstance(entries, list) or not 1 <= len(entries) <= 5
+            or any(not isinstance(e, dict) or set(e) != {"workflow_id", "job_key"}
+                   or not re.fullmatch(r"[a-f0-9]{32}", str(e.get("workflow_id") or ""))
+                   or not re.fullmatch(r"[a-f0-9]{24}", str(e.get("job_key") or "")) for e in entries)
+            or len({e["job_key"] for e in entries}) != len(entries)):
+        raise ValueError("Expected distinct exact failed jobs")
+    outcomes = []
+    for entry in entries:
+        job = client.get("/v1/jobs/" + entry["job_key"]).get("job", {})
+        payload = job.get("payload") or {}
+        if payload.get("workflow_id") != entry["workflow_id"]:
+            raise ValueError("Recovery job/workflow mismatch")
+        workflow = client.get("/v1/workflows/" + entry["workflow_id"]).get("workflow", {})
+        tasks = [t for t in workflow.get("tasks", []) if t.get("task_id") == payload.get("workflow_task_id")]
+        record = {**entry, "status": "not_eligible"}
+        if (job.get("status") == "failed" and workflow.get("status") == "failed"
+                and len(tasks) == 1 and tasks[0].get("status") == "failed"
+                and type(payload.get("workflow_attempt")) is int
+                and tasks[0].get("attempts") == payload["workflow_attempt"]
+                and tasks[0]["attempts"] < tasks[0].get("max_attempts", 0)):
+            record["status"] = "eligible"
+            if apply:
+                response = client.submit("/v1/dashboard/workers/github-actions-worker/control",
+                                         {"action": "retry", "job_key": entry["job_key"]})
+                if response.get("accepted") is not True or response.get("workflow_id") != entry["workflow_id"]:
+                    raise RuntimeError("Exact task retry receipt unverified")
+                record["status"] = "retried"
+        outcomes.append(record)
+    return {"applied": apply, "objectives": outcomes}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("control", type=Path)
@@ -119,8 +152,15 @@ def main(argv=None):
         token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
         if not token:
             raise ValueError("Operator secret missing")
-        result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
-                        control["failed_workflow_ids"], apply=args.apply)
+        client = OperatorClient(os.environ["PRODUCTION_OS_URL"], token)
+        from production_os_worker_canary import wait_for_readiness
+        wait_for_readiness(client)
+        if "retry_jobs" in control:
+            if "failed_workflow_ids" in control:
+                raise ValueError("Choose one recovery mode")
+            result = retry_existing_jobs(client, control["retry_jobs"], apply=args.apply)
+        else:
+            result = resume(client, control["failed_workflow_ids"], apply=args.apply)
     except Exception as exc:
         print(canonical({"status": "unavailable", "error_type": type(exc).__name__}))
         return 1

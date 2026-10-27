@@ -5,7 +5,7 @@
     "failed_workflow": "dd5bf4deca1e4cb89daf10182a68627b",
     "evidence": "Real Nemotron3.5 Lightning:3 calls18145 reported tokens;one correct marker published;no PR confirmed;worker hit70-minute runtime limit. Original failure preserved.",
     "fix": "Install trusted draft-PR handoff;explicit permanent failures;durable single handoff dispatch;separate bounded PR/CI waits",
-    "recovery": "Control sequence5 selects only original failed managed workflow after infrastructure merge. Reuse source checkpoint;do not regenerate or merge source PR.",
+    "recovery": "Control sequence5 retries exact job81cf5bb356d3a35ac9b36f11 in original workflow,not a new generation;preserve checkpoint identity and attempts cap;warm service with GET before mutation. Do not regenerate or merge source PR.",
     "remaining": "Qualify infrastructure and observe actual recovery;no end-to-end success claimed yet"
   },
   "generic_ci_dispatch_configuration": {

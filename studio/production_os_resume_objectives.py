@@ -3,10 +3,11 @@ import argparse
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 from pathlib import Path
 
-from core import API, canonical
+from core import API, APIError, NoRedirect, ProtocolError, StudioError, canonical
 
 
 INSTRUCTION = (
@@ -38,7 +39,21 @@ class OperatorClient(API):
             headers={"Authorization": "Bearer " + self.key, "Content-Type": "application/json",
                      "Accept": "application/json"})
         # One submission only: an uncertain mutation response must never be retried here.
-        return self._response(request, timeout_seconds=30)
+        # Control-plane 202 means accepted work, not a pending NVIDIA response.
+        try:
+            with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
+                raw = response.read(4_000_001)
+        except urllib.error.HTTPError as exc:
+            raise APIError(exc.code) from None
+        if len(raw) > 4_000_000:
+            raise StudioError("Operator response too large")
+        try:
+            value = json.loads(raw)
+        except (ValueError, UnicodeError, RecursionError):
+            raise ProtocolError("Operator response is not JSON") from None
+        if not isinstance(value, dict):
+            raise ProtocolError("Operator response must be an object")
+        return value
 
 
 def recover_legacy(client, workflow_id, projects, *, apply):
@@ -126,6 +141,9 @@ def retry_existing_jobs(client, entries, *, apply=False):
         workflow = client.get("/v1/workflows/" + entry["workflow_id"]).get("workflow", {})
         tasks = [t for t in workflow.get("tasks", []) if t.get("task_id") == payload.get("workflow_task_id")]
         record = {**entry, "status": "not_eligible"}
+        if len(tasks) == 1:
+            record.update(workflow_status=workflow.get("status"), task_status=tasks[0].get("status"),
+                          attempts=tasks[0].get("attempts"), max_attempts=tasks[0].get("max_attempts"))
         if (job.get("status") == "failed" and workflow.get("status") == "failed"
                 and len(tasks) == 1 and tasks[0].get("status") == "failed"
                 and type(payload.get("workflow_attempt")) is int
@@ -138,6 +156,26 @@ def retry_existing_jobs(client, entries, *, apply=False):
                 if response.get("accepted") is not True or response.get("workflow_id") != entry["workflow_id"]:
                     raise RuntimeError("Exact task retry receipt unverified")
                 record["status"] = "retried"
+        elif (job.get("status") == "failed" and workflow.get("status") == "running"
+              and len(tasks) == 1 and tasks[0].get("status") == "queued"
+              and type(payload.get("workflow_attempt")) is int
+              and payload["workflow_attempt"] <= tasks[0].get("attempts", 0) <= tasks[0].get("max_attempts", 0)):
+            # runtime_limit already queues another bounded attempt on the
+            # server. Wake that existing job instead of creating a generation.
+            current = client.get("/v1/jobs/" + str(tasks[0].get("claimed_job_key") or "")).get("job", {})
+            current_payload = current.get("payload") or {}
+            if (current_payload.get("workflow_id") != entry["workflow_id"]
+                    or current_payload.get("workflow_task_id") != payload.get("workflow_task_id")):
+                raise ValueError("Queued recovery task identity changed")
+            if current.get("status") in {"claimed", "acked", "running"}:
+                record["status"] = "already_running"
+            elif current.get("status") == "queued":
+                record["status"] = "already_queued"
+                if apply:
+                    response = client.submit("/v1/dashboard/workers/github-actions-worker/control", {"action": "kick"})
+                    if response.get("accepted") is not True or response.get("status") != "dispatched":
+                        raise RuntimeError("Recovery worker wake unavailable")
+                    record["status"] = "woken"
         outcomes.append(record)
     return {"applied": apply, "objectives": outcomes}
 
@@ -165,6 +203,10 @@ def main(argv=None):
         print(canonical({"status": "unavailable", "error_type": type(exc).__name__}))
         return 1
     print("Production-OS objective recovery: " + canonical(result))
+    if "retry_jobs" in control and args.apply and any(
+            row.get("status") not in {"retried", "woken", "already_running"}
+            for row in result["objectives"]):
+        return 1
     return 0
 
 

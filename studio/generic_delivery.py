@@ -8,6 +8,8 @@ from execution_checkpoint import advance, save
 from source_delivery_checkpoint import request_fingerprint, SourceCheckpointError
 from generic_target_ci import inspect as inspect_ci, dispatch as dispatch_ci
 
+CI_DISPATCH_GRACE_SECONDS = 60
+
 
 def _fingerprint(request: dict) -> str:
     objective = (request.get("production_os") or {}).get("objective_sha256")
@@ -107,7 +109,11 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
             ci = {"status": "pending" if transient else "unavailable",
                   "reason": "independent_CI_temporarily_unavailable" if transient else "independent_CI_evidence_unavailable"}
         receipt = verification["managed_review_delivery"]
-        if ci.get("reason") == "exact_commit_ci_not_started" and not receipt["ci_dispatch_attempted"]:
+        if (ci.get("reason") == "exact_commit_ci_not_started"
+                and not receipt["ci_dispatch_attempted"]
+                and time.time() - receipt["ci_wait_started"] >= CI_DISPATCH_GRACE_SECONDS):
+            # The trusted handoff creates its PR before dispatching CI. Give
+            # that receiver (and automatic PR events) time to start a run.
             # Seal intent first. Never replay an ambiguous mutation on restart.
             receipt["ci_dispatch_attempted"] = True
             checkpoint = advance(checkpoint, last_verification=deepcopy(verification))
@@ -120,8 +126,17 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
                 ci = {**ci, "status": "unavailable", "reason": dispatch["reason"]}
         if ci.get("status") == "pending" and time.time() - receipt["ci_wait_started"] > 3600:
             ci = {**ci, "status": "unavailable", "reason": "independent_CI_wait_expired"}
-        if ci.get("status") == "passed" and repo._find_open_pull_request(expected_sha=sha) is None:
-            ci = {**ci, "status": "pending", "reason": "review_commit_changed_during_CI"}
+        if ci.get("status") == "passed":
+            try:
+                current_review = repo._find_open_pull_request(expected_sha=sha)
+            except StudioError as exc:
+                transient = ((isinstance(exc, APIError) and exc.status in {408, 429, 500, 502, 503, 504})
+                             or str(exc) == "API unavailable or timed out")
+                ci = {**ci, "status": "pending" if transient else "unavailable",
+                      "reason": "review_temporarily_unavailable_after_CI" if transient else "review_evidence_unavailable_after_CI"}
+            else:
+                if current_review is None:
+                    ci = {**ci, "status": "pending", "reason": "review_commit_changed_during_CI"}
     complete = confirmed and ci.get("status") == "passed"
     repair = ci.get("status") == "failed"
     verification["independent_ci"] = ci

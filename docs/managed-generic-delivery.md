@@ -48,7 +48,10 @@ exact-commit requirement.
 1. Generate and locally verify the implementation, then publish it.
 2. Seal a delivery checkpoint and confirm the PR at the same SHA.
 3. Observe the target's CI. If absent, persist dispatch intent before sending one
-   dispatch POST. Do not replay an ambiguous response after restart.
+   dispatch POST after a60-second grace period following PR confirmation. This
+   lets the trusted receiver or automatic PR event start CI before the source
+   credential needs to dispatch a fallback. Do not replay an ambiguous response
+   after restart.
 4. While CI runs, yield without invoking the model or republishing source.
    The worker polls every30 seconds with heartbeat and cancellation active;
    waiting does not spend implementation continuations. Delivery-only resumes
@@ -86,3 +89,10 @@ that smoke are deterministic fixtures, not live hosted inference.
 The inspector was also executed against public GitHub API responses for real
 run `40222698694`, attempt1, source `3d5e617d428d809a9760460e6f22e208f095445e`:
 the existing successful CI was accepted without triggering another run.
+
+`production_os_resume_objectives.py` can also select an exact previous failed
+job via `retry_jobs`. It retries the original workflow task within its attempts
+cap, or wakes an existing queued attempt after a runtime limit. It does not
+create a new workflow generation, so checkpoint identity is retained. Missing
+eligibility or a failed wake exits unsuccessfully. Service readiness is checked
+with GET before any control mutation.

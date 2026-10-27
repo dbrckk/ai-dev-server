@@ -176,6 +176,15 @@
 
 # Project state
 
+Pilot45 published exactly one requested marker using three real hosted model
+calls (18145 reported tokens), then exhausted runtime waiting for a PR. The
+worker repository initially lacked its trusted handoff receiver;PR409 has since
+installed the exact-marker receiver. Reuse that receiver,
+surface permanent handoff failures, avoid repeated dispatches and bound review
+waiting independently from CI. Recovery control selects the original failed
+workflow only. Keep the produced source PR draft/unmerged; retain original
+failure evidence. End-to-end recovery is not yet verified.
+
 Managed generic delivery follow-up: enable explicit dispatch of the existing CI
 workflow when automatic PR events do not start qualification. Jobs retain their
 read-only permission and existing checks. PR402 postmerge validation passed all

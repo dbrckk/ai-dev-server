@@ -155,6 +155,7 @@ def main() -> int:
                "production_os": {"workflow_id": "1" * 32, "workflow_task_id": "implementation"}}
     publication = {"sha": "a" * 40, "count": 0, "available": False,
                    "ci": "absent", "dispatches": 0}
+    delivery_clock = [1000.0]
     class ManagedGitHub:
         repo = "/repos/fixture/generic-smoke"
         def dispatch(self, repo, wid):
@@ -207,6 +208,7 @@ def main() -> int:
         def _find_open_pull_request(self, **kwargs):
             return self.ensure_pull_request(**kwargs)
     with patch.object(generic_project, "GitHub", side_effect=lambda repo: ManagedGitHub()), \
+         patch("generic_delivery.time.time", side_effect=lambda: delivery_clock[0]), \
          patch("generic_delivery.dispatch_ci", side_effect=ManagedGitHub().dispatch), \
          patch.object(generic_project, "GenericRepository", ManagedRepository), \
          patch.object(generic_project, "ask", side_effect=fake_ask) as model, \
@@ -218,7 +220,13 @@ def main() -> int:
         model.side_effect = AssertionError("delivery recovery must not regenerate implementation")
         publication["available"] = True
         awaiting_ci = generic_project.run_project(request, managed_out, out / "managed-ci-wait", max_rounds=1)
-        assert awaiting_ci["status"] == "deferred" and publication["dispatches"] == 1
+        assert awaiting_ci["status"] == "deferred" and publication["dispatches"] == 0
+        delivery_clock[0] += 59
+        grace_wait = generic_project.run_project(request, managed_out, out / "managed-ci-grace", max_rounds=1)
+        assert grace_wait["status"] == "deferred" and publication["dispatches"] == 0
+        delivery_clock[0] += 1
+        dispatched = generic_project.run_project(request, managed_out, out / "managed-ci-dispatched", max_rounds=1)
+        assert dispatched["status"] == "deferred" and publication["dispatches"] == 1
         waiting_again = generic_project.run_project(request, managed_out, out / "managed-ci-wait-again", max_rounds=1)
         assert waiting_again["status"] == "deferred" and publication["dispatches"] == 1
         publication["ci"] = "success"
@@ -247,8 +255,13 @@ def main() -> int:
         publication["ci"] = "absent"
         repaired = generic_project.run_project(request, managed_out, out / "managed-repair", max_rounds=1)
         assert repaired["status"] == "deferred" and seen_failure == [True]
-        assert publication["count"] == 2 and publication["dispatches"] == 2
+        assert publication["count"] == 2 and publication["dispatches"] == 1
         repair_calls = model.call_count
+        model.side_effect = AssertionError("repaired CI dispatch must not invoke model")
+        delivery_clock[0] += 60
+        repair_dispatch = generic_project.run_project(request, managed_out, out / "managed-repair-ci-dispatch", max_rounds=1)
+        assert repair_dispatch["status"] == "deferred"
+        assert publication["count"] == 2 and publication["dispatches"] == 2
         model.side_effect = AssertionError("CI confirmation must not invoke model")
         publication["ci"] = "success"
         accepted = generic_project.run_project(request, managed_out, out / "managed-repaired-ci", max_rounds=1)

@@ -30,7 +30,7 @@ except ModuleNotFoundError as exc:
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from production_os_worker import ProductionOSClient, build_studio_request, run_once
 from core import request_check
-from production_os_resume_objectives import OperatorClient, resume
+from production_os_resume_objectives import OperatorClient, resume, retry_existing_jobs
 
 
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
@@ -92,6 +92,43 @@ class RealServerWorkerTests(unittest.TestCase):
                 self.assertEqual(updated['status'], 'ACTIVE')
                 resume(client, [project['workflow_id']], apply=True)
                 self.assertEqual(control.managed_projects.get(project['project_id'])['generation'], 2)
+                exact = control.workflows.create(name='exact-checkpoint-retry', repository='dbrckk/integration-fixture',
+                    tasks=[WorkflowTaskSpec('implementation', 'Resume published checkpoint', {
+                        'handoff': {'repository': 'dbrckk/integration-fixture', 'task': 'Resume the same verified source checkpoint'}},
+                        max_attempts=3)])
+                first = control.workflows.dispatch_ready(exact['id'])[0]
+                control.queue.claim_key(first['key'], 'github-actions-worker')
+                control.queue.ack(first['key'], 'github-actions-worker')
+                control.queue.fail(first['key'], 'github-actions-worker', 'review permission missing')
+                control.workflows.record_result(exact['id'], 'implementation', succeeded=False, result={
+                    'ai_dev_server_status': 'blocked', 'evidence': {'pipeline_status': 'blocked',
+                    'next_stage': 'source_delivery_access_denied'}})
+                before = control.workflows.get(exact['id'])
+                control.dashboard_control.kick_worker = lambda worker_id: {'status': 'dispatched'}
+                retried = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
+                # Older supported servers already queue the next attempt for
+                # this blocked result; newer ones retain an explicitly failed
+                # task. Both paths must keep identity and attempts bounded.
+                self.assertEqual(retried['objectives'][0]['status'],
+                                 'retried' if before['tasks'][0]['status'] == 'failed' else 'woken')
+                current = control.workflows.get(exact['id'])
+                second = control.queue.get(current['tasks'][0]['claimed_job_key'])
+                self.assertEqual(build_studio_request(first)['id'], build_studio_request(second)['id'])
+                self.assertEqual(current['tasks'][0]['attempts'], 2)
+                self.assertEqual(current['tasks'][0]['max_attempts'], 3)
+                control.queue.claim_key(second['key'], 'github-actions-worker')
+                control.queue.ack(second['key'], 'github-actions-worker')
+                control.queue.fail(second['key'], 'github-actions-worker', 'runtime limit')
+                control.workflows.record_result(exact['id'], 'implementation', succeeded=False,
+                                                result={'ai_dev_server_status': 'runtime_limit'})
+                queued = control.workflows.get(exact['id'])
+                self.assertEqual(queued['tasks'][0]['attempts'], 3)
+                control.dashboard_control.kick_worker = lambda worker_id: {'status': 'dispatched'}
+                woken = retry_existing_jobs(client, [{'workflow_id': exact['id'], 'job_key': first['key']}], apply=True)
+                self.assertEqual(woken['objectives'][0]['status'], 'woken')
+                self.assertEqual(control.workflows.get(exact['id'])['tasks'][0]['claimed_job_key'],
+                                 queued['tasks'][0]['claimed_job_key'])
+                self.assertEqual(control.workflows.get(exact['id'])['tasks'][0]['attempts'], 3)
             finally:
                 server.shutdown()
                 server.server_close()

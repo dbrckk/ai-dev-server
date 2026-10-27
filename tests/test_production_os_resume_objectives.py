@@ -32,6 +32,27 @@ class ResumeObjectivesTests(unittest.TestCase):
         resume(client, ['a' * 32], apply=True)
         self.assertEqual(client.submissions, ['b' * 32])
 
+        from production_os_resume_objectives import retry_existing_jobs
+        from unittest.mock import Mock
+        entry = {'workflow_id': 'a' * 32, 'job_key': 'd' * 24}
+        exact = Mock()
+        job = {'status': 'failed', 'payload': {'workflow_id': 'a' * 32,
+               'workflow_task_id': 'implementation', 'workflow_attempt': 1}}
+        task = {'task_id': 'implementation', 'status': 'failed', 'attempts': 1, 'max_attempts': 3}
+        exact.get.side_effect = lambda path: {'job': job} if '/jobs/' in path else {'workflow': {'status': 'failed', 'tasks': [task]}}
+        exact.submit.return_value = {'accepted': True, 'workflow_id': 'a' * 32}
+        self.assertEqual(retry_existing_jobs(exact, [entry])['objectives'][0]['status'], 'eligible')
+        exact.submit.assert_not_called()
+        self.assertEqual(retry_existing_jobs(exact, [entry], apply=True)['objectives'][0]['status'], 'retried')
+        exact.submit.assert_called_once_with('/v1/dashboard/workers/github-actions-worker/control',
+                                            {'action': 'retry', 'job_key': 'd' * 24})
+        task['attempts'] = 2
+        self.assertEqual(retry_existing_jobs(exact, [entry], apply=True)['objectives'][0]['status'], 'not_eligible')
+        self.assertEqual(exact.submit.call_count, 1)
+        job['payload']['workflow_id'] = 'f' * 32
+        with self.assertRaises(ValueError):
+            retry_existing_jobs(exact, [entry], apply=True)
+
     def test_active_successful_and_changed_workflows_are_never_resumed(self):
         for change in ({'status': 'ACTIVE'}, {'current_workflow': {'status': 'succeeded'}},
                        {'current_workflow_id': 'd' * 32}):

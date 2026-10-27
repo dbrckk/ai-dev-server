@@ -143,6 +143,12 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 repo.restore.return_value = ("b" * 40, {"files": 1})
                 repo.delivery_head.return_value = "b" * 40
                 repo.ensure_pull_request.side_effect = StudioError("API HTTP 403")
+                for outcome in ("not_configured", "rejected", "missing_token", "invalid_branch"):
+                    repo.request_trusted_review_handoff.return_value = {"status": outcome}
+                    blocked = deliver(request, repo, checkpoint, {"rounds": []}, out)
+                    self.assertEqual(blocked["status"], "human_action_required")
+                    self.assertEqual(blocked["report"]["ci"]["reason"], "review_handoff_" + outcome)
+                repo.request_trusted_review_handoff.reset_mock()
                 repo.request_trusted_review_handoff.return_value = {"status": "unavailable"}
                 pending = deliver(request, repo, checkpoint, {"rounds": []}, out)
                 self.assertEqual(pending["status"], "deferred")
@@ -153,11 +159,27 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                 pending_again = run_project({**request, "brief": request["brief"] + " Retry publication"},
                                             out, Path(temp) / "retry")
                 self.assertEqual(pending_again["status"], "deferred")
+                repo.request_trusted_review_handoff.assert_called_once()
+                started = load(saved_path)["last_verification"]["managed_review_delivery"]["review_wait_started"]
+                with patch("generic_delivery.time.time", return_value=started + 3601):
+                    expired = run_project(request, out, Path(temp) / "expired-review")
+                self.assertEqual(expired["status"], "human_action_required")
+                self.assertEqual(expired["report"]["ci"]["reason"], "review_handoff_wait_expired")
                 repo.ensure_pull_request.side_effect = None
                 repo.ensure_pull_request.return_value = {
                     "number": 3, "state": "open", "url": "https://github.com/owner/app/pull/3"}
-                awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+                ci.return_value = {"status": "pending", "reason": "exact_commit_ci_not_started", "workflow_id": 7}
+                with patch("generic_delivery.dispatch_ci", return_value={"status": "unavailable", "reason": "CI_dispatch_HTTP_403"}) as dispatch:
+                    awaiting_ci = run_project(request, out, Path(temp) / "ci-wait")
+                    started_ci = load(saved_path)["last_verification"]["managed_review_delivery"]["ci_wait_started"]
+                    with patch("generic_delivery.time.time", return_value=started_ci + 59):
+                        handoff_starting_ci = run_project(request, out, Path(temp) / "handoff-starting-ci")
+                    self.assertEqual(handoff_starting_ci["status"], "deferred")
+                    dispatch.assert_not_called()
                 self.assertEqual(awaiting_ci["status"], "deferred")
+                receipt = load(saved_path)["last_verification"]["managed_review_delivery"]
+                self.assertTrue(receipt["review_confirmed"])
+                self.assertIsNotNone(receipt["ci_wait_started"])
                 self.assertFalse(awaiting_ci["report"]["completion"]["finished"])
                 self.assertEqual(translate_orchestrator_result(awaiting_ci), {"yield_run": True})
                 from core import APIError
@@ -168,6 +190,13 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                     self.assertFalse(unavailable["report"]["completion"]["finished"])
                 ci.side_effect = None
                 ci.return_value = {"status": "passed", "sha": "b" * 40}
+                for outage in (APIError(503), StudioError("API unavailable or timed out")):
+                    repo._find_open_pull_request.side_effect = outage
+                    review_unavailable = run_project(request, out, Path(temp) / "review-outage-after-ci")
+                    self.assertEqual(review_unavailable["status"], "deferred")
+                    self.assertEqual(review_unavailable["report"]["ci"]["reason"], "review_temporarily_unavailable_after_CI")
+                    self.assertFalse(review_unavailable["report"]["completion"]["finished"])
+                repo._find_open_pull_request.side_effect = None
                 complete = run_project(request, out, Path(temp) / "resume")
                 self.assertEqual(complete["status"], "complete")
                 self.assertEqual(load(saved_path)["phase"], "complete")

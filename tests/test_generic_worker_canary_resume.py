@@ -55,7 +55,7 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                 )
 
                 # A restored marker must still reach review at its exact SHA.
-                for failure in (None, "API HTTP 403", "Generic review pull request head revision unverified", "confirmed handoff", "pending handoff"):
+                for index, failure in enumerate((None, "API HTTP 403", "Generic review pull request head revision unverified", "confirmed handoff", "pending handoff")):
                     with self.subTest(failure=failure), patch.dict(os.environ), patch(
                         "generic_project.GitHub"
                     ), patch("generic_project.GenericRepository") as repository, patch(
@@ -80,9 +80,10 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                         )
                         observed = []
                         request = {**self._request(), "id": "canary-resume"}
-                        outcome = run_project(request, root / "output", root,
+                        outcome = run_project(request, root / ("output-" + str(index)), root,
                                               checkpoint_observer=observed.append)
-                        self.assertEqual(outcome["status"], "complete" if delivered else "deferred")
+                        expected = "human_action_required" if failure == "Generic review pull request head revision unverified" else "deferred"
+                        self.assertEqual(outcome["status"], "complete" if delivered else expected)
                         self.assertEqual(outcome["report"]["completion"]["finished"], delivered)
                         self.assertEqual(observed[-1]["phase"], "complete" if delivered else "published")
                         self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "a" * 40)

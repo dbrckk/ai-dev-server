@@ -35,10 +35,20 @@ they never count as successful delivery.
 
 ## Automatic progression
 
+This repository's existing `production_os_review_handoff` receiver accepts only
+the exact file-canary contract. It runs default-branch code, verifies the marker,
+managed branch and source SHA, opens a draft PR and explicitly dispatches CI.
+Repository settings must permit Actions to create PRs. Other generic objectives
+need direct PR permissions or their own reviewed target handoff. Independent
+source CI success remains required after the PR is confirmed.
+
 1. Generate and locally verify the implementation, then publish it.
 2. Seal a delivery checkpoint and confirm the PR at the same SHA.
 3. Observe the target's CI. If absent, persist dispatch intent before sending one
-   dispatch POST. Do not replay an ambiguous response after restart.
+   dispatch POST after a60-second grace period following PR confirmation. This
+   lets the trusted receiver or automatic PR event start CI before the source
+   credential needs to dispatch a fallback. Do not replay an ambiguous response
+   after restart.
 4. While CI runs, yield without invoking the model or republishing source.
    The worker polls every30 seconds with heartbeat and cancellation active;
    waiting does not spend implementation continuations. Delivery-only resumes
@@ -51,6 +61,11 @@ they never count as successful delivery.
    workflow, definition blob, run, attempt, source SHA and URL.
 
 CI waiting expires after one hour instead of silently looping forever. A
+separate one-hour deadline also bounds PR handoff waiting. Missing or rejected
+handoff configuration stops with an explicit reason; accepted or ambiguous
+handoff dispatches are not replayed on resume. CI receives its own wait period
+when the PR is confirmed, so a delayed handoff does not consume the CI window.
+A
 temporary CI read failure remains pending; missing configuration or permission
 evidence is surfaced for correction. PR handoff waiting also preserves the
 implementation-continuation budget. A definite
@@ -71,3 +86,10 @@ that smoke are deterministic fixtures, not live hosted inference.
 The inspector was also executed against public GitHub API responses for real
 run `40222698694`, attempt1, source `3d5e617d428d809a9760460e6f22e208f095445e`:
 the existing successful CI was accepted without triggering another run.
+
+`production_os_resume_objectives.py` can also select an exact previous failed
+job via `retry_jobs`. It retries the original workflow task within its attempts
+cap, or wakes an existing queued attempt after a runtime limit. It does not
+create a new workflow generation, so checkpoint identity is retained. Missing
+eligibility or a failed wake exits unsuccessfully. Service readiness is checked
+with GET before any control mutation.

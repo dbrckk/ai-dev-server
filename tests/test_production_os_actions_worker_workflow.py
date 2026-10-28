@@ -130,7 +130,7 @@ def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup():
                 "GITHUB_EVENT_NAME": event,
                 "GITHUB_OUTPUT": str(Path(root) / "output"),
                 "GITHUB_STEP_SUMMARY": str(Path(root) / "summary"),
-                "PRODUCTION_OS_STATUS_FILE": str(Path(root) / "output" / "worker.json"),
+                "PRODUCTION_OS_STATUS_FILE": str(Path(root) / "artifacts" / "worker.json"),
                 "PRODUCTION_OS_URL": "https://example.org",
                 "PRODUCTION_OS_WORKER_TOKEN": "test-secret-do-not-echo",
             }
@@ -148,7 +148,7 @@ def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup():
                             raise AssertionError("manual unavailable backend must fail")
                     else:
                         exec(executable, {"__name__": "__main__"})
-            record = json.loads((Path(root) / "output" / "readiness.json").read_text())
+            record = json.loads((Path(root) / "artifacts" / "readiness.json").read_text())
             output = (Path(root) / "output").read_text()
             summary = (Path(root) / "summary").read_text()
             assert "test-secret-do-not-echo" not in str(record) + summary + capture.getvalue()

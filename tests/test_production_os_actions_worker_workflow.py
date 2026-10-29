@@ -64,6 +64,110 @@ def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup():
     assert "attempts = 12" in WORKFLOW
     assert "timeout=5" in WORKFLOW
     assert "Production-OS readiness failed after bounded retries" in WORKFLOW
+    # Prove the real embedded startup code rejects a missing Render server
+    # on manual dispatch but conserves scheduled runner minutes, with no
+    # checkout, worker registration or GitHub credential use.
+    from contextlib import redirect_stdout
+    from io import StringIO
+    import json
+    import os
+    import tempfile
+    import urllib.error
+    import urllib.request
+    from textwrap import dedent
+    from unittest.mock import patch
+
+    preflight = WORKFLOW.split(
+        "- name: Wait for Production-OS readiness", 1
+    )[1].split("\n      - name: Checkout AI Dev Server", 1)[0]
+    script = dedent(
+        preflight.split("python - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
+    )
+    executable = compile(script, "production-os-live-readiness", "exec")
+    for gate in (
+        "Checkout AI Dev Server", "Resolve qualified Production-OS revision",
+        "Checkout Production-OS tools", "Set up Python",
+        "Install Production-OS remote tools", "Validate worker configuration",
+        "Probe compatible Production-OS work",
+    ):
+        section = WORKFLOW.split("      - name: " + gate + "\n", 1)[1]
+        assert section.startswith("        if: steps.readiness.outputs.ready == 'true'\n")
+    assert "id: readiness" in preflight
+    assert "worker_task_executed" in preflight
+    assert "class NoRedirect(urllib.request.HTTPRedirectHandler):" in preflight
+
+    class MockResponse:
+        status = 200
+
+        def read(self, size):
+            assert size <= 8192
+            return b'{"status":"ready","database":"reachable"}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    class Endpoint:
+        def __init__(self, available):
+            self.available = available
+            self.calls = []
+
+        def open(self, request, timeout):
+            self.calls.append((request.full_url, timeout))
+            assert timeout == 5
+            assert request.full_url == "https://example.org/readyz"
+            assert request.get_header("Authorization") is None
+            if self.available:
+                return MockResponse()
+            raise urllib.error.HTTPError(request.full_url, 503, "Service Unavailable", {}, None)
+
+    def evaluate(event, available):
+        endpoint = Endpoint(available)
+        with tempfile.TemporaryDirectory() as root:
+            env = {
+                "GITHUB_EVENT_NAME": event,
+                "GITHUB_OUTPUT": str(Path(root) / "output"),
+                "GITHUB_STEP_SUMMARY": str(Path(root) / "summary"),
+                "PRODUCTION_OS_STATUS_FILE": str(Path(root) / "artifacts" / "worker.json"),
+                "PRODUCTION_OS_URL": "https://example.org",
+                "PRODUCTION_OS_WORKER_TOKEN": "test-secret-do-not-echo",
+            }
+            with patch.dict(os.environ, env), patch(
+                "urllib.request.build_opener", return_value=endpoint,
+            ), patch("time.sleep") as sleep:
+                capture = StringIO()
+                with redirect_stdout(capture):
+                    if event != "schedule" and not available:
+                        try:
+                            exec(executable, {"__name__": "__main__"})
+                        except SystemExit as exc:
+                            assert "readiness failed after bounded retries" in str(exc)
+                        else:
+                            raise AssertionError("manual unavailable backend must fail")
+                    else:
+                        exec(executable, {"__name__": "__main__"})
+            record = json.loads((Path(root) / "artifacts" / "readiness.json").read_text())
+            output = (Path(root) / "output").read_text()
+            summary = (Path(root) / "summary").read_text()
+            assert "test-secret-do-not-echo" not in str(record) + summary + capture.getvalue()
+            return endpoint.calls, record, output, summary, sleep.call_count
+
+    calls, record, output, summary, sleeps = evaluate("schedule", False)
+    assert len(calls) == 6 and sleeps == 5
+    assert record["status"] == "unavailable" and record["worker_task_executed"] is False
+    assert record["reason"] == "http_503"
+    assert output == "ready=false\n"
+    assert "No task was executed" in summary
+
+    calls, record, output, summary, sleeps = evaluate("workflow_dispatch", False)
+    assert len(calls) == 12 and sleeps == 11
+    assert record["status"] == "unavailable" and output == "ready=false\n"
+
+    calls, record, output, summary, sleeps = evaluate("schedule", True)
+    assert len(calls) == 1 and sleeps == 0
+    assert record["status"] == "ready" and output == "ready=true\n"
 
 
 def test_actions_worker_is_single_flight_and_bounded():

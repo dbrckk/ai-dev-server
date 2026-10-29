@@ -9022,6 +9022,44 @@ probe = WORKFLOW.index("Probe compatible Production-OS work")
 install = WORKFLOW.index("Install autonomous coding agent")
 android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
+# Prove the real embedded startup code rejects a missing Render server
+# on manual dispatch but conserves scheduled runner minutes, with no
+# checkout, worker registration or GitHub credential use.
+⋮----
+preflight = WORKFLOW.split(
+script = dedent(
+executable = compile(script, "production-os-live-readiness", "exec")
+⋮----
+section = WORKFLOW.split("      - name: " + gate + "\n", 1)[1]
+⋮----
+class MockResponse
+⋮----
+status = 200
+⋮----
+def read(self, size)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_)
+⋮----
+class Endpoint
+⋮----
+def __init__(self, available)
+⋮----
+def open(self, request, timeout)
+⋮----
+def evaluate(event, available)
+⋮----
+endpoint = Endpoint(available)
+⋮----
+env = {
+⋮----
+capture = StringIO()
+⋮----
+record = json.loads((Path(root) / "artifacts" / "readiness.json").read_text())
+output = (Path(root) / "output").read_text()
+summary = (Path(root) / "summary").read_text()
+⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ⋮----
 def test_actions_worker_retains_hidden_autonomy_diagnostics()
@@ -9060,7 +9098,6 @@ def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_
 # public GitHub responses, not just source-string assertions. The PAT
 # deliberately lacks Actions-read access to the other public repository.
 ⋮----
-script = dedent(
 qualified_sha = "d" * 40
 branch_url = "https://api.github.com/repos/dbrckk/Production-OS/branches/main"
 runs_url = (
@@ -9071,8 +9108,6 @@ class Response
 def __init__(self, payload)
 ⋮----
 def read(self, *_args)
-⋮----
-def __enter__(self)
 ⋮----
 def __exit__(self, *_args)
 ⋮----
@@ -9107,8 +9142,6 @@ def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
 block = WORKFLOW.split("      - name: Validate worker configuration\n", 1)[1]
 script = dedent(block.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
-⋮----
-env = {
 ⋮----
 def run(config)
 ⋮----

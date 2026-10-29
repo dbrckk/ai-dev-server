@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 656
-- Files reparsed this run: 7
-- Symbols: 4813
+- Files reparsed this run: 1
+- Symbols: 4821
 - Internal import edges: 1423
-- Impacted files: 10
-- Selected tests: 5
+- Impacted files: 1
+- Selected tests: 1
 
 ## Languages
 - python: 653 files
@@ -21,10 +21,10 @@
 - tests/test_architecture_reputation_policy_migration.py: 44 symbols
 - tests/test_architecture_replacement_planner.py: 42 symbols
 - tests/test_journeys.py: 41 symbols
+- tests/test_production_os_actions_worker_workflow.py: 39 symbols
 - tests/test_multi_engine_orchestrator.py: 37 symbols
 - studio/core.py: 32 symbols
 - tests/test_architecture_reputation_policy_approval.py: 32 symbols
-- tests/test_production_os_actions_worker_workflow.py: 31 symbols
 - tests/test_orchestrator.py: 30 symbols
 - tests/test_architecture_replacement_reputation.py: 26 symbols
 - tests/test_capacity_scheduler.py: 26 symbols
@@ -43,7 +43,7 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 7
+- AST files reparsed this run: 1
 - outline files retained: 652
 - top-level items retained: 6935
 - direct members retained: 2316

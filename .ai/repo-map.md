@@ -1936,12 +1936,120 @@ jobs:
       PYTHONPATH: studio
 
     steps:
+      - name: Wait for Production-OS readiness
+        id: readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          event = os.environ.get("GITHUB_EVENT_NAME", "")
+          scheduled = event == "schedule"
+          base = os.environ["PRODUCTION_OS_URL"].strip().rstrip("/")
+          parsed = urllib.parse.urlsplit(base)
+          if (parsed.scheme != "https" or not parsed.netloc
+                  or parsed.username or parsed.password or parsed.query
+                  or parsed.fragment or parsed.path not in {"", "/"}):
+              raise SystemExit("PRODUCTION_OS_URL must be a simple HTTPS origin")
+          url = base + "/readyz"
+          attempts = 12 if not scheduled else 6
+
+          # Do not let a hosting provider's response redirect this availability
+          # probe to another service. No bearer token is needed for /readyz.
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+          ready = False
+          last_reason = "unreachable"
+          for attempt in range(1, attempts + 1):
+              try:
+                  request = urllib.request.Request(
+                      url, headers={"Accept": "application/json"},
+                  )
+                  with opener.open(request, timeout=5) as response:
+                      payload = json.loads(response.read(8192).decode("utf-8"))
+                      if (
+                          int(getattr(response, "status", 200)) == 200
+                          and isinstance(payload, dict)
+                          and payload.get("status") == "ready"
+                          and payload.get("database") == "reachable"
+                      ):
+                          ready = True
+                          last_reason = "ready"
+                          break
+                      last_reason = "invalid_readiness_response"
+              except urllib.error.HTTPError as exc:
+                  last_reason = "http_" + str(exc.code)
+              except (
+                  urllib.error.URLError, TimeoutError,
+                  json.JSONDecodeError, UnicodeError, OSError,
+              ):
+                  last_reason = "transport_or_response_unavailable"
+              if attempt != attempts:
+                  time.sleep(5)
+
+          output = os.environ.get("GITHUB_OUTPUT")
+          if output:
+              with open(output, "a", encoding="utf-8") as handle:
+                  handle.write("ready=" + ("true" if ready else "false") + "\n")
+          diagnostic = {
+              "schema_version": "ai-dev-server/production-os-readiness/v1",
+              "observed_at": datetime.now(timezone.utc).isoformat(),
+              "status": "ready" if ready else "unavailable",
+              "scheduled": scheduled,
+              "attempts": attempt,
+              "reason": last_reason,
+              "worker_task_executed": False,
+          }
+          status_path = os.environ.get("PRODUCTION_OS_STATUS_FILE")
+          if status_path:
+              directory = Path(status_path).parent
+              directory.mkdir(parents=True, exist_ok=True)
+              (directory / "readiness.json").write_text(
+                  json.dumps(diagnostic, sort_keys=True) + "\n", encoding="utf-8",
+              )
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as handle:
+                  handle.write("### Production-OS readiness preflight\n")
+                  handle.write("- Control plane: " + diagnostic["status"] + "\n")
+                  handle.write("- Reason: " + diagnostic["reason"] + "\n")
+                  if not ready:
+                      handle.write("- **No task was executed.**\n")
+
+          if ready:
+              print("Production-OS readiness: ready")
+          elif scheduled:
+              # Scheduled polling is best effort. A suspended Render instance
+              # is NOT successful autonomous execution; report an explicit
+              # unavailable artifact and avoid unnecessary checkout/install.
+              print("::warning::Production-OS unavailable; scheduled worker skipped without executing tasks (" + last_reason + ")")
+          else:
+              # Operator-triggered and canary-triggered requests must fail
+              # visibly when the real control plane is unavailable.
+              raise SystemExit(
+                  "Production-OS readiness failed after bounded retries: " + last_reason
+              )
+          PY
+
       - name: Checkout AI Dev Server
+        if: steps.readiness.outputs.ready == 'true'
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
 
       - name: Resolve qualified Production-OS revision
+        if: steps.readiness.outputs.ready == 'true'
         id: production_os_revision
         shell: bash
         run: |
@@ -2077,6 +2185,7 @@ jobs:
           printf 'Using qualified Production-OS revision %s\n' "$revision"
 
       - name: Checkout Production-OS tools
+        if: steps.readiness.outputs.ready == 'true'
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/Production-OS
@@ -2085,11 +2194,13 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python
+        if: steps.readiness.outputs.ready == 'true'
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
 
       - name: Install Production-OS remote tools
+        if: steps.readiness.outputs.ready == 'true'
         run: |
           env -u PYTHONPATH python -m pip install ./production-os-tools
           env -u PYTHONPATH production-os asset-forge-batch --help >/dev/null
@@ -2103,6 +2214,7 @@ jobs:
           fi
 
       - name: Validate worker configuration
+        if: steps.readiness.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -2137,50 +2249,8 @@ jobs:
           print("Production-OS Actions worker configuration: ready")
           PY
 
-      - name: Wait for Production-OS readiness
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json
-          import os
-          import time
-          import urllib.error
-          import urllib.request
-
-          base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
-          url = base + "/readyz"
-          attempts = 12
-          for attempt in range(1, attempts + 1):
-              try:
-                  request = urllib.request.Request(
-                      url,
-                      headers={"Accept": "application/json"},
-                  )
-                  with urllib.request.urlopen(request, timeout=5) as response:
-                      payload = json.loads(response.read().decode("utf-8"))
-                      if (
-                          int(getattr(response, "status", 200)) == 200
-                          and payload.get("status") == "ready"
-                      ):
-                          print("Production-OS readiness: ready")
-                          break
-              except (
-                  urllib.error.HTTPError,
-                  urllib.error.URLError,
-                  TimeoutError,
-                  json.JSONDecodeError,
-                  OSError,
-              ):
-                  pass
-              if attempt == attempts:
-                  raise SystemExit(
-                      "Production-OS readiness failed after bounded retries"
-                  )
-              time.sleep(5)
-          PY
-
       - name: Probe compatible Production-OS work
+        if: steps.readiness.outputs.ready == 'true'
         id: queue_probe
         shell: bash
         run: |
@@ -2491,6 +2561,8 @@ jobs:
             echo
             echo "Codespace dependency: none"
             echo "Control plane: $PRODUCTION_OS_URL"
+            echo "Readiness preflight: ${{ steps.readiness.outputs.ready || 'unknown' }}"
+            echo "No task executed while control plane is unavailable"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
             echo "Polling mode: scheduled every 5 minutes + immediate control-file wake"
             echo "Compatible work at preflight: ${{ steps.queue_probe.outputs.any_available || 'unknown' }}"
@@ -36569,6 +36641,44 @@ probe = WORKFLOW.index("Probe compatible Production-OS work")
 install = WORKFLOW.index("Install autonomous coding agent")
 android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
+# Prove the real embedded startup code rejects a missing Render server
+# on manual dispatch but conserves scheduled runner minutes, with no
+# checkout, worker registration or GitHub credential use.
+⋮----
+preflight = WORKFLOW.split(
+script = dedent(
+executable = compile(script, "production-os-live-readiness", "exec")
+⋮----
+section = WORKFLOW.split("      - name: " + gate + "\n", 1)[1]
+⋮----
+class MockResponse
+⋮----
+status = 200
+⋮----
+def read(self, size)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_)
+⋮----
+class Endpoint
+⋮----
+def __init__(self, available)
+⋮----
+def open(self, request, timeout)
+⋮----
+def evaluate(event, available)
+⋮----
+endpoint = Endpoint(available)
+⋮----
+env = {
+⋮----
+capture = StringIO()
+⋮----
+record = json.loads((Path(root) / "artifacts" / "readiness.json").read_text())
+output = (Path(root) / "output").read_text()
+summary = (Path(root) / "summary").read_text()
+⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ⋮----
 def test_actions_worker_retains_hidden_autonomy_diagnostics()
@@ -36607,7 +36717,6 @@ def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_
 # public GitHub responses, not just source-string assertions. The PAT
 # deliberately lacks Actions-read access to the other public repository.
 ⋮----
-script = dedent(
 qualified_sha = "d" * 40
 branch_url = "https://api.github.com/repos/dbrckk/Production-OS/branches/main"
 runs_url = (
@@ -36618,8 +36727,6 @@ class Response
 def __init__(self, payload)
 ⋮----
 def read(self, *_args)
-⋮----
-def __enter__(self)
 ⋮----
 def __exit__(self, *_args)
 ⋮----
@@ -36654,8 +36761,6 @@ def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
 block = WORKFLOW.split("      - name: Validate worker configuration\n", 1)[1]
 script = dedent(block.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
-⋮----
-env = {
 ⋮----
 def run(config)
 ⋮----

@@ -135,6 +135,7 @@
     "studio/agents/codex.py": {
       "dependencies": [
         "studio/core.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
@@ -144,7 +145,7 @@
         "tests/test_codex_output_retention.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/agents/orchestrator.py": {
       "dependencies": [
@@ -432,13 +433,14 @@
         "studio/architecture_replacement_pr_validator.py",
         "studio/core.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_architecture_replacement_merge.py"
       ],
       "in_degree": 1,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/architecture_replacement_merge_gate.py": {
       "dependencies": [
@@ -1345,6 +1347,7 @@
       "dependencies": [
         "studio/core.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -1353,7 +1356,7 @@
         "tests/test_ci_diagnostics.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/ci_provider.py": {
       "dependencies": [
@@ -1494,6 +1497,7 @@
         "studio/stage_registry.py",
         "tests/test_journeys.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
@@ -1731,7 +1735,7 @@
         "tests/test_transport.py"
       ],
       "in_degree": 230,
-      "out_degree": 20
+      "out_degree": 21
     },
     "studio/cost_drift.py": {
       "dependencies": [],
@@ -3939,13 +3943,14 @@
       "dependencies": [
         "studio/core.py",
         "tests/test_journeys.py",
-        "tests/test_multi_engine_orchestrator.py"
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/post_preview.py": {
       "dependencies": [
@@ -4130,6 +4135,7 @@
       "dependencies": [
         "studio/core.py",
         "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
@@ -4143,7 +4149,7 @@
         "tests/test_production_os_worker_runtime.py"
       ],
       "in_degree": 8,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/production_os_worker.py": {
       "dependencies": [
@@ -4891,14 +4897,16 @@
       "out_degree": 2
     },
     "studio/security_audit.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_production_os_actions_worker_workflow.py"
+      ],
       "dependents": [
         "studio/security_stage.py",
         "tests/test_security.py",
         "tests/test_security_stage.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/security_remediation.py": {
       "dependencies": [],
@@ -5128,6 +5136,7 @@
     },
     "studio/task_context.py": {
       "dependencies": [
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_studio.py"
       ],
       "dependents": [
@@ -5136,7 +5145,7 @@
         "tests/test_task_context.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/task_lease.py": {
       "dependencies": [
@@ -6556,11 +6565,12 @@
     "tests/test_generic_repository_pull_request.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/generic_repository.py"
+        "studio/generic_repository.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_generic_structural_verify.py": {
       "dependencies": [
@@ -7234,6 +7244,7 @@
         "studio/production_os_worker_canary.py",
         "studio/stage_registry.py",
         "studio/target_ci_verification.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_studio.py"
       ],
       "dependents": [
@@ -7303,7 +7314,7 @@
         "studio/replacement_ci_policy_v11.py"
       ],
       "in_degree": 64,
-      "out_degree": 13
+      "out_degree": 14
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [
@@ -7498,8 +7509,24 @@
         "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/agents/codex.py",
+        "studio/architecture_replacement_merge.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/portfolio_scan.py",
+        "studio/production_os_source_tasks.py",
+        "studio/security_audit.py",
+        "studio/task_context.py",
+        "tests/test_generic_repository_pull_request.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_live_diagnostics.py",
+        "tests/test_release_repair.py",
+        "tests/test_security.py",
+        "tests/test_security_agent.py",
+        "tests/test_security_remediation.py"
+      ],
+      "in_degree": 15,
       "out_degree": 3
     },
     "tests/test_production_os_live_diagnostics.py": {
@@ -7508,11 +7535,12 @@
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
         "studio/provider_router.py",
-        "studio/public_free_code_smoke.py"
+        "studio/public_free_code_smoke.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 6
     },
     "tests/test_production_os_local_e2e.py": {
       "dependencies": [
@@ -7836,11 +7864,12 @@
       "dependencies": [
         "studio/core.py",
         "studio/release_repair.py",
-        "studio/stage_registry.py"
+        "studio/stage_registry.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_release_stage_engine.py": {
       "dependencies": [
@@ -8035,28 +8064,31 @@
     },
     "tests/test_security.py": {
       "dependencies": [
-        "studio/security_audit.py"
-      ],
-      "dependents": [],
-      "in_degree": 0,
-      "out_degree": 1
-    },
-    "tests/test_security_agent.py": {
-      "dependencies": [
-        "studio/core.py",
-        "studio/security_agent.py"
+        "studio/security_audit.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
     },
-    "tests/test_security_remediation.py": {
+    "tests/test_security_agent.py": {
       "dependencies": [
-        "studio/security_remediation.py"
+        "studio/core.py",
+        "studio/security_agent.py",
+        "tests/test_production_os_actions_worker_workflow.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
+    },
+    "tests/test_security_remediation.py": {
+      "dependencies": [
+        "studio/security_remediation.py",
+        "tests/test_production_os_actions_worker_workflow.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "tests/test_security_stage.py": {
       "dependencies": [

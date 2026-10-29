@@ -323,16 +323,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-27T15:11:01Z
+Generated: 2026-10-29T22:24:47Z
 
 ### Git
 - Branch: `main`
-- Head: `fa22bb2e816e`
-- Commit date: 2026-10-27T11:10:47-04:00
-- Commit: fix: resume published generic objectives through draft PR and CI (#410)
+- Head: `719aff601340`
+- Commit date: 2026-10-29T18:24:37-04:00
+- Commit: fix(worker): fail fast safely when Render is suspended, preserve manual failure (#411)
 - Tracked files: 880
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-resume.json`
 - `docs/managed-generic-delivery.md`
 - `integration_tests/test_production_os_server_integration.py`
@@ -347,9 +349,6 @@ Generated: 2026-10-27T15:11:01Z
 - `tests/test_production_os_worker_canary.py`
 - `studio/github_runner.py`
 - `tests/test_github_runner_round_persistence.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

@@ -1914,7 +1914,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+      PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
       PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
       PRODUCTION_OS_WORKER_SPECIALTIES: mobile
@@ -3004,7 +3004,7 @@ jobs:
           python-version: '3.12'
       - name: Check live inference and existing operator access
         env:
-          PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+          PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
           PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
           PRODUCTION_OS_DIAGNOSE_WAKE: '1'
           PRODUCTION_OS_DIAGNOSE_CODE_SMOKE: '1'
@@ -3108,7 +3108,7 @@ jobs:
           python-version: '3.12'
       - name: Continue selected failed managed objectives
         env:
-          PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+          PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
           PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
         run: python studio/production_os_resume_objectives.py control/production-os-resume.json --apply
 ````
@@ -3137,7 +3137,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
-      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+      PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
       PYTHONPATH: studio
       PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

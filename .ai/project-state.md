@@ -323,17 +323,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-29T22:24:47Z
+Generated: 2026-10-31T17:02:40Z
 
 ### Git
 - Branch: `main`
-- Head: `719aff601340`
-- Commit date: 2026-10-29T18:24:37-04:00
-- Commit: fix(worker): fail fast safely when Render is suspended, preserve manual failure (#411)
+- Head: `ac527b976c1f`
+- Commit date: 2026-10-31T13:02:20-04:00
+- Commit: fix(ops): pin Production-OS workflows to studycall12 Render (#412)
 - Tracked files: 880
 
 ### Recently changed files
 - `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-live-diagnostics.yml`
+- `.github/workflows/production-os-objective-recovery.yml`
+- `.github/workflows/production-os-worker-canary.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-resume.json`
 - `docs/managed-generic-delivery.md`

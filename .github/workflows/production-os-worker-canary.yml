@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
-      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os-control-plane.onrender.com' }}
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
       PYTHONPATH: studio
       PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

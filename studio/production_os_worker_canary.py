@@ -382,6 +382,7 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
     result = launch_canary(client, control, source_api=source_api)
     if result.get("result", {}).get("status") == "blocked":
         return result
+    wake_unconfirmed = False
     if dispatch is not None:
         # The control plane may have dispatched the same Actions worker while
         # admitting the job. Only use the canary's privileged dispatch when
@@ -392,7 +393,16 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
         elif wake == "not_needed":
             result["actions_worker_wake"] = "not_needed"
         else:
-            result["actions_worker_wake"] = dispatch()
+            try:
+                result["actions_worker_wake"] = dispatch()
+            except (RuntimeError, ValueError, TimeoutError, OSError):
+                # Admission has already succeeded. Never lose the returned
+                # workflow/project IDs or retry the mutation just because
+                # the GitHub wake was rejected or its outcome was ambiguous.
+                # Ignore exception text: it may embed a bearer or response.
+                wake_unconfirmed = True
+                result["actions_worker_wake"] = "unconfirmed"
+                result["actions_worker_wake_reason"] = "dispatch_not_confirmed"
     if wait_seconds:
         outcome = wait_for_workflow(
             client,
@@ -406,8 +416,11 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
         result["succeeded"] = outcome.get("status") == "succeeded"
     else:
         # An acknowledged submission is not terminal worker success.
-        # Preserve the distinction for status consumers and CI receipts.
-        result["result"] = {"status": "launched"}
+        # A failed/ambiguous wake cannot count as a successful launch when
+        # nobody has verified processing; retain IDs for later recovery.
+        result["result"] = {
+            "status": "wake_unconfirmed" if wake_unconfirmed else "launched"
+        }
         result["succeeded"] = None
     return result
 

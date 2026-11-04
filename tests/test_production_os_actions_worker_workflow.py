@@ -393,6 +393,82 @@ def test_actions_worker_preflight_uses_runtime_capability_detection():
     assert '"visual-asset-production"' not in probe.split("def probe", 1)[0]
 
 
+
+def test_actions_worker_session_auth_failure_is_actionable_and_secret_safe():
+    """Exercise the real embedded workflow registration code, without HTTP."""
+    import contextlib
+    import io
+    import os
+    import sys
+    import types
+    from textwrap import dedent
+    from unittest.mock import patch
+
+    step = WORKFLOW.split(
+        "- name: Probe compatible Production-OS work", 1
+    )[1]
+    script = dedent(
+        step.split("python - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
+    )
+    # Only run the authentication/register preflight. The later queue probes
+    # require a real HTTP service and are tested separately.
+    snippet = script.split(
+        "# Snapshot is also produced on idle cycles", 1
+    )[0]
+    executable = compile(snippet, "production-os-worker-session-auth", "exec")
+    assert "session = ProductionOSClient(base, token).register" in snippet
+    secret = "never-log-worker-secret-401-403"
+
+    class WorkerError(RuntimeError):
+        pass
+
+    def execute(error_status):
+        fake_module = types.ModuleType("production_os_worker")
+        fake_module.ProductionOSWorkerError = WorkerError
+        fake_module._NoRedirect = object
+        fake_module.worker_capabilities = lambda env: ["repository-code-edit"]
+
+        class FakeClient:
+            def __init__(self, base, token):
+                assert base == "https://example.invalid"
+                assert token == secret
+
+            def register(self, worker_id, capabilities):
+                assert worker_id == "test-actions-worker"
+                assert capabilities == ["repository-code-edit"]
+                raise WorkerError(f"Production-OS HTTP {error_status}")
+
+        fake_module.ProductionOSClient = FakeClient
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        env = {
+            "PRODUCTION_OS_URL": "https://example.invalid",
+            "PRODUCTION_OS_WORKER_TOKEN": secret,
+            "PRODUCTION_OS_WORKER_ID": "test-actions-worker",
+        }
+        with patch.dict(os.environ, env), patch.dict(
+            sys.modules, {"production_os_worker": fake_module}
+        ), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            try:
+                exec(executable, {"__name__": "__main__"})
+            except (SystemExit, WorkerError) as exc:
+                return exc, stdout.getvalue() + stderr.getvalue()
+        raise AssertionError("An unauthenticated worker must not proceed")
+
+    for status in (401, 403):
+        error, output = execute(status)
+        assert isinstance(error, SystemExit)
+        assert "registration (HTTP " + str(status) + ")" in str(error)
+        assert "PRODUCTION_OS_WORKER_TOKEN" in str(error)
+        assert "PRODUCTION_OS_OPERATOR_TOKEN" in str(error)
+        assert secret not in str(error) + output
+
+    error, output = execute(503)
+    assert isinstance(error, WorkerError)
+    assert str(error) == "Production-OS HTTP 503"
+    assert secret not in str(error) + output
+
+
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
     assert "env -u PYTHONPATH python -m pip install ./production-os-tools" in WORKFLOW
     assert "env -u PYTHONPATH production-os asset-forge-batch --help" in WORKFLOW

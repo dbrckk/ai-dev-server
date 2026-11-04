@@ -359,6 +359,22 @@ def check_operator_access(client):
 
 
 
+
+def check_worker_access(client):
+    """Validate the worker bearer with a read-only request before enqueueing.
+
+    GET /v1/stats accepts worker credentials and does not register a worker,
+    claim a job, or alter the queue. A successful response is not a worker
+    heartbeat and never proves task execution.
+    """
+    payload = client.get("/v1/stats", timeout_seconds=10)
+    if (not isinstance(payload, dict)
+            or not isinstance(payload.get("jobs"), dict)
+            or not isinstance(payload.get("workflows"), dict)
+            or type(payload.get("online_workers")) is not int):
+        raise RuntimeError("worker preflight returned invalid stats contract")
+
+
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
                clock=time.monotonic, sleeper=time.sleep, dispatch=None, source_api=None):
     # Invalid monitoring parameters must not leave a real task queued.
@@ -397,13 +413,17 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
 
 
 
-def sanitized_failure_receipt(exc):
-    """Expose the API failure code without leaking secrets, URLs or response bodies."""
+def sanitized_failure_receipt(exc, *, phase=None):
+    """Expose only bounded status/phase metadata, never credentials or body."""
     receipt = {"status": "unavailable", "error_type": type(exc).__name__}
     if isinstance(exc, APIError) and type(exc.status) is int and 400 <= exc.status <= 599:
         receipt["http_status"] = exc.status
         if exc.status in {401, 403}:
-            receipt["reason"] = "operator_authorization_rejected"
+            receipt["reason"] = (
+                "worker_authorization_rejected"
+                if phase == "worker_preflight"
+                else "operator_authorization_rejected"
+            )
         elif exc.status == 409:
             receipt["reason"] = "canary_launch_conflict"
     return receipt
@@ -429,6 +449,14 @@ def main(argv=None):
         wait_for_readiness(client)
         phase = "operator_preflight"
         check_operator_access(client)
+        # A valid operator token cannot compensate for a rejected worker token.
+        # Check both before the one-shot launch to avoid orphaned queued tasks.
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            phase = "worker_preflight"
+            worker_token = os.environ.get("PRODUCTION_OS_WORKER_TOKEN", "").strip()
+            if not worker_token:
+                raise ValueError("Worker token missing")
+            check_worker_access(OperatorClient(base, worker_token))
         phase = "canary_launch"
         dispatch = None
         if os.environ.get("GITHUB_ACTIONS") == "true":
@@ -444,7 +472,7 @@ def main(argv=None):
             dispatch=dispatch,
         )
     except Exception as exc:
-        receipt = sanitized_failure_receipt(exc)
+        receipt = sanitized_failure_receipt(exc, phase=phase)
         # Fixed phase labels only; exception text/URLs/credentials never printed.
         receipt["phase"] = phase
         print(canonical(receipt))

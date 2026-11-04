@@ -8,6 +8,8 @@ from production_os_resume_objectives import OperatorClient
 
 from production_os_worker_canary import (
     canary_instruction,
+    check_operator_access,
+    main as canary_main,
     sanitized_failure_receipt,
     dispatch_worker_after_enqueue,
     run_canary,
@@ -45,6 +47,69 @@ class FakeClient:
 
 
 class WorkerCanaryTests(unittest.TestCase):
+    def test_operator_preflight_is_read_only_and_fails_closed(self):
+        client = Mock()
+        client.get.return_value = {"workers": [], "generated_at": "2026-11-04T00:00:00Z"}
+        check_operator_access(client)
+        client.get.assert_called_once_with("/v1/dashboard/workers", timeout_seconds=10)
+        self.assertFalse(client.submit.called)
+
+        for code in (401, 403):
+            client = Mock()
+            client.get.side_effect = APIError(code)
+            with self.subTest(code=code), self.assertRaises(APIError) as exc:
+                check_operator_access(client)
+            self.assertEqual(exc.exception.status, code)
+            self.assertFalse(client.submit.called)
+
+        for response in ({}, {"workers": "invalid"}, None):
+            client = Mock()
+            client.get.return_value = response
+            with self.subTest(response=response), self.assertRaises(RuntimeError):
+                check_operator_access(client)
+            self.assertFalse(client.submit.called)
+
+    def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self):
+        import io
+        import json
+        import os
+        import tempfile
+        from contextlib import redirect_stdout
+
+        with tempfile.TemporaryDirectory() as directory:
+            control = Path(directory) / "canary.json"
+            control.write_text(json.dumps({
+                "sequence": 46,
+                "repository": "dbrckk/ai-dev-server",
+                "scenario": "file",
+            }), encoding="utf-8")
+            stdout = io.StringIO()
+            with patch.dict(os.environ, {
+                "PRODUCTION_OS_OPERATOR_TOKEN": "unit-secret-never-printed",
+                "PRODUCTION_OS_URL": "https://valid.example",
+                "GITHUB_ACTIONS": "true",
+            }), patch(
+                "production_os_worker_canary.wait_for_readiness"
+            ), patch(
+                "production_os_worker_canary.check_operator_access",
+                side_effect=APIError(401),
+            ) as access, patch(
+                "production_os_worker_canary.run_canary"
+            ) as launch, redirect_stdout(stdout):
+                status = canary_main([str(control)])
+            self.assertEqual(status, 1)
+            access.assert_called_once()
+            launch.assert_not_called()
+            receipt = json.loads(stdout.getvalue())
+            self.assertEqual(receipt, {
+                "status": "unavailable",
+                "error_type": "APIError",
+                "http_status": 401,
+                "reason": "operator_authorization_rejected",
+                "phase": "operator_preflight",
+            })
+            self.assertNotIn("unit-secret-never-printed", stdout.getvalue())
+
     def test_sanitized_failure_receipt_keeps_only_safe_http_status(self):
         self.assertEqual(
             sanitized_failure_receipt(APIError(401)),

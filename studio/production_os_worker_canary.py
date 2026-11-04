@@ -346,6 +346,19 @@ def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
         sleeper(min(poll, remaining))
 
 
+
+def check_operator_access(client):
+    """Prove the bearer is accepted on a dashboard-only, read-only route.
+
+    Worker credentials must be denied here. This probe never mutates or
+    submits a task. Launch still requires the strict operator role.
+    """
+    payload = client.get("/v1/dashboard/workers", timeout_seconds=10)
+    if not isinstance(payload, dict) or not isinstance(payload.get("workers"), list):
+        raise RuntimeError("operator preflight returned invalid dashboard contract")
+
+
+
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
                clock=time.monotonic, sleeper=time.sleep, dispatch=None, source_api=None):
     # Invalid monitoring parameters must not leave a real task queued.
@@ -402,6 +415,7 @@ def main(argv=None):
     parser.add_argument("--wait-seconds", type=float, default=0)
     parser.add_argument("--poll-seconds", type=float, default=10)
     args = parser.parse_args(argv)
+    phase = "configuration"
     try:
         control = json.loads(args.control.read_text(encoding="utf-8"))
         token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
@@ -411,7 +425,11 @@ def main(argv=None):
         if not base:
             raise ValueError("Production-OS URL missing")
         client = OperatorClient(base, token)
+        phase = "readiness"
         wait_for_readiness(client)
+        phase = "operator_preflight"
+        check_operator_access(client)
+        phase = "canary_launch"
         dispatch = None
         if os.environ.get("GITHUB_ACTIONS") == "true":
             dispatch = lambda: dispatch_worker_after_enqueue(
@@ -426,7 +444,10 @@ def main(argv=None):
             dispatch=dispatch,
         )
     except Exception as exc:
-        print(canonical(sanitized_failure_receipt(exc)))
+        receipt = sanitized_failure_receipt(exc)
+        # Fixed phase labels only; exception text/URLs/credentials never printed.
+        receipt["phase"] = phase
+        print(canonical(receipt))
         return 1
     print("Production-OS worker canary: " + canonical(result))
     # A non-blocking CLI launch can exit successfully without claiming

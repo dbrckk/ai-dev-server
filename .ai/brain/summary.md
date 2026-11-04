@@ -3,7 +3,7 @@
 - Index mode: incremental
 - Files indexed: 656
 - Files reparsed this run: 2
-- Symbols: 4835
+- Symbols: 4840
 - Internal import edges: 1423
 - Impacted files: 7
 - Selected tests: 5
@@ -23,10 +23,10 @@
 - tests/test_architecture_replacement_planner.py: 42 symbols
 - tests/test_journeys.py: 41 symbols
 - tests/test_multi_engine_orchestrator.py: 37 symbols
+- tests/test_production_os_worker_canary.py: 34 symbols
 - studio/core.py: 32 symbols
 - tests/test_architecture_reputation_policy_approval.py: 32 symbols
 - tests/test_orchestrator.py: 30 symbols
-- tests/test_production_os_worker_canary.py: 29 symbols
 - tests/test_architecture_replacement_reputation.py: 26 symbols
 - tests/test_capacity_scheduler.py: 26 symbols
 - tests/test_ci.py: 26 symbols
@@ -46,7 +46,7 @@
 - AST files reparsed this run: 2
 - outline files retained: 652
 - top-level items retained: 6939
-- direct members retained: 2321
+- direct members retained: 2324
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

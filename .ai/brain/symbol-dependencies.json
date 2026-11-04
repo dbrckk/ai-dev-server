@@ -480,9 +480,33 @@
       "source": {
         "file": "studio/production_os_worker_canary.py",
         "start": 378,
-        "end": 412
+        "end": 425
       },
       "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
         {
           "symbol": "_polling_parameters",
           "definitions": [
@@ -501,6 +525,18 @@
             {
               "file": "studio/production_os_resume_objectives.py",
               "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -532,13 +568,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 6
     },
     "sanitized_failure_receipt": {
       "source": {
         "file": "studio/production_os_worker_canary.py",
-        "start": 416,
-        "end": 429
+        "start": 429,
+        "end": 442
       },
       "symbol_dependencies": [
         {
@@ -559,8 +595,8 @@
     "main": {
       "source": {
         "file": "studio/production_os_worker_canary.py",
-        "start": 432,
-        "end": 552
+        "start": 445,
+        "end": 565
       },
       "symbol_dependencies": [
         {
@@ -664,7 +700,7 @@
           "definitions": [
             {
               "file": "studio/production_os_worker_canary.py",
-              "line": 416,
+              "line": 429,
               "kind": "function",
               "language": "python"
             }
@@ -806,7 +842,7 @@
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
         "start": 50,
-        "end": 513
+        "end": 603
       },
       "symbol_dependencies": [
         {
@@ -910,7 +946,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -970,7 +1006,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -994,7 +1030,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 476,
+              "line": 566,
               "kind": "function",
               "language": "python"
             }
@@ -1042,7 +1078,25 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "rejected_dispatch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 441,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 467,
               "kind": "function",
               "language": "python"
             }
@@ -1066,7 +1120,7 @@
           "definitions": [
             {
               "file": "studio/production_os_worker_canary.py",
-              "line": 416,
+              "line": 429,
               "kind": "function",
               "language": "python"
             }
@@ -1078,7 +1132,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 440,
+              "line": 530,
               "kind": "function",
               "language": "python"
             }
@@ -1091,6 +1145,18 @@
             {
               "file": "tests/test_production_os_worker_canary.py",
               "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 435,
               "kind": "function",
               "language": "python"
             }
@@ -1122,6 +1188,18 @@
           "relation": "same_file"
         },
         {
+          "symbol": "test_cli_failed_dispatch_is_not_reported_as_successful_launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 483,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "test_cli_worker_auth_failure_blocks_enqueue_and_sanitizes_receipt",
           "definitions": [
             {
@@ -1139,6 +1217,18 @@
             {
               "file": "tests/test_production_os_worker_canary.py",
               "line": 220,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_dispatch_failure_keeps_polling_to_real_terminal_state",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 461,
               "kind": "function",
               "language": "python"
             }
@@ -1186,7 +1276,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 449,
+              "line": 539,
               "kind": "function",
               "language": "python"
             }
@@ -1198,7 +1288,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 462,
+              "line": 552,
               "kind": "function",
               "language": "python"
             }
@@ -1210,7 +1300,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 435,
+              "line": 525,
               "kind": "function",
               "language": "python"
             }
@@ -1252,21 +1342,9 @@
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 37
+      "dependency_count": 40
     },
     "test_operator_preflight_is_read_only_and_fails_closed": {
       "source": {
@@ -1560,7 +1638,7 @@
           "definitions": [
             {
               "file": "studio/production_os_worker_canary.py",
-              "line": 416,
+              "line": 429,
               "kind": "function",
               "language": "python"
             }
@@ -1710,7 +1788,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -1770,7 +1848,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -1792,11 +1870,253 @@
       ],
       "dependency_count": 11
     },
-    "test_wait_observes_real_terminal_success": {
+    "test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
         "start": 435,
-        "end": 447
+        "end": 459
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "rejected_dispatch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 441,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 467,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "rejected_dispatch": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 441,
+        "end": 561
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "check_operator_access",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 350,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "check_worker_access",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 363,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 528,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "dispatch_worker_after_enqueue",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 530,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_cli_failed_dispatch_is_not_reported_as_successful_launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 483,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_dispatch_failure_keeps_polling_to_real_terminal_state",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 461,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 539,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 552,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_observes_real_terminal_success",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 525,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "test_dispatch_failure_keeps_polling_to_real_terminal_state": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 461,
+        "end": 481
       },
       "symbol_dependencies": [
         {
@@ -1816,7 +2136,153 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "rejected_dispatch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 441,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 467,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_cli_failed_dispatch_is_not_reported_as_successful_launch": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 483,
+        "end": 523
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "check_operator_access",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 350,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "check_worker_access",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 363,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "dispatch_worker_after_enqueue",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_wait_observes_real_terminal_success": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 525,
+        "end": 537
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -1828,7 +2294,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 440,
+              "line": 530,
               "kind": "function",
               "language": "python"
             }
@@ -1853,8 +2319,8 @@
     "clock": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 438,
-        "end": 558
+        "start": 528,
+        "end": 648
       },
       "symbol_dependencies": [
         {
@@ -1970,7 +2436,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 476,
+              "line": 566,
               "kind": "function",
               "language": "python"
             }
@@ -1982,7 +2448,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 571,
+              "line": 661,
               "kind": "function",
               "language": "python"
             }
@@ -2006,7 +2472,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 440,
+              "line": 530,
               "kind": "function",
               "language": "python"
             }
@@ -2018,7 +2484,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 520,
+              "line": 610,
               "kind": "function",
               "language": "python"
             }
@@ -2030,7 +2496,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 449,
+              "line": 539,
               "kind": "function",
               "language": "python"
             }
@@ -2042,7 +2508,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 462,
+              "line": 552,
               "kind": "function",
               "language": "python"
             }
@@ -2079,8 +2545,8 @@
     "sleep": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 440,
-        "end": 560
+        "start": 530,
+        "end": 650
       },
       "symbol_dependencies": [
         {
@@ -2184,7 +2650,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -2208,7 +2674,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 476,
+              "line": 566,
               "kind": "function",
               "language": "python"
             }
@@ -2220,7 +2686,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 571,
+              "line": 661,
               "kind": "function",
               "language": "python"
             }
@@ -2244,7 +2710,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 520,
+              "line": 610,
               "kind": "function",
               "language": "python"
             }
@@ -2256,7 +2722,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 449,
+              "line": 539,
               "kind": "function",
               "language": "python"
             }
@@ -2268,7 +2734,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 462,
+              "line": 552,
               "kind": "function",
               "language": "python"
             }
@@ -2305,8 +2771,8 @@
     "test_terminal_failure_returns_without_retrying_mutation": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 449,
-        "end": 460
+        "start": 539,
+        "end": 550
       },
       "symbol_dependencies": [
         {
@@ -2326,7 +2792,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -2351,8 +2817,8 @@
     "test_wait_is_bounded": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 462,
-        "end": 513
+        "start": 552,
+        "end": 603
       },
       "symbol_dependencies": [
         {
@@ -2432,7 +2898,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -2444,7 +2910,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 476,
+              "line": 566,
               "kind": "function",
               "language": "python"
             }
@@ -2468,7 +2934,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 440,
+              "line": 530,
               "kind": "function",
               "language": "python"
             }
@@ -2505,8 +2971,8 @@
     "expire": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 476,
-        "end": 596
+        "start": 566,
+        "end": 686
       },
       "symbol_dependencies": [
         {
@@ -2550,7 +3016,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -2598,7 +3064,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -2610,7 +3076,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -2622,7 +3088,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 577,
+              "line": 667,
               "kind": "function",
               "language": "python"
             }
@@ -2676,7 +3142,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 438,
+              "line": 528,
               "kind": "function",
               "language": "python"
             }
@@ -2700,7 +3166,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -2712,7 +3178,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 571,
+              "line": 661,
               "kind": "function",
               "language": "python"
             }
@@ -2736,7 +3202,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 440,
+              "line": 530,
               "kind": "function",
               "language": "python"
             }
@@ -2748,7 +3214,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 520,
+              "line": 610,
               "kind": "function",
               "language": "python"
             }
@@ -2785,8 +3251,8 @@
     "test_canary_workflow_verifies_terminal_worker_completion": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 520,
-        "end": 679
+        "start": 610,
+        "end": 769
       },
       "symbol_dependencies": [
         {
@@ -2794,7 +3260,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -2830,7 +3296,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -2842,7 +3308,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -2854,7 +3320,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 577,
+              "line": 667,
               "kind": "function",
               "language": "python"
             }
@@ -2908,7 +3374,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -2920,7 +3386,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 571,
+              "line": 661,
               "kind": "function",
               "language": "python"
             }
@@ -2932,7 +3398,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -2945,8 +3411,8 @@
     "FakeResponse": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 564,
-        "end": 684
+        "start": 654,
+        "end": 774
       },
       "symbol_dependencies": [
         {
@@ -2978,7 +3444,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -2990,7 +3456,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -3002,7 +3468,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 577,
+              "line": 667,
               "kind": "function",
               "language": "python"
             }
@@ -3044,7 +3510,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -3056,7 +3522,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 571,
+              "line": 661,
               "kind": "function",
               "language": "python"
             }
@@ -3068,7 +3534,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3081,8 +3547,8 @@
     "read": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 571,
-        "end": 691
+        "start": 661,
+        "end": 781
       },
       "symbol_dependencies": [
         {
@@ -3090,7 +3556,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -3126,7 +3592,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -3138,7 +3604,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 574,
+              "line": 664,
               "kind": "function",
               "language": "python"
             }
@@ -3150,7 +3616,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 577,
+              "line": 667,
               "kind": "function",
               "language": "python"
             }
@@ -3192,7 +3658,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -3204,7 +3670,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3217,8 +3683,8 @@
     "__enter__": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 574,
-        "end": 694
+        "start": 664,
+        "end": 784
       },
       "symbol_dependencies": [
         {
@@ -3226,7 +3692,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -3262,7 +3728,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -3274,7 +3740,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 577,
+              "line": 667,
               "kind": "function",
               "language": "python"
             }
@@ -3316,7 +3782,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -3328,7 +3794,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3341,8 +3807,8 @@
     "__exit__": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 577,
-        "end": 697
+        "start": 667,
+        "end": 787
       },
       "symbol_dependencies": [
         {
@@ -3350,7 +3816,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -3386,7 +3852,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -3428,7 +3894,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -3440,7 +3906,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3453,8 +3919,8 @@
     "Transport": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 580,
-        "end": 700
+        "start": 670,
+        "end": 790
       },
       "symbol_dependencies": [
         {
@@ -3462,7 +3928,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -3528,7 +3994,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 586,
+              "line": 676,
               "kind": "function",
               "language": "python"
             }
@@ -3540,7 +4006,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3553,8 +4019,8 @@
     "open": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 586,
-        "end": 706
+        "start": 676,
+        "end": 796
       },
       "symbol_dependencies": [
         {
@@ -3562,7 +4028,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 564,
+              "line": 654,
               "kind": "class",
               "language": "python"
             }
@@ -3598,7 +4064,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }
@@ -3610,7 +4076,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 636,
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -3623,8 +4089,8 @@
     "run_trusted": {
       "source": {
         "file": "tests/test_production_os_worker_canary.py",
-        "start": 636,
-        "end": 756
+        "start": 726,
+        "end": 846
       },
       "symbol_dependencies": [
         {
@@ -3632,7 +4098,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_worker_canary.py",
-              "line": 580,
+              "line": 670,
               "kind": "class",
               "language": "python"
             }

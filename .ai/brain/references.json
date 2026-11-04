@@ -21,7 +21,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 463,
+          "line": 476,
           "preview": "dispatch = lambda: dispatch_worker_after_enqueue(",
           "definition_candidate": false
         },
@@ -42,9 +42,15 @@
           "line": 422,
           "preview": "dispatch_worker_after_enqueue(",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 514,
+          "preview": "\"production_os_worker_canary.dispatch_worker_after_enqueue\",",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 5
+      "occurrence_count": 6
     },
     "validate_control": {
       "definition": {
@@ -357,7 +363,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 397,
+          "line": 407,
           "preview": "outcome = wait_for_workflow(",
           "definition_candidate": false
         },
@@ -369,25 +375,25 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 442,
+          "line": 532,
           "preview": "result = wait_for_workflow(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 465,
+          "line": 555,
           "preview": "result = wait_for_workflow(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 494,
+          "line": 584,
           "preview": "outcome = wait_for_workflow(recovering, \"b\"*32, timeout_seconds=5, poll_seconds=1,",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 501,
+          "line": 591,
           "preview": "wait_for_workflow(denied, \"b\"*32, timeout_seconds=5, poll_seconds=1,",
           "definition_candidate": false
         }
@@ -422,7 +428,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 449,
+          "line": 462,
           "preview": "wait_for_readiness(client)",
           "definition_candidate": false
         },
@@ -446,18 +452,24 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 481,
+          "line": 508,
+          "preview": "\"production_os_worker_canary.wait_for_readiness\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 571,
           "preview": "wait_for_readiness(operator, timeout_seconds=2, poll_seconds=1,",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 489,
+          "line": 579,
           "preview": "wait_for_readiness(untouched, timeout_seconds=budget, poll_seconds=1,",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 9
+      "occurrence_count": 10
     },
     "check_operator_access": {
       "definition": {
@@ -475,7 +487,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 451,
+          "line": 464,
           "preview": "check_operator_access(client)",
           "definition_candidate": false
         },
@@ -514,9 +526,15 @@
           "line": 166,
           "preview": "\"production_os_worker_canary.check_operator_access\",",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 510,
+          "preview": "\"production_os_worker_canary.check_operator_access\"",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 9
     },
     "check_worker_access": {
       "definition": {
@@ -534,7 +552,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 459,
+          "line": 472,
           "preview": "check_worker_access(OperatorClient(base, worker_token))",
           "definition_candidate": false
         },
@@ -567,9 +585,15 @@
           "line": 123,
           "preview": "\"production_os_worker_canary.check_worker_access\",",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 512,
+          "preview": "\"production_os_worker_canary.check_worker_access\"",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 8
     },
     "run_canary": {
       "definition": {
@@ -587,7 +611,7 @@
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 467,
+          "line": 480,
           "preview": "result = run_canary(",
           "definition_candidate": false
         },
@@ -665,36 +689,48 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 452,
+          "line": 445,
           "preview": "result = run_canary(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 509,
+          "line": 470,
+          "preview": "result = run_canary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 542,
+          "preview": "result = run_canary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 599,
           "preview": "run_canary(untouched, {\"sequence\": 1, \"repository\": \"dbrckk/repo-standards\"},",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 16
+      "occurrence_count": 18
     },
     "sanitized_failure_receipt": {
       "definition": {
         "file": "studio/production_os_worker_canary.py",
-        "line": 416,
+        "line": 429,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 416,
+          "line": 429,
           "preview": "def sanitized_failure_receipt(exc, *, phase=None):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker_canary.py",
-          "line": 475,
+          "line": 488,
           "preview": "receipt = sanitized_failure_receipt(exc, phase=phase)",
           "definition_candidate": false
         },
@@ -758,7 +794,7 @@
     "main": {
       "definition": {
         "file": "studio/production_os_worker_canary.py",
-        "line": 432,
+        "line": 445,
         "kind": "function",
         "language": "python"
       },
@@ -1562,48 +1598,66 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 436,
+          "line": 438,
+          "preview": "client = FakeClient(wake_status=\"scheduled_fallback\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 464,
+          "preview": "client = FakeClient((\"running\", terminal), wake_status=\"scheduled_fallback\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 506,
+          "preview": "return_value=FakeClient(wake_status=\"scheduled_fallback\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 526,
           "preview": "client = FakeClient((\"queued\", \"running\", \"succeeded\"))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 450,
+          "line": 540,
           "preview": "client = FakeClient((\"running\", \"failed\"))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 463,
+          "line": 553,
           "preview": "client = FakeClient((\"running\",))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 487,
+          "line": 577,
           "preview": "untouched = FakeClient()",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 492,
+          "line": 582,
           "preview": "recovering = FakeClient((APIError(503), \"succeeded\"))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 499,
+          "line": 589,
           "preview": "denied = FakeClient((APIError(403),))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 507,
+          "line": 597,
           "preview": "untouched = FakeClient()",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 18
+      "occurrence_count": 21
     },
     "__init__": {
       "definition": {
@@ -1987,13 +2041,13 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 567,
+          "line": 657,
           "preview": "def __init__(self, payload=None, *, status=200):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 581,
+          "line": 671,
           "preview": "def __init__(self, *, content=expected, existing_ci=False):",
           "definition_candidate": false
         },
@@ -3207,7 +3261,7 @@
       ],
       "occurrence_count": 1
     },
-    "test_wait_observes_real_terminal_success": {
+    "test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
         "line": 435,
@@ -3218,6 +3272,92 @@
         {
           "file": "tests/test_production_os_worker_canary.py",
           "line": 435,
+          "preview": "def test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "rejected_dispatch": {
+      "definition": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "line": 441,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 441,
+          "preview": "def rejected_dispatch():",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 447,
+          "preview": "dispatch=rejected_dispatch,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 467,
+          "preview": "def rejected_dispatch():",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 472,
+          "preview": "wait_seconds=20, poll_seconds=2, dispatch=rejected_dispatch,",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "test_dispatch_failure_keeps_polling_to_real_terminal_state": {
+      "definition": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "line": 461,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 461,
+          "preview": "def test_dispatch_failure_keeps_polling_to_real_terminal_state(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_cli_failed_dispatch_is_not_reported_as_successful_launch": {
+      "definition": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "line": 483,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 483,
+          "preview": "def test_cli_failed_dispatch_is_not_reported_as_successful_launch(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_wait_observes_real_terminal_success": {
+      "definition": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "line": 525,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 525,
           "preview": "def test_wait_observes_real_terminal_success(self):",
           "definition_candidate": true
         }
@@ -3227,7 +3367,7 @@
     "clock": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 438,
+        "line": 528,
         "kind": "function",
         "language": "python"
       },
@@ -3958,7 +4098,7 @@
     "sleep": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 440,
+        "line": 530,
         "kind": "function",
         "language": "python"
       },
@@ -4301,19 +4441,19 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 440,
+          "line": 530,
           "preview": "def sleep(seconds):",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 444,
+          "line": 534,
           "preview": "clock=clock, sleeper=sleep,",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 490,
+          "line": 580,
           "preview": "clock=lambda: 0, sleeper=lambda seconds: self.fail(\"no sleep\"))",
           "definition_candidate": false
         },
@@ -4347,14 +4487,14 @@
     "test_terminal_failure_returns_without_retrying_mutation": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 449,
+        "line": 539,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 449,
+          "line": 539,
           "preview": "def test_terminal_failure_returns_without_retrying_mutation(self):",
           "definition_candidate": true
         }
@@ -4364,14 +4504,14 @@
     "test_wait_is_bounded": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 462,
+        "line": 552,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 462,
+          "line": 552,
           "preview": "def test_wait_is_bounded(self):",
           "definition_candidate": true
         }
@@ -4381,7 +4521,7 @@
     "expire": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 476,
+        "line": 566,
         "kind": "function",
         "language": "python"
       },
@@ -4394,13 +4534,13 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 476,
+          "line": 566,
           "preview": "def expire(method, path, **kwargs):",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 479,
+          "line": 569,
           "preview": "with patch.object(operator, \"call\", side_effect=expire) as call:",
           "definition_candidate": false
         }
@@ -4410,14 +4550,14 @@
     "test_canary_workflow_verifies_terminal_worker_completion": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 520,
+        "line": 610,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 520,
+          "line": 610,
           "preview": "def test_canary_workflow_verifies_terminal_worker_completion():",
           "definition_candidate": true
         }
@@ -4427,56 +4567,56 @@
     "FakeResponse": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 564,
+        "line": 654,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 564,
+          "line": 654,
           "preview": "class FakeResponse:",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 594,
+          "line": 684,
           "preview": "return FakeResponse({\"object\": {\"sha\": head}})",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 596,
+          "line": 686,
           "preview": "return FakeResponse({",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 602,
+          "line": 692,
           "preview": "return FakeResponse({",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 608,
+          "line": 698,
           "preview": "return FakeResponse([])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 614,
+          "line": 704,
           "preview": "return FakeResponse({",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 630,
+          "line": 720,
           "preview": "return FakeResponse({\"total_count\": len(rows), \"workflow_runs\": rows})",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 633,
+          "line": 723,
           "preview": "return FakeResponse(status=204)",
           "definition_candidate": false
         }
@@ -4486,7 +4626,7 @@
     "read": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 571,
+        "line": 661,
         "kind": "function",
         "language": "python"
       },
@@ -4853,19 +4993,19 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 527,
+          "line": 617,
           "preview": "assert \"contents: read\" in workflow",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 552,
+          "line": 642,
           "preview": "assert \"contents: read\" in trusted",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 571,
+          "line": 661,
           "preview": "def read(self, *_args):",
           "definition_candidate": true
         },
@@ -4923,7 +5063,7 @@
     "__enter__": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 574,
+        "line": 664,
         "kind": "function",
         "language": "python"
       },
@@ -5014,7 +5154,7 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 574,
+          "line": 664,
           "preview": "def __enter__(self):",
           "definition_candidate": true
         },
@@ -5030,7 +5170,7 @@
     "__exit__": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 577,
+        "line": 667,
         "kind": "function",
         "language": "python"
       },
@@ -5091,7 +5231,7 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 577,
+          "line": 667,
           "preview": "def __exit__(self, *_args):",
           "definition_candidate": true
         },
@@ -5107,44 +5247,44 @@
     "Transport": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 580,
+        "line": 670,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 580,
+          "line": 670,
           "preview": "class Transport:",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 650,
+          "line": 740,
           "preview": "transport = Transport()",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 655,
+          "line": 745,
           "preview": "prequalified = Transport(existing_ci=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 661,
+          "line": 751,
           "preview": "Transport(content=b\"tampered marker\\n\"),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 662,
+          "line": 752,
           "preview": "Transport(content=b\"production-os-worker-canary sequence 47\\n\"),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 672,
+          "line": 762,
           "preview": "denied = Transport()",
           "definition_candidate": false
         }
@@ -5154,7 +5294,7 @@
     "open": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 586,
+        "line": 676,
         "kind": "function",
         "language": "python"
       },
@@ -5803,13 +5943,13 @@
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 586,
+          "line": 676,
           "preview": "def open(self, request, timeout=20):",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 615,
+          "line": 705,
           "preview": "\"number\": 46, \"state\": \"open\", \"draft\": True,",
           "definition_candidate": false
         },
@@ -5867,38 +6007,38 @@
     "run_trusted": {
       "definition": {
         "file": "tests/test_production_os_worker_canary.py",
-        "line": 636,
+        "line": 726,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 636,
+          "line": 726,
           "preview": "def run_trusted(transport, *, payload=None):",
           "definition_candidate": true
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 651,
+          "line": 741,
           "preview": "run_trusted(transport)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 656,
+          "line": 746,
           "preview": "run_trusted(prequalified)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 665,
+          "line": 755,
           "preview": "run_trusted(bad)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_canary.py",
-          "line": 674,
+          "line": 764,
           "preview": "run_trusted(denied, payload={\"branch\": \"studio/foreign\", \"commit_sha\": head})",
           "definition_candidate": false
         }

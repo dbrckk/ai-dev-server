@@ -17387,15 +17387,24 @@ payload = client.get("/v1/stats", timeout_seconds=10)
 ⋮----
 result = launch_canary(client, control, source_api=source_api)
 ⋮----
+wake_unconfirmed = False
+⋮----
 # The control plane may have dispatched the same Actions worker while
 # admitting the job. Only use the canary's privileged dispatch when
 # that wake did not happen and no persistent worker is available.
 wake = result["worker_wake"]
 ⋮----
+# Admission has already succeeded. Never lose the returned
+# workflow/project IDs or retry the mutation just because
+# the GitHub wake was rejected or its outcome was ambiguous.
+# Ignore exception text: it may embed a bearer or response.
+wake_unconfirmed = True
+⋮----
 outcome = wait_for_workflow(
 ⋮----
 # An acknowledged submission is not terminal worker success.
-# Preserve the distinction for status consumers and CI receipts.
+# A failed/ambiguous wake cannot count as a successful launch when
+# nobody has verified processing; retain IDs for later recovery.
 ⋮----
 def sanitized_failure_receipt(exc, *, phase=None)
 ⋮----

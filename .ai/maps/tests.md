@@ -9608,10 +9608,24 @@ already_fixed = FakeClient()
 ⋮----
 request = opener.return_value.open.call_args.args[0]
 ⋮----
+def test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt(self)
+⋮----
+client = FakeClient(wake_status="scheduled_fallback")
+calls = []
+⋮----
+def rejected_dispatch()
+⋮----
+def test_dispatch_failure_keeps_polling_to_real_terminal_state(self)
+⋮----
+client = FakeClient(("running", terminal), wake_status="scheduled_fallback")
+now = [0.0]
+⋮----
+def test_cli_failed_dispatch_is_not_reported_as_successful_launch(self)
+⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
 client = FakeClient(("queued", "running", "succeeded"))
-now = [0.0]
+⋮----
 def clock()
 def sleep(seconds)
 result = wait_for_workflow(

@@ -2,13 +2,13 @@
 
 Summary: 1 success / 0 failure / 7 active
 
-- Resilience Soak: in_progress / pending (975acc23)
-- CI: in_progress / pending (975acc23)
-- Fault Injection Gate: in_progress / pending (975acc23)
-- Validate AI Dev Server: in_progress / pending (975acc23)
-- Mobile Studio Real Build: pending / pending (975acc23)
-- Multi-Engine E2E Benchmark: pending / pending (975acc23)
-- Production-OS worker integration: in_progress / pending (975acc23)
-- Validate AI Dev Server: completed / success (a385cd88)
+- Resilience Soak: in_progress / pending (0f6589aa)
+- Multi-Engine E2E Benchmark: queued / pending (0f6589aa)
+- Mobile Studio Real Build: pending / pending (0f6589aa)
+- CI: queued / pending (0f6589aa)
+- Production-OS worker integration: in_progress / pending (0f6589aa)
+- Fault Injection Gate: in_progress / pending (0f6589aa)
+- Validate AI Dev Server: in_progress / pending (0f6589aa)
+- Production-OS worker integration: completed / success (9d4ca1b9)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

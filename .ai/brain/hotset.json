@@ -1,18 +1,6 @@
 {
   "files": [
     {
-      "path": "studio/production_os_worker_canary.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 630
-    },
-    {
       "path": "tests/test_production_os_worker_canary.py",
       "reasons": [
         "changed",
@@ -23,7 +11,19 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 610
+      "score": 635
+    },
+    {
+      "path": "studio/production_os_worker_canary.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 630
     },
     {
       "path": "tests/test_multi_engine_orchestrator.py",
@@ -107,13 +107,6 @@
         "symbol-indexed"
       ],
       "score": 120
-    },
-    {
-      "path": ".github/workflows/production-os-worker-canary.yml",
-      "reasons": [
-        "changed"
-      ],
-      "score": 100
     },
     {
       "path": "tests/test_studio.py",
@@ -258,6 +251,13 @@
     },
     {
       "path": "studio/adaptive_phase_policy.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 30
+    },
+    {
+      "path": "studio/agents/adapters.py",
       "reasons": [
         "reverse-dependency-neighbor"
       ],

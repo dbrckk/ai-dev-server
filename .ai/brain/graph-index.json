@@ -1240,6 +1240,7 @@
         "integration_tests/test_production_os_server_integration.py",
         "scripts/production-os-live-resume-proof.py",
         "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_remote_asset_capability.py",
         "tests/test_production_os_worker.py",
@@ -1247,7 +1248,7 @@
         "tests/test_production_os_worker_recovery.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 9,
+      "in_degree": 10,
       "out_degree": 12,
       "path": "studio/production_os_worker.py"
     },
@@ -1332,6 +1333,34 @@
       "in_degree": 15,
       "out_degree": 4,
       "path": "studio/capacity_ledger.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/production_os_worker.py",
+        "tests/test_production_os_worker_canary.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/agents/codex.py",
+        "studio/architecture_replacement_merge.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/portfolio_scan.py",
+        "studio/production_os_source_tasks.py",
+        "studio/security_audit.py",
+        "studio/task_context.py",
+        "tests/test_generic_repository_pull_request.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_live_diagnostics.py",
+        "tests/test_release_repair.py",
+        "tests/test_security.py",
+        "tests/test_security_agent.py",
+        "tests/test_security_remediation.py"
+      ],
+      "in_degree": 15,
+      "out_degree": 4,
+      "path": "tests/test_production_os_actions_worker_workflow.py"
     },
     {
       "dependencies": [
@@ -1468,33 +1497,6 @@
       "in_degree": 18,
       "out_degree": 0,
       "path": "studio/project_memory.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "tests/test_production_os_worker_canary.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/agents/codex.py",
-        "studio/architecture_replacement_merge.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/portfolio_scan.py",
-        "studio/production_os_source_tasks.py",
-        "studio/security_audit.py",
-        "studio/task_context.py",
-        "tests/test_generic_repository_pull_request.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_production_os_live_diagnostics.py",
-        "tests/test_release_repair.py",
-        "tests/test_security.py",
-        "tests/test_security_agent.py",
-        "tests/test_security_remediation.py"
-      ],
-      "in_degree": 15,
-      "out_degree": 3,
-      "path": "tests/test_production_os_actions_worker_workflow.py"
     },
     {
       "dependencies": [
@@ -2286,7 +2288,7 @@
       "path": "studio/improvement_backlog.py"
     }
   ],
-  "edge_count": 2131,
+  "edge_count": 2132,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 644,
   "schema_version": 1

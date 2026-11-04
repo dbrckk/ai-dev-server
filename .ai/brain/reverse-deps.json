@@ -4170,6 +4170,7 @@
         "integration_tests/test_production_os_server_integration.py",
         "scripts/production-os-live-resume-proof.py",
         "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_remote_asset_capability.py",
         "tests/test_production_os_worker.py",
@@ -4177,7 +4178,7 @@
         "tests/test_production_os_worker_recovery.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 9,
+      "in_degree": 10,
       "out_degree": 12
     },
     "studio/production_os_worker_canary.py": {
@@ -7506,6 +7507,7 @@
     "tests/test_production_os_actions_worker_workflow.py": {
       "dependencies": [
         "studio/core.py",
+        "studio/production_os_worker.py",
         "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
@@ -7527,7 +7529,7 @@
         "tests/test_security_remediation.py"
       ],
       "in_degree": 15,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_production_os_live_diagnostics.py": {
       "dependencies": [

@@ -323,16 +323,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-11-04T16:38:52Z
+Generated: 2026-11-04T22:32:26Z
 
 ### Git
 - Branch: `main`
-- Head: `2a83f46cfdb2`
-- Commit date: 2026-11-04T11:38:38-05:00
-- Commit: fix(canary): fail closed on operator authorization preflight (#414)
+- Head: `55f0f14dffae`
+- Commit date: 2026-11-04T17:32:15-05:00
+- Commit: fix(worker): diagnose session auth failures without leaking credentials (#415)
 - Tracked files: 880
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `control/production-os-worker-canary.json`

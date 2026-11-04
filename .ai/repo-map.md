@@ -2268,7 +2268,7 @@ jobs:
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
           from production_os_worker import worker_capabilities
-          from production_os_worker import _NoRedirect, ProductionOSClient
+          from production_os_worker import _NoRedirect, ProductionOSClient, ProductionOSWorkerError
 
           base_env = dict(os.environ)
           base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
@@ -2276,7 +2276,20 @@ jobs:
 
           # A fresh single-flight Actions process has no in-memory active jobs.
           # Reconcile its prior interrupted session before checking for queued work.
-          session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
+          try:
+              session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
+          except ProductionOSWorkerError as exc:
+              # Do not print exception bodies, request headers, or credentials.
+              if str(exc) in {"Production-OS HTTP 401", "Production-OS HTTP 403"}:
+                  raise SystemExit(
+                      "Production-OS worker authentication rejected during session "
+                      "registration (HTTP " + str(exc).rsplit(" ", 1)[-1] + "). "
+                      "Synchronize PRODUCTION_OS_WORKER_TOKEN between the "
+                      "ai-dev-server GitHub Actions repository secret and the "
+                      "studycall12 Render service environment. Do not change "
+                      "PRODUCTION_OS_OPERATOR_TOKEN or print either value."
+                  ) from None
+              raise
           recovered = (session or {}).get("recovered_jobs", [])
           print(f"Production-OS worker session: ready recovered_jobs={len(recovered)}")
           # Snapshot is also produced on idle cycles; no task payload is kept.
@@ -36772,6 +36785,34 @@ blocked = ScopedTransport(deny_public=True)
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
+⋮----
+def test_actions_worker_session_auth_failure_is_actionable_and_secret_safe()
+⋮----
+"""Exercise the real embedded workflow registration code, without HTTP."""
+⋮----
+step = WORKFLOW.split(
+⋮----
+# Only run the authentication/register preflight. The later queue probes
+# require a real HTTP service and are tested separately.
+snippet = script.split(
+executable = compile(snippet, "production-os-worker-session-auth", "exec")
+⋮----
+secret = "never-log-worker-secret-401-403"
+⋮----
+class WorkerError(RuntimeError)
+⋮----
+def execute(error_status)
+⋮----
+fake_module = types.ModuleType("production_os_worker")
+⋮----
+class FakeClient
+⋮----
+def __init__(self, base, token)
+⋮----
+def register(self, worker_id, capabilities)
+⋮----
+stdout = io.StringIO()
+stderr = io.StringIO()
 ⋮----
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ⋮----

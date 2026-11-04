@@ -9132,6 +9132,34 @@ def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
 ⋮----
+def test_actions_worker_session_auth_failure_is_actionable_and_secret_safe()
+⋮----
+"""Exercise the real embedded workflow registration code, without HTTP."""
+⋮----
+step = WORKFLOW.split(
+⋮----
+# Only run the authentication/register preflight. The later queue probes
+# require a real HTTP service and are tested separately.
+snippet = script.split(
+executable = compile(snippet, "production-os-worker-session-auth", "exec")
+⋮----
+secret = "never-log-worker-secret-401-403"
+⋮----
+class WorkerError(RuntimeError)
+⋮----
+def execute(error_status)
+⋮----
+fake_module = types.ModuleType("production_os_worker")
+⋮----
+class FakeClient
+⋮----
+def __init__(self, base, token)
+⋮----
+def register(self, worker_id, capabilities)
+⋮----
+stdout = io.StringIO()
+stderr = io.StringIO()
+⋮----
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ⋮----
 def test_actions_worker_has_resilient_model_provider_fallbacks()

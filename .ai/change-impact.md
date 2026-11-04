@@ -1,19 +1,18 @@
 # Change impact
 
-Base: 016d87f67c49e8b3488db6e8cf511d7cbd3e9c00
-Head: ac527b976c1f393de6b0a1be4cb2753dbd86c683
+Base: 3ae63d0fb7c93d7d808e65c02f2612b023508eda
+Head: 2a83f46cfdb20e2ec0bf9646335505648d93734e
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M .github/workflows/production-os-live-diagnostics.yml
-- M .github/workflows/production-os-objective-recovery.yml
-- M .github/workflows/production-os-worker-canary.yml
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
-- .github
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

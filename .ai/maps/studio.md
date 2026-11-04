@@ -17364,6 +17364,15 @@ last_status = str(workflow.get("status") or "unknown").lower()
 ⋮----
 response = client.get("/readyz", timeout_seconds=min(30.0, remaining))
 ⋮----
+def check_operator_access(client)
+⋮----
+"""Prove the bearer is accepted on a dashboard-only, read-only route.
+
+    Worker credentials must be denied here. This probe never mutates or
+    submits a task. Launch still requires the strict operator role.
+    """
+payload = client.get("/v1/dashboard/workers", timeout_seconds=10)
+⋮----
 # Invalid monitoring parameters must not leave a real task queued.
 ⋮----
 result = launch_canary(client, control, source_api=source_api)
@@ -17378,22 +17387,35 @@ outcome = wait_for_workflow(
 # An acknowledged submission is not terminal worker success.
 # Preserve the distinction for status consumers and CI receipts.
 ⋮----
+def sanitized_failure_receipt(exc)
+⋮----
+"""Expose the API failure code without leaking secrets, URLs or response bodies."""
+receipt = {"status": "unavailable", "error_type": type(exc).__name__}
+⋮----
 def main(argv=None)
 ⋮----
 parser = argparse.ArgumentParser()
 ⋮----
 args = parser.parse_args(argv)
+phase = "configuration"
 ⋮----
 control = json.loads(args.control.read_text(encoding="utf-8"))
 token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 base = os.environ.get("PRODUCTION_OS_URL", "").strip()
 ⋮----
 client = OperatorClient(base, token)
+phase = "readiness"
 ⋮----
+phase = "operator_preflight"
+⋮----
+phase = "canary_launch"
 dispatch = None
 ⋮----
 dispatch = lambda: dispatch_worker_after_enqueue(
 result = run_canary(
+⋮----
+receipt = sanitized_failure_receipt(exc)
+# Fixed phase labels only; exception text/URLs/credentials never printed.
 ⋮----
 # A non-blocking CLI launch can exit successfully without claiming
 # the workflow actually finished. Blocking mode still requires success.

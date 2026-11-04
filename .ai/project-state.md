@@ -323,35 +323,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-31T17:02:40Z
+Generated: 2026-11-04T16:38:52Z
 
 ### Git
 - Branch: `main`
-- Head: `ac527b976c1f`
-- Commit date: 2026-10-31T13:02:20-04:00
-- Commit: fix(ops): pin Production-OS workflows to studycall12 Render (#412)
+- Head: `2a83f46cfdb2`
+- Commit date: 2026-11-04T11:38:38-05:00
+- Commit: fix(canary): fail closed on operator authorization preflight (#414)
 - Tracked files: 880
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-live-diagnostics.yml`
-- `.github/workflows/production-os-objective-recovery.yml`
-- `.github/workflows/production-os-worker-canary.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `control/production-os-resume.json`
-- `docs/managed-generic-delivery.md`
-- `integration_tests/test_production_os_server_integration.py`
-- `studio/generic_delivery.py`
-- `studio/generic_smoke.py`
-- `studio/production_os_resume_objectives.py`
-- `tests/test_generic_published_checkpoint.py`
-- `tests/test_generic_worker_canary_resume.py`
-- `tests/test_production_os_resume_objectives.py`
-- `.github/workflows/production-os-canary-review-handoff.yml`
-- `studio/generic_repository.py`
+- `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `studio/github_runner.py`
-- `tests/test_github_runner_round_persistence.py`
+- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

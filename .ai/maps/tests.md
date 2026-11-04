@@ -9505,6 +9505,22 @@ status = self.statuses.pop(0) if len(self.statuses) > 1 else self.statuses[0]
 ⋮----
 class WorkerCanaryTests(unittest.TestCase)
 ⋮----
+def test_operator_preflight_is_read_only_and_fails_closed(self)
+⋮----
+client = Mock()
+⋮----
+def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self)
+⋮----
+control = Path(directory) / "canary.json"
+⋮----
+stdout = io.StringIO()
+⋮----
+status = canary_main([str(control)])
+⋮----
+receipt = json.loads(stdout.getvalue())
+⋮----
+def test_sanitized_failure_receipt_keeps_only_safe_http_status(self)
+⋮----
 def test_control_is_strict(self)
 ⋮----
 trusted = {"sequence": 41, "repository": "dbrckk/star-list",

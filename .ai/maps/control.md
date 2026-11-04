@@ -142,7 +142,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-    "sequence": 45,
+    "sequence": 46,
     "repository": "dbrckk/ai-dev-server",
     "scenario": "file"
 }

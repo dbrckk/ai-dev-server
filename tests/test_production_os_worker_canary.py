@@ -8,6 +8,7 @@ from production_os_resume_objectives import OperatorClient
 
 from production_os_worker_canary import (
     canary_instruction,
+    sanitized_failure_receipt,
     dispatch_worker_after_enqueue,
     run_canary,
     validate_control,
@@ -44,6 +45,33 @@ class FakeClient:
 
 
 class WorkerCanaryTests(unittest.TestCase):
+    def test_sanitized_failure_receipt_keeps_only_safe_http_status(self):
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(401)),
+            {"status":"unavailable", "error_type":"APIError", "http_status":401,
+             "reason":"operator_authorization_rejected"},
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(403))["reason"],
+            "operator_authorization_rejected",
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(409))["reason"],
+            "canary_launch_conflict",
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(503)),
+            {"status":"unavailable", "error_type":"APIError", "http_status":503},
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(ValueError("Bearer sample-secret very sensitive")),
+            {"status":"unavailable", "error_type":"ValueError"},
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError("Bearer sample-secret")),
+            {"status":"unavailable", "error_type":"APIError"},
+        )
+
     def test_control_is_strict(self):
         self.assertEqual(validate_control({"sequence": 7, "repository": "owner/repo"}), (7, "owner/repo"))
         for value in (

@@ -383,6 +383,19 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
     return result
 
 
+
+def sanitized_failure_receipt(exc):
+    """Expose the API failure code without leaking secrets, URLs or response bodies."""
+    receipt = {"status": "unavailable", "error_type": type(exc).__name__}
+    if isinstance(exc, APIError) and type(exc.status) is int and 400 <= exc.status <= 599:
+        receipt["http_status"] = exc.status
+        if exc.status in {401, 403}:
+            receipt["reason"] = "operator_authorization_rejected"
+        elif exc.status == 409:
+            receipt["reason"] = "canary_launch_conflict"
+    return receipt
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("control", type=Path)
@@ -413,7 +426,7 @@ def main(argv=None):
             dispatch=dispatch,
         )
     except Exception as exc:
-        print(canonical({"status": "unavailable", "error_type": type(exc).__name__}))
+        print(canonical(sanitized_failure_receipt(exc)))
         return 1
     print("Production-OS worker canary: " + canonical(result))
     # A non-blocking CLI launch can exit successfully without claiming

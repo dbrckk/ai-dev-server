@@ -9,6 +9,7 @@ from production_os_resume_objectives import OperatorClient
 from production_os_worker_canary import (
     canary_instruction,
     check_operator_access,
+    check_worker_access,
     main as canary_main,
     sanitized_failure_receipt,
     dispatch_worker_after_enqueue,
@@ -69,6 +70,77 @@ class WorkerCanaryTests(unittest.TestCase):
                 check_operator_access(client)
             self.assertFalse(client.submit.called)
 
+    def test_worker_preflight_is_read_only_and_fails_closed(self):
+        client = Mock()
+        client.get.return_value = {
+            "jobs": {}, "workflows": {}, "online_workers": 0,
+        }
+        check_worker_access(client)
+        client.get.assert_called_once_with("/v1/stats", timeout_seconds=10)
+        client.submit.assert_not_called()
+
+        for code in (401, 403):
+            client = Mock()
+            client.get.side_effect = APIError(code)
+            with self.subTest(code=code), self.assertRaises(APIError):
+                check_worker_access(client)
+            client.submit.assert_not_called()
+
+        for payload in ({}, None, {"jobs": [], "workflows": {}, "online_workers": 0},
+                        {"jobs": {}, "workflows": [], "online_workers": 0},
+                        {"jobs": {}, "workflows": {}, "online_workers": "0"}):
+            client = Mock()
+            client.get.return_value = payload
+            with self.subTest(payload=payload), self.assertRaises(RuntimeError):
+                check_worker_access(client)
+            client.submit.assert_not_called()
+
+    def test_cli_worker_auth_failure_blocks_enqueue_and_sanitizes_receipt(self):
+        import io
+        import json
+        import os
+        import tempfile
+        from contextlib import redirect_stdout
+
+        with tempfile.TemporaryDirectory() as directory:
+            control = Path(directory) / "canary.json"
+            control.write_text(json.dumps({
+                "sequence": 46,
+                "repository": "dbrckk/ai-dev-server",
+                "scenario": "file",
+            }), encoding="utf-8")
+            stdout = io.StringIO()
+            with patch.dict(os.environ, {
+                "PRODUCTION_OS_URL": "https://valid.example",
+                "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret-keep-hidden",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret-keep-hidden",
+                "GITHUB_ACTIONS": "true",
+            }), patch(
+                "production_os_worker_canary.wait_for_readiness"
+            ), patch(
+                "production_os_worker_canary.check_operator_access"
+            ) as operator_check, patch(
+                "production_os_worker_canary.check_worker_access",
+                side_effect=APIError(401),
+            ) as worker_check, patch(
+                "production_os_worker_canary.run_canary"
+            ) as launch, redirect_stdout(stdout):
+                status = canary_main([str(control)])
+            self.assertEqual(status, 1)
+            operator_check.assert_called_once()
+            worker_check.assert_called_once()
+            launch.assert_not_called()
+            receipt = json.loads(stdout.getvalue())
+            self.assertEqual(receipt, {
+                "status": "unavailable",
+                "error_type": "APIError",
+                "http_status": 401,
+                "reason": "worker_authorization_rejected",
+                "phase": "worker_preflight",
+            })
+            self.assertNotIn("operator-secret-keep-hidden", stdout.getvalue())
+            self.assertNotIn("worker-secret-keep-hidden", stdout.getvalue())
+
     def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self):
         import io
         import json
@@ -119,6 +191,14 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertEqual(
             sanitized_failure_receipt(APIError(403))["reason"],
             "operator_authorization_rejected",
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(401), phase="worker_preflight")["reason"],
+            "worker_authorization_rejected",
+        )
+        self.assertEqual(
+            sanitized_failure_receipt(APIError(403), phase="worker_preflight")["reason"],
+            "worker_authorization_rejected",
         )
         self.assertEqual(
             sanitized_failure_receipt(APIError(409))["reason"],

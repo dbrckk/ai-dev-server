@@ -30,9 +30,11 @@ def test_actions_worker_polls_production_os_on_schedule():
     assert "--once" in WORKFLOW
 
 
-def test_actions_worker_uses_existing_secure_credentials():
-    assert "secrets.PRODUCTION_OS_WORKER_TOKEN" in WORKFLOW
+def test_actions_worker_uses_trusted_oidc_instead_of_static_worker_secrets():
+    assert "secrets.PRODUCTION_OS_WORKER_TOKEN" not in WORKFLOW
     assert "secrets.PRODUCTION_OS_OPERATOR_TOKEN" not in WORKFLOW
+    assert "id-token: write" in WORKFLOW
+    assert "python studio/production_os_oidc.py worker" in WORKFLOW
     assert "secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT" in WORKFLOW
     assert "secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY" in WORKFLOW
     assert "persist-credentials: false" in WORKFLOW

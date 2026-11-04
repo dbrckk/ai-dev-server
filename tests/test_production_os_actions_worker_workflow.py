@@ -408,7 +408,7 @@ def test_actions_worker_session_auth_failure_is_actionable_and_secret_safe():
         "- name: Probe compatible Production-OS work", 1
     )[1]
     script = dedent(
-        step.split("python - <<'PY'\\n", 1)[1].split("\\n          PY", 1)[0]
+        step.split("python - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
     )
     # Only run the authentication/register preflight. The later queue probes
     # require a real HTTP service and are tested separately.

@@ -432,6 +432,96 @@ class WorkerCanaryTests(unittest.TestCase):
                 "production-os-actions-worker.yml/dispatches",
             )
 
+    def test_ambiguous_or_rejected_dispatch_preserves_job_recovery_receipt(self):
+        for error_type in (RuntimeError, ValueError, TimeoutError, OSError):
+            with self.subTest(error=error_type.__name__):
+                client = FakeClient(wake_status="scheduled_fallback")
+                calls = []
+
+                def rejected_dispatch():
+                    calls.append("after-admission")
+                    raise error_type("Bearer do-not-echo-anywhere")
+
+                result = run_canary(
+                    client, {"sequence": 46, "repository": "dbrckk/ai-dev-server"},
+                    dispatch=rejected_dispatch,
+                )
+                self.assertEqual(calls, ["after-admission"])
+                self.assertEqual(len(client.submissions), 1)
+                self.assertEqual(client.submissions[0][1]["request_id"], "worker-canary-46")
+                self.assertEqual(result["project_id"], "a" * 32)
+                self.assertEqual(result["workflow_id"], "b" * 32)
+                self.assertEqual(result["actions_worker_wake"], "unconfirmed")
+                self.assertEqual(result["actions_worker_wake_reason"], "dispatch_not_confirmed")
+                self.assertEqual(result["result"], {"status": "wake_unconfirmed"})
+                self.assertIsNone(result["succeeded"])
+                self.assertNotIn("do-not-echo-anywhere", str(result))
+                self.assertEqual(client.lookups, [])
+
+    def test_dispatch_failure_keeps_polling_to_real_terminal_state(self):
+        for terminal in ("succeeded", "failed"):
+            with self.subTest(terminal=terminal):
+                client = FakeClient(("running", terminal), wake_status="scheduled_fallback")
+                now = [0.0]
+
+                def rejected_dispatch():
+                    raise RuntimeError("Authorization: Bearer masked-secret")
+
+                result = run_canary(
+                    client, {"sequence": 46, "repository": "dbrckk/ai-dev-server"},
+                    wait_seconds=20, poll_seconds=2, dispatch=rejected_dispatch,
+                    clock=lambda: now[0],
+                    sleeper=lambda seconds: now.__setitem__(0, now[0] + seconds),
+                )
+                self.assertEqual(len(client.submissions), 1)
+                self.assertEqual(result["result"], {"status": terminal})
+                self.assertEqual(result["succeeded"], terminal == "succeeded")
+                self.assertEqual(result["actions_worker_wake"], "unconfirmed")
+                self.assertEqual(result["workflow_id"], "b" * 32)
+                self.assertNotIn("masked-secret", str(result))
+
+    def test_cli_failed_dispatch_is_not_reported_as_successful_launch(self):
+        import io
+        import json
+        import os
+        import tempfile
+        from contextlib import redirect_stdout
+
+        with tempfile.TemporaryDirectory() as directory:
+            control = Path(directory) / "canary.json"
+            control.write_text(json.dumps({
+                "sequence": 46,
+                "repository": "dbrckk/ai-dev-server",
+                "scenario": "file",
+            }), encoding="utf-8")
+            stdout = io.StringIO()
+            with patch.dict(os.environ, {
+                "PRODUCTION_OS_URL": "https://valid.example",
+                "PRODUCTION_OS_OPERATOR_TOKEN": "operator-token-not-for-logs",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-token-not-for-logs",
+                "GITHUB_ACTIONS": "true",
+                "GITHUB_REPOSITORY": "dbrckk/ai-dev-server",
+            }), patch(
+                "production_os_worker_canary.OperatorClient",
+                return_value=FakeClient(wake_status="scheduled_fallback"),
+            ), patch(
+                "production_os_worker_canary.wait_for_readiness"
+            ), patch(
+                "production_os_worker_canary.check_operator_access"
+            ), patch(
+                "production_os_worker_canary.check_worker_access"
+            ), patch(
+                "production_os_worker_canary.dispatch_worker_after_enqueue",
+                side_effect=RuntimeError("Bearer dispatch-secret-must-stay-hidden"),
+            ), redirect_stdout(stdout):
+                status = canary_main([str(control)])
+            self.assertEqual(status, 1)
+            self.assertIn("wake_unconfirmed", stdout.getvalue())
+            self.assertIn('"workflow_id":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"', stdout.getvalue())
+            for secret in ("operator-token-not-for-logs", "worker-token-not-for-logs",
+                           "dispatch-secret-must-stay-hidden"):
+                self.assertNotIn(secret, stdout.getvalue())
+
     def test_wait_observes_real_terminal_success(self):
         client = FakeClient(("queued", "running", "succeeded"))
         now = [0.0]

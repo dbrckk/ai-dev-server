@@ -323,20 +323,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-11-04T22:32:26Z
+Generated: 2026-11-04T22:36:04Z
 
 ### Git
 - Branch: `main`
-- Head: `55f0f14dffae`
-- Commit date: 2026-11-04T17:32:15-05:00
-- Commit: fix(worker): diagnose session auth failures without leaking credentials (#415)
+- Head: `975acc237be5`
+- Commit date: 2026-11-04T17:35:47-05:00
+- Commit: fix(canary): validate worker bearer before enqueue (#416)
 - Tracked files: 880
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
+- `.github/workflows/production-os-worker-canary.yml`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-worker-canary.json`
 
 ### Project signals

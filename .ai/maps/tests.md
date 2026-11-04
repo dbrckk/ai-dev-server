@@ -9537,7 +9537,9 @@ def test_operator_preflight_is_read_only_and_fails_closed(self)
 ⋮----
 client = Mock()
 ⋮----
-def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self)
+def test_worker_preflight_is_read_only_and_fails_closed(self)
+⋮----
+def test_cli_worker_auth_failure_blocks_enqueue_and_sanitizes_receipt(self)
 ⋮----
 control = Path(directory) / "canary.json"
 ⋮----
@@ -9546,6 +9548,8 @@ stdout = io.StringIO()
 status = canary_main([str(control)])
 ⋮----
 receipt = json.loads(stdout.getvalue())
+⋮----
+def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self)
 ⋮----
 def test_sanitized_failure_receipt_keeps_only_safe_http_status(self)
 ⋮----

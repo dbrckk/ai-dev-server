@@ -3152,6 +3152,7 @@ jobs:
     env:
       PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+      PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PYTHONPATH: studio
       PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -23558,6 +23559,16 @@ def check_operator_access(client)
     """
 payload = client.get("/v1/dashboard/workers", timeout_seconds=10)
 ⋮----
+def check_worker_access(client)
+⋮----
+"""Validate the worker bearer with a read-only request before enqueueing.
+
+    GET /v1/stats accepts worker credentials and does not register a worker,
+    claim a job, or alter the queue. A successful response is not a worker
+    heartbeat and never proves task execution.
+    """
+payload = client.get("/v1/stats", timeout_seconds=10)
+⋮----
 # Invalid monitoring parameters must not leave a real task queued.
 ⋮----
 result = launch_canary(client, control, source_api=source_api)
@@ -23572,9 +23583,9 @@ outcome = wait_for_workflow(
 # An acknowledged submission is not terminal worker success.
 # Preserve the distinction for status consumers and CI receipts.
 ⋮----
-def sanitized_failure_receipt(exc)
+def sanitized_failure_receipt(exc, *, phase=None)
 ⋮----
-"""Expose the API failure code without leaking secrets, URLs or response bodies."""
+"""Expose only bounded status/phase metadata, never credentials or body."""
 receipt = {"status": "unavailable", "error_type": type(exc).__name__}
 ⋮----
 def main(argv=None)
@@ -23593,13 +23604,19 @@ phase = "readiness"
 ⋮----
 phase = "operator_preflight"
 ⋮----
+# A valid operator token cannot compensate for a rejected worker token.
+# Check both before the one-shot launch to avoid orphaned queued tasks.
+⋮----
+phase = "worker_preflight"
+worker_token = os.environ.get("PRODUCTION_OS_WORKER_TOKEN", "").strip()
+⋮----
 phase = "canary_launch"
 dispatch = None
 ⋮----
 dispatch = lambda: dispatch_worker_after_enqueue(
 result = run_canary(
 ⋮----
-receipt = sanitized_failure_receipt(exc)
+receipt = sanitized_failure_receipt(exc, phase=phase)
 # Fixed phase labels only; exception text/URLs/credentials never printed.
 ⋮----
 # A non-blocking CLI launch can exit successfully without claiming
@@ -37191,7 +37208,9 @@ def test_operator_preflight_is_read_only_and_fails_closed(self)
 ⋮----
 client = Mock()
 ⋮----
-def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self)
+def test_worker_preflight_is_read_only_and_fails_closed(self)
+⋮----
+def test_cli_worker_auth_failure_blocks_enqueue_and_sanitizes_receipt(self)
 ⋮----
 control = Path(directory) / "canary.json"
 ⋮----
@@ -37200,6 +37219,8 @@ stdout = io.StringIO()
 status = canary_main([str(control)])
 ⋮----
 receipt = json.loads(stdout.getvalue())
+⋮----
+def test_cli_blocks_before_enqueue_with_sanitized_auth_diagnosis(self)
 ⋮----
 def test_sanitized_failure_receipt_keeps_only_safe_http_status(self)
 ⋮----

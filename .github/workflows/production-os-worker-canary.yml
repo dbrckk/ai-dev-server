@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
   actions: write
+  id-token: write
 
 concurrency:
   group: production-os-worker-canary
@@ -21,8 +22,6 @@ jobs:
     timeout-minutes: 40
     env:
       PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
-      PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
-      PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PYTHONPATH: studio
       PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -35,6 +34,14 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+
+      # Canary requires an operator credential and a narrower read-only worker
+      # role check. Both sessions are short-lived; neither secret is stored.
+      - name: Exchange GitHub OIDC for scoped operator token
+        run: python studio/production_os_oidc.py operator
+
+      - name: Exchange GitHub OIDC for scoped worker token
+        run: python studio/production_os_oidc.py worker
 
       # The control plane may already dispatch a worker while queueing. This
       # workflow_dispatch is a fallback only when no worker was woken.

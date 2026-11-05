@@ -1,7 +1,7 @@
-"""Isolated, exact-contract GitHub delivery canary for opted-in Jumpy.
+"""Isolated, exact-contract GitHub delivery canary for trusted repositories.
 
-This does not run a game-development model, alter Godot source or generalize
-repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
+This does not run a coding model or generalize repository_dispatch to untrusted
+repositories. It verifies the real branch -> review PR transport only.
 """
 from __future__ import annotations
 
@@ -16,11 +16,12 @@ from generic_repository import GenericRepository
 from run import GitHub
 
 _CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
+_ALLOWED_TARGETS = frozenset({"dbrckk/Jumpy", "dbrckk/ai-dev-server"})
 
 
 def contract(req: dict) -> tuple[str, str] | None:
-    """Only an *exact* control-plane Jumpy canary can bypass Godot preview."""
-    if not isinstance(req, dict) or req.get("target_repo") != "dbrckk/Jumpy":
+    """Only an exact, authenticated, allowlisted delivery canary may bypass AI."""
+    if not isinstance(req, dict) or req.get("target_repo") not in _ALLOWED_TARGETS:
         return None
     production_os = req.get("production_os")
     if not isinstance(production_os, dict) or not all(
@@ -53,7 +54,7 @@ def contract(req: dict) -> tuple[str, str] | None:
 def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     checked = contract(req)
     if checked is None:
-        raise StudioError("Jumpy delivery canary contract was not verified")
+        raise StudioError("Exact delivery canary contract was not verified")
     path, line = checked
     out.mkdir(parents=True, exist_ok=True)
     github = GitHub(req["target_repo"])
@@ -68,11 +69,11 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     raw = target.read_bytes()
     if raw != (line + "\n").encode("utf-8"):
         raise StudioError("Delivery canary file bytes did not match contract")
-    sha = repo.publish(base_sha, work, "Production-OS verified Jumpy delivery canary")
+    sha = repo.publish(base_sha, work, "Production-OS verified exact delivery canary")
     verification = {
         "status": "passed",
         "passed": True,
-        "reason": "exact Jumpy Git delivery canary contract",
+        "reason": "exact allowlisted Git delivery canary contract",
         "structural_only": True,
         "files": [{"path": path, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}],
     }
@@ -90,7 +91,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
 
     try:
         repo.ensure_pull_request(
-            title="Review Production-OS Jumpy delivery canary",
+            title="Review Production-OS delivery canary for " + req["target_repo"],
             body="Verified, exact-content checkpoint only. Review before merging.",
         )
         # The PR creation response (or an old PR on the same branch) does
@@ -117,7 +118,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             **({"review_handoff": handoff} if handoff is not None else {}),
         }
     delivered = type(pr.get("number")) is int and isinstance(pr.get("url"), str) and (
-        pr["url"].startswith("https://github.com/dbrckk/Jumpy/pull/")
+        pr["url"].startswith(f"https://github.com/{req['target_repo']}/pull/")
     )
     if delivered:
         checkpoint = advance_checkpoint(checkpoint, phase="complete")
@@ -142,7 +143,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             "blockers": [] if delivered else ["GitHub review PR not confirmed"],
         },
         "release_status": "verified_project_complete" if delivered else "verified_branch_review_blocked",
-        "resume_mode": "exact_jumpy_delivery_canary",
+        "resume_mode": "exact_allowlisted_delivery_canary",
     }
     (out / "generic-report.json").write_text(canonical(report), encoding="utf-8")
     return {"status": "complete" if delivered else "blocked", "report": report, "next_stage": None if delivered else "review_handoff"}

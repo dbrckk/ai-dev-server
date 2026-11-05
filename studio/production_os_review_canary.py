@@ -62,14 +62,23 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     base_sha, restore = repo.restore(work)
 
     target = work / path
-    if target.exists() or target.is_symlink():
-        raise StudioError("Delivery canary target already exists; no overwrite permitted")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(line + "\n", encoding="utf-8")
-    raw = target.read_bytes()
-    if raw != (line + "\n").encode("utf-8"):
-        raise StudioError("Delivery canary file bytes did not match contract")
-    sha = repo.publish(base_sha, work, "Production-OS verified exact delivery canary")
+    if target.is_symlink() or (target.exists() and not target.is_file()):
+        raise StudioError("Delivery canary target is unsafe")
+    expected = (line + "\n").encode("utf-8")
+    if target.is_file():
+        # A retry/restored worker must reuse the existing exact checkpoint,
+        # not overwrite the file or create a second commit.
+        raw = target.read_bytes()
+        if raw != expected:
+            raise StudioError("Restored delivery canary does not match exact contract")
+        sha = base_sha
+    else:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(expected)
+        raw = target.read_bytes()
+        if raw != expected:
+            raise StudioError("Delivery canary file bytes did not match contract")
+        sha = repo.publish(base_sha, work, "Production-OS verified exact delivery canary")
     verification = {
         "status": "passed",
         "passed": True,

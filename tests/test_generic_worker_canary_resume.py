@@ -136,7 +136,7 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                    "target_repo": "dbrckk/ai-dev-server",
                    "brief": canary_instruction(sequence)}
         expected_path = ".production-os/worker-canary-48.txt"
-        expected_content = b"production-os-worker-canary sequence 48\\n"
+        expected_content = b"production-os-worker-canary sequence 48\n"
         verified = {
             "passed": True, "status": "passed", "structural_only": True,
             "files": [{

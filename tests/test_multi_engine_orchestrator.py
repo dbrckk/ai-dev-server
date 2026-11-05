@@ -58,6 +58,50 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             )
             self.assertEqual(callback_calls, [])
 
+            # An exact AI Dev Server delivery marker is a transport canary,
+            # not a free-form coding task. It must bypass model/engine routing.
+            from production_os_worker_canary import canary_instruction
+            exact = {
+                "id": "pos-" + "a" * 24,
+                "target_repo": "dbrckk/ai-dev-server",
+                "app_name": "ai_dev_server",
+                "brief": canary_instruction(49),
+                "enabled": True,
+                "repository_branch_id": "mp-" + "a" * 24,
+                "production_os": {
+                    "workflow_id": "1" * 32,
+                    "workflow_task_id": "implementation",
+                },
+            }
+            exact_path = root / "exact-canary.json"
+            exact_path.write_text(json.dumps(exact), encoding="utf-8")
+            with patch("multi_engine_orchestrator.run_jumpy_review_canary") as delivery:
+                delivery.return_value = {
+                    "status": "deferred", "report": {}, "next_stage": "review_handoff",
+                }
+
+                def forbidden_runner(*_args, **_kwargs):
+                    raise AssertionError("Exact delivery canary must not run a coding model")
+
+                run_project(
+                    str(exact_path), root / "canary-out", str(root / "canary-work"),
+                    forbidden_runner, 100, lambda: 0, "a" * 40,
+                    checkpoint_observer=callback,
+                )
+                delivery.assert_called_once()
+                self.assertEqual(generic.call_count, 1)
+
+                # Nearby instructions must not fall back to unrestricted AI.
+                exact["brief"] += " Also write ls.txt."
+                exact_path.write_text(json.dumps(exact), encoding="utf-8")
+                with self.assertRaises(StudioError):
+                    run_project(
+                        str(exact_path), root / "bad-out",
+                        str(root / "bad-work"), forbidden_runner,
+                        100, lambda: 0, "a" * 40,
+                    )
+                delivery.assert_called_once()
+
     @patch("multi_engine_orchestrator.run_generic_project")
     def test_generic_without_callback_preserves_original_call(self, generic):
         generic.return_value = {

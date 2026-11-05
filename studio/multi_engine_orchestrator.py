@@ -46,9 +46,10 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock):
 
 def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None):
     project_out.mkdir(parents=True,exist_ok=True)
-    # A delivery canary is an exact, authenticated Git checkpoint/PR contract,
-    # NOT an instruction to build or release an entire Godot game. Keep the
-    # usual engine detection for every other user request.
+    # An exact, authenticated delivery canary is a Git checkpoint/PR
+    # transport probe (not a coding-model evaluation). The only permitted
+    # repositories are explicitly allowlisted by its contract; other
+    # requests continue through the normal engine detection.
     try:
         canary_req=json.loads(Path(request_path).read_text())
     except (OSError,json.JSONDecodeError):
@@ -79,9 +80,17 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
     # This failed closed only after the exact authorized routes above.
     if (isinstance(canary_req, dict)
             and isinstance(canary_req.get("target_repo"), str)
-            and canary_req["target_repo"].casefold() in {
-                task.repo.casefold() for task in TASKS.values()
-            }
+            and (
+                canary_req["target_repo"].casefold() in {
+                    task.repo.casefold() for task in TASKS.values()
+                }
+                or (
+                    canary_req["target_repo"] == "dbrckk/ai-dev-server"
+                    and str(canary_req.get("brief") or "").startswith(
+                        "Production-OS worker canary "
+                    )
+                )
+            )
             and re.fullmatch(
                 r"mp-[a-f0-9]{24}",
                 str(canary_req.get("repository_branch_id") or ""),

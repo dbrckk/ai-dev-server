@@ -133,7 +133,7 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             path = ".production-os/worker-canary-48.txt"
             target = root / path
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text("production-os-worker-canary sequence 48\\n", encoding="utf-8")
+            target.write_text("production-os-worker-canary sequence 48\n", encoding="utf-8")
             _enforce_live_worker_canary_patch(request, root, [path])
             for changed in (["ls.txt"], [], [path, "ls.txt"]):
                 with self.subTest(changed=changed), self.assertRaises(StudioError):

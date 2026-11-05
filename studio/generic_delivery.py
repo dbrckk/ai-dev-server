@@ -1,6 +1,7 @@
 """Resume managed review delivery after implementation, without another model call."""
 from pathlib import Path
 from copy import deepcopy
+import hashlib
 import time
 
 from core import APIError, StudioError, canonical
@@ -9,6 +10,46 @@ from source_delivery_checkpoint import request_fingerprint, SourceCheckpointErro
 from generic_target_ci import inspect as inspect_ci, dispatch as dispatch_ci
 
 CI_DISPATCH_GRACE_SECONDS = 60
+
+
+def require_exact_canary_evidence(request: dict, verification: dict,
+                                  changed_files: object) -> None:
+    """Reject a stale or semantically wrong managed worker marker before review.
+
+    The independent trusted GitHub reviewer validates the actual diff again;
+    this is an early fail-closed check so a past structurally valid ls.txt
+    cannot be continually retried or presented as a verified implementation.
+    It is intentionally limited to the opted-in worker's exact canary brief.
+    """
+    brief = request.get("brief")
+    if (request.get("target_repo") != "dbrckk/ai-dev-server"
+            or not isinstance(brief, str)
+            or not brief.startswith("Production-OS worker canary ")):
+        return
+
+    # Reuse the existing narrowly scoped instruction contract; do not
+    # duplicate the brief grammar or interpret general user instructions.
+    from production_os_review_canary import contract
+
+    expected = contract(request)
+    if expected is None:
+        raise SourceCheckpointError("Exact worker canary instruction is unverified")
+    path, line = expected
+    if changed_files != [path]:
+        raise SourceCheckpointError("Exact worker canary changed-file scope is invalid")
+
+    files = verification.get("files") if isinstance(verification, dict) else None
+    if not isinstance(files, list) or len(files) != 1 or not isinstance(files[0], dict):
+        raise SourceCheckpointError("Exact worker canary file verification is missing")
+    receipt = files[0]
+    allowed = {
+        (len(raw), hashlib.sha256(raw).hexdigest())
+        for raw in (line.encode("utf-8"), (line + "\n").encode("utf-8"))
+    }
+    if (receipt.get("path") != path
+            or type(receipt.get("bytes")) is not int
+            or (receipt["bytes"], receipt.get("sha256")) not in allowed):
+        raise SourceCheckpointError("Exact worker canary content verification is invalid")
 
 
 def _fingerprint(request: dict) -> str:
@@ -30,6 +71,7 @@ def resumable(checkpoint: dict, request: dict, commit_sha: str) -> bool:
             or receipt.get("implementation_complete") is not True
             or receipt.get("request_fingerprint") != _fingerprint(request)):
         raise SourceCheckpointError("Managed review delivery checkpoint identity changed")
+    require_exact_canary_evidence(request, verification, receipt.get("changed_files"))
     return receipt.get("repair_required") is not True
 
 
@@ -40,6 +82,16 @@ def deliver(request: dict, repo, checkpoint: dict, state: dict, out: Path,
     if verification.get("passed") is not True:
         raise StudioError("Managed review delivery requires verified implementation")
     previous = verification.get("managed_review_delivery") or {}
+    # The changed-file proof must be identical both on initial delivery and
+    # on resume. No credentialed PR/dispatch call is allowed for a bad marker.
+    if request.get("target_repo") == "dbrckk/ai-dev-server":
+        candidate_changed = previous.get("changed_files", [])
+        if state.get("rounds"):
+            candidate_changed = sorted({
+                name for row in state["rounds"] if isinstance(row, dict)
+                for name in row.get("changed_files", []) if isinstance(name, str)
+            })[:100]
+        require_exact_canary_evidence(request, verification, candidate_changed)
     changed = previous.get("changed_files", [])
     if state.get("rounds"):
         changed = sorted({name for row in state["rounds"] if isinstance(row, dict)

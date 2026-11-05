@@ -146,6 +146,8 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                 )
                 request["target_repo"] = "dbrckk/Jumpy"
                 self.assertEqual(review_contract(request), (relative, line) if valid else None)
+                request["target_repo"] = "dbrckk/ai-dev-server"
+                self.assertEqual(review_contract(request), (relative, line) if valid else None)
 
         # Extend the existing canary regression: Jumpy's exact marker-only
         # request must bypass the expensive Godot game-production pipeline.
@@ -168,6 +170,13 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             "production_os": {"workflow_id": "1" * 32, "workflow_task_id": "implementation"},
         }
         self.assertEqual(review_contract(req), (path, line))
+        # The same exact, finite contract may exercise the target repository's
+        # GitHub transport without asking a model to invent a marker file.
+        ai_dev_request = {**req, "target_repo": "dbrckk/ai-dev-server"}
+        self.assertEqual(review_contract(ai_dev_request), (path, line))
+        self.assertIsNone(review_contract({
+            **ai_dev_request, "brief": brief + " Also write ls.txt."
+        }))
         self.assertIsNone(review_contract({**req, "brief": brief + " Also modify scripts."}))
         self.assertIsNone(review_contract({**req, "target_repo": "stranger/Jumpy"}))
         self.assertIsNone(review_contract({**req, "production_os": {}}))

@@ -212,6 +212,32 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                 self.assertEqual(result["report"]["pull_request"]["number"], 42)
                 instance.await_trusted_review.assert_called_once_with(published)
                 self.assertEqual(result["report"]["rounds"][0]["changed_files"], [path])
+                # A restarted worker must reuse the exact already-published
+                # marker without creating another commit or spending tokens.
+                instance.restore.return_value = (published, {"files": 3})
+                resumed = run_review_canary(
+                    req, Path(temp) / "resumed-out", work,
+                )
+                self.assertEqual(resumed["status"], "complete")
+                self.assertEqual(resumed["report"]["checkpoint_commit"], published)
+                instance.publish.assert_called_once()
+                # AI Dev Server uses the same restricted real Git transport.
+                # The PR URL must match this repository, never Jumpy.
+                instance.restore.return_value = ("a" * 40, {"files": 3})
+                instance.await_trusted_review.return_value = {
+                    "number": 44, "state": "open",
+                    "url": "https://github.com/dbrckk/ai-dev-server/pull/44",
+                    "handoff_confirmed": True,
+                }
+                ai_delivered = run_review_canary(
+                    ai_dev_request, Path(temp) / "ai-out",
+                    Path(temp) / "ai-work",
+                )
+                self.assertEqual(ai_delivered["status"], "complete")
+                self.assertEqual(
+                    ai_delivered["report"]["rounds"][0]["changed_files"], [path],
+                )
+                self.assertEqual(ai_delivered["report"]["pull_request"]["number"], 44)
                 # An old PR number/URL without this exact published commit
                 # must not finish the delivery canary.
                 instance.await_trusted_review.return_value = None

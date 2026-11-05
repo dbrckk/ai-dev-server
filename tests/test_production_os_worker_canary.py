@@ -617,6 +617,14 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     assert "contents: read" in workflow
     assert "secrets.GITHUB_TOKEN" in workflow
     assert "PRODUCTION_OS_CANARY_DISPATCH_TOKEN" in workflow
+    # A cold free Render container needs a read-only readiness probe before
+    # the short-lived credential exchange, not after OIDC times out.
+    assert workflow.index("- name: Wait for Render and PostgreSQL readiness before OIDC") < workflow.index(
+        "- name: Exchange GitHub OIDC for scoped operator token"
+    )
+    assert 'base + "/readyz"' in workflow
+    assert 'data.get("database") == "reachable"' in workflow
+    assert "NoRedirect(urllib.request.HTTPRedirectHandler)" in workflow
     # The canary enqueues first and dispatches only if the control plane did
     # not already wake a worker. A push trigger would race the queue.
     worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(

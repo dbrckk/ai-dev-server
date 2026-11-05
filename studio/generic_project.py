@@ -773,6 +773,29 @@ def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:
 
 
 
+def _require_exact_canary_workspace(req: dict, work: Path, changed: list[str]) -> None:
+    """Keep an incorrect model candidate out of a managed delivery branch."""
+    brief = req.get("brief")
+    if (req.get("target_repo") != "dbrckk/ai-dev-server"
+            or not isinstance(brief, str)
+            or not brief.startswith("Production-OS worker canary ")):
+        return
+
+    from production_os_review_canary import contract
+
+    expected = contract(req)
+    if expected is None:
+        raise StudioError("Exact worker canary instruction is unverified")
+    path, line = expected
+    if changed != [path]:
+        raise StudioError("Exact worker canary changed-file scope is invalid")
+    target = work / path
+    if target.is_symlink() or not target.is_file():
+        raise StudioError("Exact worker canary artifact is missing or unsafe")
+    if target.read_bytes() not in {line.encode("utf-8"), (line + "\n").encode("utf-8")}:
+        raise StudioError("Exact worker canary content verification failed")
+
+
 def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None:
     """Publish a round boundary only after the local sealed checkpoint exists.
 
@@ -2636,6 +2659,10 @@ Objective and current plan:
         (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "generic-report.json").write_text(canonical(state))
 
+        # A structural text verifier proves UTF-8 safety, not that the model
+        # followed a one-file objective. The exact canary is a finite,
+        # independently checkable contract: reject any wrong patch before Git.
+        _require_exact_canary_workspace(req, work, changed)
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
         if complete and req.get("production_os"):
             checkpoint = advance_checkpoint(

@@ -1,4 +1,5 @@
 import os
+import hashlib
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -121,6 +122,74 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             self.assertIsNone(
                 _existing_worker_canary_verification(incomplete, root)
             )
+
+        # The old live canary #48 produced ls.txt and passed only a
+        # structural text check. It must not be published or replayed as a
+        # verified exact marker, even when the checkpoint says "passed".
+        from generic_delivery import require_exact_canary_evidence, resumable, _fingerprint
+        from generic_project import _require_exact_canary_workspace
+        from execution_checkpoint import advance, new
+        from source_delivery_checkpoint import SourceCheckpointError
+
+        sequence = 48
+        request = {**self._request(sequence), "id": "pos-canary-48",
+                   "target_repo": "dbrckk/ai-dev-server",
+                   "brief": canary_instruction(sequence)}
+        expected_path = ".production-os/worker-canary-48.txt"
+        expected_content = b"production-os-worker-canary sequence 48\\n"
+        verified = {
+            "passed": True, "status": "passed", "structural_only": True,
+            "files": [{
+                "path": expected_path, "bytes": len(expected_content),
+                "sha256": hashlib.sha256(expected_content).hexdigest(),
+            }],
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "ls.txt").write_text("list of top-level entries", encoding="utf-8")
+            with self.assertRaisesRegex(StudioError, "changed-file scope"):
+                _require_exact_canary_workspace(request, root, ["ls.txt"])
+            with self.assertRaisesRegex(SourceCheckpointError, "changed-file scope"):
+                require_exact_canary_evidence(request, verified, ["ls.txt"])
+
+            target = root / expected_path
+            target.parent.mkdir(parents=True)
+            target.write_bytes(b"wrong")
+            with self.assertRaisesRegex(StudioError, "content verification"):
+                _require_exact_canary_workspace(request, root, [expected_path])
+            target.write_bytes(expected_content)
+            _require_exact_canary_workspace(request, root, [expected_path])
+            require_exact_canary_evidence(request, verified, [expected_path])
+            tampered = {**verified, "files": [{
+                **verified["files"][0], "sha256": hashlib.sha256(b"wrong").hexdigest(),
+            }]}
+            with self.assertRaisesRegex(SourceCheckpointError, "content verification"):
+                require_exact_canary_evidence(request, tampered, [expected_path])
+            invalid_brief = {**request, "brief": request["brief"] + " Also create ls.txt."}
+            with self.assertRaisesRegex(SourceCheckpointError, "instruction"):
+                require_exact_canary_evidence(invalid_brief, verified, [expected_path])
+
+            receipt = {
+                "request_fingerprint": _fingerprint(request),
+                "implementation_complete": True, "changed_files": [expected_path],
+            }
+            checkpoint = advance(
+                new(request["id"], "generic", "a" * 40),
+                base_sha="b" * 40, round_index=1, phase="published",
+                last_verification={
+                    **verified, "managed_review_delivery": receipt,
+                },
+            )
+            self.assertTrue(resumable(checkpoint, request, "b" * 40))
+            bad_checkpoint = advance(
+                checkpoint, last_verification={
+                    **verified, "managed_review_delivery": {
+                        **receipt, "changed_files": ["ls.txt"],
+                    },
+                },
+            )
+            with self.assertRaisesRegex(SourceCheckpointError, "changed-file scope"):
+                resumable(bad_checkpoint, request, "b" * 40)
 
         # The producer and both consumers must agree at the inclusive limit.
         for sequence in (1, 999_999_999, 1_000_000_000, 0, 1_000_000_001):

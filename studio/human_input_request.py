@@ -55,7 +55,11 @@ def requested_secret_names(detail: object) -> list[str]:
 
 
 def _reason_category(detail: object) -> str:
-    text = str(detail or "").lower()
+    text = str(detail or "").strip().lower()
+    # A GitHub review handoff is an external repository permission/review
+    # prerequisite, not an unspecified missing secret or model failure.
+    if text == "review_handoff":
+        return "review_handoff_required"
     if requested_secret_names(detail):
         return "external_secret_required"
     if "legal" in text:
@@ -94,6 +98,12 @@ def _requested_items(detail: str) -> list[str]:
         ]
 
     category = _reason_category(detail)
+    if category == "review_handoff_required":
+        return [
+            "Inspect the existing GitHub Actions trusted review-handoff run. Do not enqueue the original Production-OS task again.",
+            "If draft PR creation failed with HTTP 403, an authorized repository owner must enable Settings > Actions > General > Workflow permissions > Allow GitHub Actions to create and approve pull requests.",
+            "After fixing permissions, rerun only the existing trusted review-handoff job and verify its draft PR head SHA and CI against the published checkpoint; never merge automatically.",
+        ]
     instructions = {
         "legal_approval_required": "Complete the required legal approval in the external service.",
         "payment_action_required": "Complete the required payment or billing action in the external service.",
@@ -129,7 +139,11 @@ def render(project_id: str, detail: str, *, target_repo: str | None = None) -> s
         "- Do NOT paste API keys, passwords, private keys, tokens, or recovery codes into this file.",
         "- Put secrets in GitHub repository/environment secrets (or the external service's secure secret manager).",
         "- Keep the secret name requested above exactly unchanged when one is specified.",
-        "- After the prerequisite is supplied, the scheduled autonomous worker can resume from its persisted checkpoint.",
+        (
+            "- Do not relaunch the Production-OS task: recover the existing review handoff and verify its exact checkpoint."
+            if _reason_category(detail) == "review_handoff_required"
+            else "- After the prerequisite is supplied, the scheduled autonomous worker can resume from its persisted checkpoint."
+        ),
         "",
         f"Reason category: {_reason_category(detail)}",
         "",

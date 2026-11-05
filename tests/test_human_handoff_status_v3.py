@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from studio.autonomous_project import ensure_project_goal, run_persistent_project
-from studio.human_input_request import write_request
+from studio.human_input_request import prerequisite_satisfied, safe_handoff_detail, write_request
 
 
 class HumanHandoffStatusV3Tests(unittest.TestCase):
@@ -28,6 +28,44 @@ class HumanHandoffStatusV3Tests(unittest.TestCase):
         self.assertNotIn(secret_value, machine_text)
         self.assertEqual(machine["required_secret_names"], ["CUSTOM_API_KEY"])
         self.assertIn("CUSTOM_API_KEY", text)
+
+    def test_review_handoff_requires_explicit_permission_and_exact_sha_recovery(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            text_path = write_request(
+                root,
+                "pos-review-46",
+                "review_handoff",
+                target_repo="dbrckk/ai-dev-server",
+            )
+            rendered = text_path.read_text(encoding="utf-8")
+            machine = json.loads((root / "user-input-required.json").read_text(
+                encoding="utf-8"
+            ))
+
+        self.assertEqual(machine["reason_category"], "review_handoff_required")
+        self.assertEqual(machine["required_secret_names"], [])
+        self.assertEqual(safe_handoff_detail("review_handoff"), "review_handoff")
+        self.assertFalse(prerequisite_satisfied("review_handoff"))
+        self.assertIn("Settings > Actions > General > Workflow permissions", rendered)
+        self.assertIn("Allow GitHub Actions to create and approve pull requests", rendered)
+        self.assertIn("HTTP 403", rendered)
+        self.assertIn("head SHA and CI", rendered)
+        self.assertIn("Do not enqueue the original Production-OS task again", rendered)
+        self.assertNotIn("Complete the external prerequisite reported", rendered)
+        self.assertNotIn("scheduled autonomous worker can resume", rendered)
+        self.assertNotIn("Bearer ", rendered)
+
+    def test_other_handoff_categories_remain_unchanged(self):
+        with tempfile.TemporaryDirectory() as td:
+            text = write_request(
+                Path(td),
+                "pos-other",
+                "Missing CUSTOM_API_KEY=do-not-copy-this-value",
+                target_repo="owner/repo",
+            ).read_text(encoding="utf-8")
+        self.assertIn("scheduled autonomous worker can resume", text)
+        self.assertNotIn("do-not-copy-this-value", text)
 
     def test_named_secret_resumes_terminal_goal_before_worker_runs(self):
         with tempfile.TemporaryDirectory() as td:

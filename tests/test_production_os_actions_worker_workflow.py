@@ -541,7 +541,8 @@ def test_actions_worker_has_resilient_model_provider_fallbacks():
 
 
 def test_actions_worker_fails_ci_when_production_result_failed():
-    assert 'if status == "failed":' in WORKFLOW
+    assert 'worker_exit=$?' in WORKFLOW
+    assert 'if exit_code != 0 or status in {"failed", "unknown"}:' in WORKFLOW
     assert 'Production-OS base-capability job failed' in WORKFLOW
 
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work():

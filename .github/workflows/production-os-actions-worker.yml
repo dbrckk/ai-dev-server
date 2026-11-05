@@ -598,25 +598,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # The worker returns nonzero for a real job failure. Capture its
+          # structured status before failing the step so scheduled runs remain
+          # diagnosable in logs, not only in short-lived artifacts.
+          worker_exit=0
           python studio/production_os_worker.py \
             --worker-id "$PRODUCTION_OS_WORKER_ID" \
             --output-root studio-output/production-os-actions \
             --status-file "$PRODUCTION_OS_STATUS_FILE" \
-            --once
-          python - <<'PY'
+            --once || worker_exit=$?
+          WORKER_EXIT_CODE="$worker_exit" python - <<'PY'
           import json
           import os
           from pathlib import Path
 
           path = Path(os.environ["PRODUCTION_OS_STATUS_FILE"])
-          payload = json.loads(path.read_text(encoding="utf-8"))
-          status = str(payload.get("status") or "unknown")
+          try:
+              payload = json.loads(path.read_text(encoding="utf-8"))
+          except (OSError, UnicodeError, ValueError):
+              payload = {}
+          if not isinstance(payload, dict):
+              payload = {}
+          raw_status = payload.get("status")
+          status = raw_status if isinstance(raw_status, str) and raw_status in {
+              "completed", "idle", "paused", "draining",
+              "stale", "cancelled", "failed"
+          } else "unknown"
           mobile_fallback = "true" if status == "idle" else "false"
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
               handle.write(f"status={status}\n")
               handle.write(f"mobile_fallback={mobile_fallback}\n")
-          print(f"Base-capability worker result: {status}")
-          if status == "failed":
+          exit_code = int(os.environ["WORKER_EXIT_CODE"])
+          print(f"Base-capability worker result: {status} (exit={exit_code})")
+          if exit_code != 0 or status in {"failed", "unknown"}:
               raise SystemExit("Production-OS base-capability job failed")
           PY
 

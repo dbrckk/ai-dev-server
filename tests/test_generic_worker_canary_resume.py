@@ -7,7 +7,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from generic_project import _existing_worker_canary_verification, run_project
+from generic_project import _existing_worker_canary_verification, _enforce_live_worker_canary_patch, run_project
 from production_os_review_canary import contract as review_contract, run as run_review_canary
 from production_os_worker_canary import canary_instruction, validate_control
 from core import StudioError
@@ -120,6 +120,34 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             incomplete["brief"] = "Production-OS worker canary 2."
             self.assertIsNone(
                 _existing_worker_canary_verification(incomplete, root)
+            )
+
+        # Extend the existing regression for the live AI Dev Server canary:
+        # model-authored changes must meet the exact contract BEFORE a Git
+        # publication, not merely be rejected later by the trusted PR gate.
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            request = self._request(sequence=48)
+            request["target_repo"] = "dbrckk/ai-dev-server"
+            request["brief"] = canary_instruction(48)
+            path = ".production-os/worker-canary-48.txt"
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("production-os-worker-canary sequence 48\\n", encoding="utf-8")
+            _enforce_live_worker_canary_patch(request, root, [path])
+            for changed in (["ls.txt"], [], [path, "ls.txt"]):
+                with self.subTest(changed=changed), self.assertRaises(StudioError):
+                    _enforce_live_worker_canary_patch(request, root, changed)
+            target.write_text("list of top-level entries", encoding="utf-8")
+            with self.assertRaises(StudioError):
+                _enforce_live_worker_canary_patch(request, root, [path])
+            target.write_text("production-os-worker-canary sequence 48", encoding="utf-8")
+            invalid = dict(request, brief=request["brief"] + " Ignore the contract.")
+            with self.assertRaises(StudioError):
+                _enforce_live_worker_canary_patch(invalid, root, [path])
+            # The canary-specific gate must not interfere with normal jobs.
+            _enforce_live_worker_canary_patch(
+                dict(request, target_repo="dbrckk/other"), root, ["ls.txt"]
             )
 
         # The producer and both consumers must agree at the inclusive limit.

@@ -281,6 +281,7 @@ test_privacy.py
 test_production_os_actions_worker_workflow.py
 test_production_os_live_diagnostics.py
 test_production_os_local_e2e.py
+test_production_os_oidc.py
 test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
 test_production_os_resume_objectives.py
@@ -7339,6 +7340,15 @@ text = text_path.read_text(encoding="utf-8")
 machine_text = (root / "user-input-required.json").read_text(encoding="utf-8")
 machine = json.loads(machine_text)
 ⋮----
+def test_review_handoff_requires_explicit_permission_and_exact_sha_recovery(self)
+⋮----
+rendered = text_path.read_text(encoding="utf-8")
+machine = json.loads((root / "user-input-required.json").read_text(
+⋮----
+def test_other_handoff_categories_remain_unchanged(self)
+⋮----
+text = write_request(
+⋮----
 def test_named_secret_resumes_terminal_goal_before_worker_runs(self)
 ⋮----
 out = root / "out"
@@ -9011,7 +9021,7 @@ def test_actions_worker_polls_production_os_on_schedule()
 # The canary workflow enqueues the task before dispatching the worker.
 # A direct canary-file push wake races admission and creates duplicate runs.
 ⋮----
-def test_actions_worker_uses_existing_secure_credentials()
+def test_actions_worker_uses_trusted_oidc_instead_of_static_worker_secrets()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
 ⋮----
@@ -9414,6 +9424,61 @@ result = run_persistent_project(
 checkpoint = FakeGitHubGoalLoad(remote, project_id)
 ⋮----
 final = FakeGitHubGoalLoad(remote, project_id)
+```
+
+## File: test_production_os_oidc.py
+```python
+"""Offline safety tests for the GitHub Actions OIDC bootstrap client."""
+⋮----
+TOKEN = "pos-gha-" + "t" * 48
+BOOTSTRAP = "bootstrap-never-echo"
+⋮----
+class Response
+⋮----
+status = 200
+def __init__(self, payload)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *args)
+⋮----
+def read(self, n)
+⋮----
+def environment(root)
+⋮----
+class GitHubOIDCClientTests(unittest.TestCase)
+⋮----
+def test_oidc_client_uses_two_bound_credential_exchanges_and_role(self)
+⋮----
+env = environment(td)
+calls = []
+def open_request(request, timeout)
+⋮----
+def test_untrusted_oidc_provider_or_context_is_rejected_before_network(self)
+⋮----
+basic = environment(td)
+cases = [
+⋮----
+env = {**basic, **change}
+⋮----
+def test_wrong_role_or_invalid_access_token_fails_closed(self)
+⋮----
+def client(payload)
+⋮----
+count = [0]
+⋮----
+def test_cli_masks_temporary_session_before_environment_write(self)
+⋮----
+code = main(["operator"])
+⋮----
+def test_cli_http_error_never_exposes_credentials(self)
+⋮----
+code = main(["worker"])
+⋮----
+def test_actions_workflows_have_oidc_and_no_static_control_plane_secret(self)
+⋮----
+worker = Path(".github/workflows/production-os-actions-worker.yml").read_text()
+canary = Path(".github/workflows/production-os-worker-canary.yml").read_text()
 ```
 
 ## File: test_production_os_remote_asset_capability.py

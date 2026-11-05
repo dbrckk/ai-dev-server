@@ -1601,6 +1601,7 @@
         "studio/godot_store_metadata_stage.py",
         "studio/godot_visual_qa.py",
         "studio/godot_visual_stage.py",
+        "studio/human_input_request.py",
         "studio/idempotent_model.py",
         "studio/immutable_artifact_cache.py",
         "studio/learning_context.py",
@@ -1734,7 +1735,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 230,
+      "in_degree": 231,
       "out_degree": 21
     },
     "studio/cost_drift.py": {
@@ -3338,6 +3339,7 @@
     },
     "studio/human_input_request.py": {
       "dependencies": [
+        "studio/core.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -3348,7 +3350,7 @@
         "tests/test_human_input_request.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/idempotent_model.py": {
       "dependencies": [
@@ -4088,6 +4090,16 @@
       "in_degree": 2,
       "out_degree": 5
     },
+    "studio/production_os_oidc.py": {
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_oidc.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 1
+    },
     "studio/production_os_provider_config.py": {
       "dependencies": [
         "studio/core.py",
@@ -4313,9 +4325,7 @@
       "out_degree": 2
     },
     "studio/provider_cost.py": {
-      "dependencies": [
-        "tests/test_unified_routing_score.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "studio/core.py",
         "studio/generic_model.py",
@@ -4324,7 +4334,7 @@
         "tests/test_provider_cost.py"
       ],
       "in_degree": 5,
-      "out_degree": 1
+      "out_degree": 0
     },
     "studio/provider_health.py": {
       "dependencies": [
@@ -7560,6 +7570,14 @@
       "in_degree": 1,
       "out_degree": 7
     },
+    "tests/test_production_os_oidc.py": {
+      "dependencies": [
+        "studio/production_os_oidc.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "tests/test_production_os_remote_asset_capability.py": {
       "dependencies": [
         "studio/production_os_worker.py"
@@ -8409,12 +8427,12 @@
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_live_diagnostics.py",
+        "studio/production_os_oidc.py",
         "studio/production_os_provider_config.py",
         "studio/production_os_source_tasks.py",
         "studio/production_os_worker.py",
         "studio/production_os_worker_canary.py",
-        "studio/promoted_capabilities.py",
-        "studio/provider_cost.py"
+        "studio/promoted_capabilities.py"
       ],
       "in_degree": 64,
       "out_degree": 1

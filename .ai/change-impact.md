@@ -1,18 +1,18 @@
 # Change impact
 
-Base: 9fc3f377a74aaa059f1c824bb45cc509cd2ab330
-Head: 0f6589aa0f3ebd9a1dcdd60e3224da9af03db8d3
+Base: 2747c84f843835795000e43825725c85b1915dbc
+Head: 48326afcb8adf070eafbcd902f8c81e5d092400c
 
 ## Changed files
-- M studio/production_os_worker_canary.py
-- M tests/test_production_os_worker_canary.py
+- M studio/human_input_request.py
+- M tests/test_human_handoff_status_v3.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker_canary.py
+- tests/test_human_input_request.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

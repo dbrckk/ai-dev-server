@@ -142,17 +142,17 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-    "sequence": 46,
-    "repository": "dbrckk/ai-dev-server",
-    "scenario": "file"
+  "sequence": 46,
+  "repository": "dbrckk/ai-dev-server",
+  "scenario": "file"
 }
 ```
 
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 25,
-  "reason": "Continue eligible queued Production-OS work on qualified main after live operator, inference and immediate wake diagnostics (2026-10-14)"
+  "sequence": 26,
+  "reason": "Read-only Production-OS GitHub OIDC worker authentication qualification on studycall12; queue verified empty before dispatch (2026-11-05)"
 }
 ```
 

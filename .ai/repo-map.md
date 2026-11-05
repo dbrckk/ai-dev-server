@@ -380,6 +380,7 @@ studio/
   production_os_bounded_source_repair.py
   production_os_jumpy_source_repair.py
   production_os_live_diagnostics.py
+  production_os_oidc.py
   production_os_provider_config.py
   production_os_resume_objectives.py
   production_os_review_canary.py
@@ -701,6 +702,7 @@ tests/
   test_production_os_actions_worker_workflow.py
   test_production_os_live_diagnostics.py
   test_production_os_local_e2e.py
+  test_production_os_oidc.py
   test_production_os_remote_asset_capability.py
   test_production_os_result_contract.py
   test_production_os_resume_objectives.py
@@ -1904,6 +1906,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: production-os-actions-worker
@@ -1915,7 +1918,6 @@ jobs:
     timeout-minutes: 90
     env:
       PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
-      PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
       PRODUCTION_OS_WORKER_SPECIALTIES: mobile
       PRODUCTION_OS_STATUS_FILE: studio-output/production-os-actions/worker-status.json
@@ -2198,6 +2200,10 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+
+      - name: Exchange GitHub OIDC for scoped worker token
+        if: steps.readiness.outputs.ready == 'true'
+        run: python studio/production_os_oidc.py worker
 
       - name: Install Production-OS remote tools
         if: steps.readiness.outputs.ready == 'true'
@@ -3140,6 +3146,7 @@ on:
 permissions:
   contents: read
   actions: write
+  id-token: write
 
 concurrency:
   group: production-os-worker-canary
@@ -3151,8 +3158,6 @@ jobs:
     timeout-minutes: 40
     env:
       PRODUCTION_OS_URL: https://production-os-control-plane.onrender.com
-      PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
-      PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PYTHONPATH: studio
       PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -3165,6 +3170,14 @@ jobs:
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+
+      # Canary requires an operator credential and a narrower read-only worker
+      # role check. Both sessions are short-lived; neither secret is stored.
+      - name: Exchange GitHub OIDC for scoped operator token
+        run: python studio/production_os_oidc.py operator
+
+      - name: Exchange GitHub OIDC for scoped worker token
+        run: python studio/production_os_oidc.py worker
 
       # The control plane may already dispatch a worker while queueing. This
       # workflow_dispatch is a fallback only when no worker was woken.
@@ -3823,17 +3836,17 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-    "sequence": 46,
-    "repository": "dbrckk/ai-dev-server",
-    "scenario": "file"
+  "sequence": 46,
+  "repository": "dbrckk/ai-dev-server",
+  "scenario": "file"
 }
 ````
 
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 25,
-  "reason": "Continue eligible queued Production-OS work on qualified main after live operator, inference and immediate wake diagnostics (2026-10-14)"
+  "sequence": 26,
+  "reason": "Read-only Production-OS GitHub OIDC worker authentication qualification on studycall12; queue verified empty before dispatch (2026-11-05)"
 }
 ````
 
@@ -19969,6 +19982,10 @@ names: list[str] = []
 ⋮----
 def _reason_category(detail: object) -> str
 ⋮----
+text = str(detail or "").strip().lower()
+# A GitHub review handoff is an external repository permission/review
+# prerequisite, not an unspecified missing secret or model failure.
+⋮----
 def safe_handoff_detail(detail: object) -> str
 ⋮----
 """Keep safe action identifiers, but never persist secret-bearing/free-form detail."""
@@ -19980,6 +19997,7 @@ def _requested_items(detail: str) -> list[str]
 names = requested_secret_names(detail)
 ⋮----
 category = _reason_category(detail)
+⋮----
 instructions = {
 ⋮----
 def render(project_id: str, detail: str, *, target_repo: str | None = None) -> str
@@ -23207,6 +23225,62 @@ ready = ready and result.get("coding_smoke", {}).get("status") == "ready"
 ⋮----
 wake = result.get("worker_wake")
 ready = ready and isinstance(wake, dict) and wake.get("mode") in {
+````
+
+## File: studio/production_os_oidc.py
+````python
+"""Acquire short-lived Production-OS role credentials via GitHub Actions OIDC.
+
+Run only inside the trusted Actions job after checkout. Never put a credential
+in shell output, source control, artifacts, or the job summary.
+"""
+⋮----
+AUDIENCE = "production-os-control-plane"
+ROLE_ENV = {
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+def _https_origin(base)
+⋮----
+parsed = urllib.parse.urlsplit(str(base or "").strip())
+⋮----
+def _read_json(response, max_bytes)
+⋮----
+raw = response.read(max_bytes + 1)
+⋮----
+value = json.loads(raw.decode("utf-8"))
+⋮----
+def acquire_session(*, role, env=None, opener=None)
+⋮----
+env = env or os.environ
+⋮----
+request_url = str(env.get("ACTIONS_ID_TOKEN_REQUEST_URL") or "")
+bootstrap = str(env.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN") or "")
+parsed = urllib.parse.urlsplit(request_url)
+⋮----
+origin = _https_origin(env.get("PRODUCTION_OS_URL"))
+⋮----
+opener = urllib.request.build_opener(_NoRedirect()).open
+delimiter = "&" if parsed.query else "?"
+request = urllib.request.Request(
+⋮----
+assertion = _read_json(response, 16000).get("value")
+⋮----
+exchange = urllib.request.Request(
+⋮----
+payload = _read_json(response, 2048)
+bearer = payload.get("access_token")
+⋮----
+def main(argv=None)
+⋮----
+arguments = list(sys.argv[1:] if argv is None else argv)
+⋮----
+bearer = acquire_session(role=arguments[0])
+path = os.environ.get("GITHUB_ENV")
+⋮----
+# Register masking before exporting the ephemeral session.
 ````
 
 ## File: studio/production_os_provider_config.py
@@ -35019,6 +35093,15 @@ text = text_path.read_text(encoding="utf-8")
 machine_text = (root / "user-input-required.json").read_text(encoding="utf-8")
 machine = json.loads(machine_text)
 ⋮----
+def test_review_handoff_requires_explicit_permission_and_exact_sha_recovery(self)
+⋮----
+rendered = text_path.read_text(encoding="utf-8")
+machine = json.loads((root / "user-input-required.json").read_text(
+⋮----
+def test_other_handoff_categories_remain_unchanged(self)
+⋮----
+text = write_request(
+⋮----
 def test_named_secret_resumes_terminal_goal_before_worker_runs(self)
 ⋮----
 out = root / "out"
@@ -36691,7 +36774,7 @@ def test_actions_worker_polls_production_os_on_schedule()
 # The canary workflow enqueues the task before dispatching the worker.
 # A direct canary-file push wake races admission and creates duplicate runs.
 ⋮----
-def test_actions_worker_uses_existing_secure_credentials()
+def test_actions_worker_uses_trusted_oidc_instead_of_static_worker_secrets()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
 ⋮----
@@ -37094,6 +37177,61 @@ result = run_persistent_project(
 checkpoint = FakeGitHubGoalLoad(remote, project_id)
 ⋮----
 final = FakeGitHubGoalLoad(remote, project_id)
+````
+
+## File: tests/test_production_os_oidc.py
+````python
+"""Offline safety tests for the GitHub Actions OIDC bootstrap client."""
+⋮----
+TOKEN = "pos-gha-" + "t" * 48
+BOOTSTRAP = "bootstrap-never-echo"
+⋮----
+class Response
+⋮----
+status = 200
+def __init__(self, payload)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *args)
+⋮----
+def read(self, n)
+⋮----
+def environment(root)
+⋮----
+class GitHubOIDCClientTests(unittest.TestCase)
+⋮----
+def test_oidc_client_uses_two_bound_credential_exchanges_and_role(self)
+⋮----
+env = environment(td)
+calls = []
+def open_request(request, timeout)
+⋮----
+def test_untrusted_oidc_provider_or_context_is_rejected_before_network(self)
+⋮----
+basic = environment(td)
+cases = [
+⋮----
+env = {**basic, **change}
+⋮----
+def test_wrong_role_or_invalid_access_token_fails_closed(self)
+⋮----
+def client(payload)
+⋮----
+count = [0]
+⋮----
+def test_cli_masks_temporary_session_before_environment_write(self)
+⋮----
+code = main(["operator"])
+⋮----
+def test_cli_http_error_never_exposes_credentials(self)
+⋮----
+code = main(["worker"])
+⋮----
+def test_actions_workflows_have_oidc_and_no_static_control_plane_secret(self)
+⋮----
+worker = Path(".github/workflows/production-os-actions-worker.yml").read_text()
+canary = Path(".github/workflows/production-os-worker-canary.yml").read_text()
 ````
 
 ## File: tests/test_production_os_remote_asset_capability.py

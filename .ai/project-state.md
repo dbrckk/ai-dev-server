@@ -323,22 +323,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-11-04T22:43:55Z
+Generated: 2026-11-05T07:42:33Z
 
 ### Git
 - Branch: `main`
-- Head: `0f6589aa0f3e`
-- Commit date: 2026-11-04T17:43:44-05:00
-- Commit: fix(canary): preserve workflow IDs on unconfirmed wake (#417)
-- Tracked files: 880
+- Head: `48326afcb8ad`
+- Commit date: 2026-11-05T02:42:14-05:00
+- Commit: fix(handoff): explain GitHub PR permission and checkpoint recovery (#420)
+- Tracked files: 882
 
 ### Recently changed files
+- `studio/human_input_request.py`
+- `tests/test_human_handoff_status_v3.py`
+- `control/production-os-worker-canary.json`
+- `control/production-os-worker-kick.json`
+- `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-worker-canary.yml`
+- `studio/production_os_oidc.py`
+- `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_production_os_oidc.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `.github/workflows/production-os-worker-canary.yml`
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

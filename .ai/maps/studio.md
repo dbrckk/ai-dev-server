@@ -292,6 +292,7 @@ privacy_stage.py
 production_os_bounded_source_repair.py
 production_os_jumpy_source_repair.py
 production_os_live_diagnostics.py
+production_os_oidc.py
 production_os_provider_config.py
 production_os_resume_objectives.py
 production_os_review_canary.py
@@ -13783,6 +13784,10 @@ names: list[str] = []
 ⋮----
 def _reason_category(detail: object) -> str
 ⋮----
+text = str(detail or "").strip().lower()
+# A GitHub review handoff is an external repository permission/review
+# prerequisite, not an unspecified missing secret or model failure.
+⋮----
 def safe_handoff_detail(detail: object) -> str
 ⋮----
 """Keep safe action identifiers, but never persist secret-bearing/free-form detail."""
@@ -13794,6 +13799,7 @@ def _requested_items(detail: str) -> list[str]
 names = requested_secret_names(detail)
 ⋮----
 category = _reason_category(detail)
+⋮----
 instructions = {
 ⋮----
 def render(project_id: str, detail: str, *, target_repo: str | None = None) -> str
@@ -17021,6 +17027,62 @@ ready = ready and result.get("coding_smoke", {}).get("status") == "ready"
 ⋮----
 wake = result.get("worker_wake")
 ready = ready and isinstance(wake, dict) and wake.get("mode") in {
+````
+
+## File: production_os_oidc.py
+````python
+"""Acquire short-lived Production-OS role credentials via GitHub Actions OIDC.
+
+Run only inside the trusted Actions job after checkout. Never put a credential
+in shell output, source control, artifacts, or the job summary.
+"""
+⋮----
+AUDIENCE = "production-os-control-plane"
+ROLE_ENV = {
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+def _https_origin(base)
+⋮----
+parsed = urllib.parse.urlsplit(str(base or "").strip())
+⋮----
+def _read_json(response, max_bytes)
+⋮----
+raw = response.read(max_bytes + 1)
+⋮----
+value = json.loads(raw.decode("utf-8"))
+⋮----
+def acquire_session(*, role, env=None, opener=None)
+⋮----
+env = env or os.environ
+⋮----
+request_url = str(env.get("ACTIONS_ID_TOKEN_REQUEST_URL") or "")
+bootstrap = str(env.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN") or "")
+parsed = urllib.parse.urlsplit(request_url)
+⋮----
+origin = _https_origin(env.get("PRODUCTION_OS_URL"))
+⋮----
+opener = urllib.request.build_opener(_NoRedirect()).open
+delimiter = "&" if parsed.query else "?"
+request = urllib.request.Request(
+⋮----
+assertion = _read_json(response, 16000).get("value")
+⋮----
+exchange = urllib.request.Request(
+⋮----
+payload = _read_json(response, 2048)
+bearer = payload.get("access_token")
+⋮----
+def main(argv=None)
+⋮----
+arguments = list(sys.argv[1:] if argv is None else argv)
+⋮----
+bearer = acquire_session(role=arguments[0])
+path = os.environ.get("GITHUB_ENV")
+⋮----
+# Register masking before exporting the ephemeral session.
 ````
 
 ## File: production_os_provider_config.py

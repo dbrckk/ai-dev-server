@@ -773,6 +773,48 @@ def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:
 
 
 
+
+def _enforce_live_worker_canary_patch(req: dict, work: Path, changed: list[str]) -> None:
+    """Reject an off-contract model patch before publishing a worker canary.
+
+    Keep model authorship: this guard never writes the requested marker.
+    The separate trusted review workflow still independently checks GitHub's
+    exact remote diff and commit identity after any successful publication.
+    """
+    if (req.get("target_repo") != "dbrckk/ai-dev-server"
+            or not isinstance(req.get("production_os"), dict)):
+        return
+    brief = req.get("brief")
+    if not isinstance(brief, str) or not brief.startswith("Production-OS worker canary "):
+        return
+    match = _WORKER_CANARY_RE.match(brief)
+    if match is None:
+        raise StudioError("Live worker canary instruction is malformed")
+    sequence = int(match.group(1))
+    relative = f".production-os/worker-canary-{sequence}.txt"
+    marker = f"production-os-worker-canary sequence {sequence}"
+    expected_brief = (
+        f"Production-OS worker canary {sequence}. "
+        f"Make exactly one intentional product-file change: create {relative} "
+        f"containing exactly one line: {marker}. "
+        "Do not change dependencies, workflows, secrets, configuration, "
+        "or existing source files. Verify the file content, persist the normal "
+        "autonomous checkpoint branch, and finish the task successfully."
+    )
+    if brief != expected_brief:
+        raise StudioError("Live worker canary instruction differs from approved contract")
+    if changed != [relative]:
+        raise StudioError("Live worker canary produced unapproved changed files")
+    root = Path(work).resolve()
+    target = Path(work) / relative
+    if (target.is_symlink() or not target.is_file()
+            or not target.resolve().is_relative_to(root)):
+        raise StudioError("Live worker canary file is missing or unsafe")
+    if target.read_bytes() not in {marker.encode(), (marker + "\n").encode()}:
+        raise StudioError("Live worker canary file contents do not match approved bytes")
+
+
+
 def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None:
     """Publish a round boundary only after the local sealed checkpoint exists.
 
@@ -2636,6 +2678,7 @@ Objective and current plan:
         (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "generic-report.json").write_text(canonical(state))
 
+        _enforce_live_worker_canary_patch(req, work, changed)
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
         if complete and req.get("production_os"):
             checkpoint = advance_checkpoint(

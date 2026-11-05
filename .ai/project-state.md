@@ -323,27 +323,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-11-05T07:42:33Z
+Generated: 2026-11-05T15:42:44Z
 
 ### Git
 - Branch: `main`
-- Head: `48326afcb8ad`
-- Commit date: 2026-11-05T02:42:14-05:00
-- Commit: fix(handoff): explain GitHub PR permission and checkpoint recovery (#420)
+- Head: `8da29c99b73c`
+- Commit date: 2026-11-05T10:42:33-05:00
+- Commit: fix(actions): report scheduled worker failures before exiting (#421)
 - Tracked files: 882
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `studio/human_input_request.py`
 - `tests/test_human_handoff_status_v3.py`
 - `control/production-os-worker-canary.json`
 - `control/production-os-worker-kick.json`
-- `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-worker-canary.yml`
 - `studio/production_os_oidc.py`
-- `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_production_os_oidc.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

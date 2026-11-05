@@ -1,18 +1,18 @@
 # Change impact
 
-Base: 2747c84f843835795000e43825725c85b1915dbc
-Head: 48326afcb8adf070eafbcd902f8c81e5d092400c
+Base: bf54bb9558c03e5fcf5175892ec7b3777ed9b265
+Head: 8da29c99b73cb9c69e1d27f2e87127673fe18147
 
 ## Changed files
-- M studio/human_input_request.py
-- M tests/test_human_handoff_status_v3.py
+- M .github/workflows/production-os-actions-worker.yml
+- M tests/test_production_os_actions_worker_workflow.py
 
 ## Affected areas
-- studio
+- .github
 - tests
 
 ## Related test candidates
-- tests/test_human_input_request.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

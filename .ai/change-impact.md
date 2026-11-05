@@ -1,14 +1,15 @@
 # Change impact
 
-Base: bf54bb9558c03e5fcf5175892ec7b3777ed9b265
-Head: 8da29c99b73cb9c69e1d27f2e87127673fe18147
+Base: 965bea73415fc52280aecd17ce9fde698d99dd50
+Head: 155a7bcd58656aeb7e6293b1d4547035bcb78cde
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M tests/test_production_os_actions_worker_workflow.py
+- M studio/generic_delivery.py
+- M studio/generic_project.py
+- M tests/test_generic_worker_canary_resume.py
 
 ## Affected areas
-- .github
+- studio
 - tests
 
 ## Related test candidates

@@ -5764,6 +5764,27 @@ wrong_repo = self._request()
 ⋮----
 incomplete = self._request()
 ⋮----
+# The old live canary #48 produced ls.txt and passed only a
+# structural text check. It must not be published or replayed as a
+# verified exact marker, even when the checkpoint says "passed".
+⋮----
+sequence = 48
+request = {**self._request(sequence), "id": "pos-canary-48",
+expected_path = ".production-os/worker-canary-48.txt"
+expected_content = b"production-os-worker-canary sequence 48\n"
+verified = {
+⋮----
+target = root / expected_path
+⋮----
+tampered = {**verified, "files": [{
+⋮----
+invalid_brief = {**request, "brief": request["brief"] + " Also create ls.txt."}
+⋮----
+receipt = {
+checkpoint = advance(
+⋮----
+bad_checkpoint = advance(
+⋮----
 # The producer and both consumers must agree at the inclusive limit.
 ⋮----
 valid = 1 <= sequence <= 1_000_000_000
@@ -5785,6 +5806,10 @@ line = f"production-os-worker-canary sequence {seq}"
 brief = (
 req = {
 ⋮----
+# The same exact, finite contract may exercise the target repository's
+# GitHub transport without asking a model to invent a marker file.
+ai_dev_request = {**req, "target_repo": "dbrckk/ai-dev-server"}
+⋮----
 out = Path(temp) / "out"
 work = Path(temp) / "work"
 published = "b" * 40
@@ -5792,6 +5817,16 @@ published = "b" * 40
 instance = repository.return_value
 ⋮----
 result = run_review_canary(
+⋮----
+# A restarted worker must reuse the exact already-published
+# marker without creating another commit or spending tokens.
+⋮----
+resumed = run_review_canary(
+⋮----
+# AI Dev Server uses the same restricted real Git transport.
+# The PR URL must match this repository, never Jumpy.
+⋮----
+ai_delivered = run_review_canary(
 ⋮----
 # An old PR number/URL without this exact published commit
 # must not finish the delivery canary.
@@ -8174,6 +8209,16 @@ def runner(args, timeout)
 callback = callback_calls.append
 response = run_project(
 ⋮----
+# An exact AI Dev Server delivery marker is a transport canary,
+# not a free-form coding task. It must bypass model/engine routing.
+⋮----
+exact = {
+exact_path = root / "exact-canary.json"
+⋮----
+def forbidden_runner(*_args, **_kwargs)
+⋮----
+# Nearby instructions must not fall back to unrestricted AI.
+⋮----
 @patch("multi_engine_orchestrator.run_generic_project")
     def test_generic_without_callback_preserves_original_call(self, generic)
 ⋮----
@@ -8246,8 +8291,6 @@ def runner(args,timeout): return subprocess.CompletedProcess(args,0)
 # An exact operator-approved *model* source-repair canary must bypass
 # the costly Godot game-generation pipeline. It must never fall back
 # to a deterministic patch or match unrelated projects/instructions.
-⋮----
-exact = {
 ⋮----
 root = Path(td); req = root / "request.json"; req.write_text(json.dumps(exact))
 ⋮----
@@ -9720,6 +9763,9 @@ denied = FakeClient((APIError(403),))
 def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----
 workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
+⋮----
+# A cold free Render container needs a read-only readiness probe before
+# the short-lived credential exchange, not after OIDC times out.
 ⋮----
 # The canary enqueues first and dispatches only if the control plane did
 # not already wake a worker. A push trigger would race the queue.

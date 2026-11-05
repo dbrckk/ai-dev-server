@@ -323,25 +323,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-11-05T15:42:44Z
+Generated: 2026-11-05T21:46:53Z
 
 ### Git
 - Branch: `main`
-- Head: `8da29c99b73c`
-- Commit date: 2026-11-05T10:42:33-05:00
-- Commit: fix(actions): report scheduled worker failures before exiting (#421)
+- Head: `155a7bcd5865`
+- Commit date: 2026-11-05T16:46:43-05:00
+- Commit: fix(generic): reject invalid canary checkpoints before publishing or review (#425)
 - Tracked files: 882
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `studio/human_input_request.py`
-- `tests/test_human_handoff_status_v3.py`
-- `control/production-os-worker-canary.json`
+- `studio/generic_delivery.py`
+- `studio/generic_project.py`
+- `tests/test_generic_worker_canary_resume.py`
 - `control/production-os-worker-kick.json`
-- `.github/workflows/production-os-worker-canary.yml`
-- `studio/production_os_oidc.py`
-- `tests/test_production_os_oidc.py`
+- `control/production-os-worker-canary.json`
+- `studio/multi_engine_orchestrator.py`
+- `studio/production_os_review_canary.py`
+- `tests/test_multi_engine_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

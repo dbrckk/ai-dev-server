@@ -8792,6 +8792,25 @@ def synthesize_from_memory(memory, project_id, capability, *, api=None, model=No
 ⋮----
 CI_DISPATCH_GRACE_SECONDS = 60
 ⋮----
+"""Reject a stale or semantically wrong managed worker marker before review.
+
+    The independent trusted GitHub reviewer validates the actual diff again;
+    this is an early fail-closed check so a past structurally valid ls.txt
+    cannot be continually retried or presented as a verified implementation.
+    It is intentionally limited to the opted-in worker's exact canary brief.
+    """
+brief = request.get("brief")
+⋮----
+# Reuse the existing narrowly scoped instruction contract; do not
+# duplicate the brief grammar or interpret general user instructions.
+⋮----
+expected = contract(request)
+⋮----
+files = verification.get("files") if isinstance(verification, dict) else None
+⋮----
+receipt = files[0]
+allowed = {
+⋮----
 def _fingerprint(request: dict) -> str
 ⋮----
 objective = (request.get("production_os") or {}).get("objective_sha256")
@@ -8805,6 +8824,13 @@ sha = checkpoint["base_sha"]
 verification = dict(checkpoint.get("last_verification") or {})
 ⋮----
 previous = verification.get("managed_review_delivery") or {}
+# The changed-file proof must be identical both on initial delivery and
+# on resume. No credentialed PR/dispatch call is allowed for a bad marker.
+⋮----
+candidate_changed = previous.get("changed_files", [])
+⋮----
+candidate_changed = sorted({
+⋮----
 changed = previous.get("changed_files", [])
 ⋮----
 changed = sorted({name for row in state["rounds"] if isinstance(row, dict)
@@ -9381,6 +9407,15 @@ target = work / relative
 actual = target.read_text(encoding="utf-8")
 raw = target.read_bytes()
 ⋮----
+def _require_exact_canary_workspace(req: dict, work: Path, changed: list[str]) -> None
+⋮----
+"""Keep an incorrect model candidate out of a managed delivery branch."""
+brief = req.get("brief")
+⋮----
+expected = contract(req)
+⋮----
+target = work / path
+⋮----
 def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None
 ⋮----
 """Publish a round boundary only after the local sealed checkpoint exists.
@@ -9874,6 +9909,10 @@ remaining_items = review.get("remaining")
 browser_reason = str(
 ⋮----
 mobile_reason = str(
+⋮----
+# A structural text verifier proves UTF-8 safety, not that the model
+# followed a one-file objective. The exact canary is a finite,
+# independently checkable contract: reject any wrong patch before Git.
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
 ⋮----
@@ -14970,9 +15009,10 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock)
 ⋮----
 def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None)
 ⋮----
-# A delivery canary is an exact, authenticated Git checkpoint/PR contract,
-# NOT an instruction to build or release an entire Godot game. Keep the
-# usual engine detection for every other user request.
+# An exact, authenticated delivery canary is a Git checkpoint/PR
+# transport probe (not a coding-model evaluation). The only permitted
+# repositories are explicitly allowlisted by its contract; other
+# requests continue through the normal engine detection.
 ⋮----
 canary_req=json.loads(Path(request_path).read_text())
 ⋮----
@@ -17218,17 +17258,18 @@ result = resume(client, control["failed_workflow_ids"], apply=args.apply)
 
 ## File: production_os_review_canary.py
 ````python
-"""Isolated, exact-contract GitHub delivery canary for opted-in Jumpy.
+"""Isolated, exact-contract GitHub delivery canary for trusted repositories.
 
-This does not run a game-development model, alter Godot source or generalize
-repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
+This does not run a coding model or generalize repository_dispatch to untrusted
+repositories. It verifies the real branch -> review PR transport only.
 """
 ⋮----
 _CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
+_ALLOWED_TARGETS = frozenset({"dbrckk/Jumpy", "dbrckk/ai-dev-server"})
 ⋮----
 def contract(req: dict) -> tuple[str, str] | None
 ⋮----
-"""Only an *exact* control-plane Jumpy canary can bypass Godot preview."""
+"""Only an exact, authenticated, allowlisted delivery canary may bypass AI."""
 ⋮----
 production_os = req.get("production_os")
 ⋮----
@@ -17250,9 +17291,15 @@ repo = GenericRepository(github, req["target_repo"], req.get("repository_branch_
 ⋮----
 target = work / path
 ⋮----
+expected = (line + "\n").encode("utf-8")
+⋮----
+# A retry/restored worker must reuse the existing exact checkpoint,
+# not overwrite the file or create a second commit.
 raw = target.read_bytes()
 ⋮----
-sha = repo.publish(base_sha, work, "Production-OS verified Jumpy delivery canary")
+sha = base_sha
+⋮----
+sha = repo.publish(base_sha, work, "Production-OS verified exact delivery canary")
 verification = {
 checkpoint = advance_checkpoint(
 checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"

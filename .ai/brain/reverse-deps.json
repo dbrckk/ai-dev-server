@@ -2074,12 +2074,13 @@
         "tests/test_execution_checkpoint.py",
         "tests/test_generic_published_checkpoint.py",
         "tests/test_generic_published_round_checkpoint.py",
+        "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_runner_persistent.py",
         "tests/test_github_runner_round_persistence.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_preemption_apply.py"
       ],
-      "in_degree": 19,
+      "in_degree": 20,
       "out_degree": 0
     },
     "studio/existing_project.py": {
@@ -2358,15 +2359,18 @@
         "studio/core.py",
         "studio/execution_checkpoint.py",
         "studio/generic_target_ci.py",
+        "studio/production_os_review_canary.py",
         "studio/source_delivery_checkpoint.py",
+        "tests/test_journeys.py",
         "tests/test_studio.py"
       ],
       "dependents": [
         "studio/generic_project.py",
-        "tests/test_generic_published_checkpoint.py"
+        "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_worker_canary_resume.py"
       ],
-      "in_degree": 2,
-      "out_degree": 5
+      "in_degree": 3,
+      "out_degree": 7
     },
     "studio/generic_model.py": {
       "dependencies": [
@@ -2472,6 +2476,7 @@
         "studio/phase_cost_baseline.py",
         "studio/portfolio_candidate_scheduler.py",
         "studio/predictive_budget.py",
+        "studio/production_os_review_canary.py",
         "studio/project_recommendations.py",
         "studio/provider_cost.py",
         "studio/provider_health.py",
@@ -2499,7 +2504,7 @@
         "tests/test_mobile_validation_contract.py"
       ],
       "in_degree": 8,
-      "out_degree": 65
+      "out_degree": 66
     },
     "studio/generic_repository.py": {
       "dependencies": [
@@ -3677,6 +3682,7 @@
         "studio/production_os_review_canary.py",
         "studio/production_os_source_tasks.py",
         "studio/stage_registry.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
       "dependents": [
@@ -3685,7 +3691,7 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 3,
-      "out_degree": 10
+      "out_degree": 11
     },
     "studio/native_model_usage.py": {
       "dependencies": [
@@ -4134,14 +4140,17 @@
         "studio/execution_checkpoint.py",
         "studio/generic_repository.py",
         "studio/run.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
       "dependents": [
+        "studio/generic_delivery.py",
+        "studio/generic_project.py",
         "studio/multi_engine_orchestrator.py",
         "tests/test_generic_worker_canary_resume.py"
       ],
-      "in_degree": 2,
-      "out_degree": 5
+      "in_degree": 4,
+      "out_degree": 6
     },
     "studio/production_os_source_tasks.py": {
       "dependencies": [
@@ -4966,11 +4975,12 @@
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_jumpy_source_repair.py",
         "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_runner_persistent.py",
         "tests/test_production_os_worker_recovery.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 9,
+      "in_degree": 10,
       "out_degree": 3
     },
     "studio/stage_registry.py": {
@@ -6613,14 +6623,18 @@
     "tests/test_generic_worker_canary_resume.py": {
       "dependencies": [
         "studio/core.py",
+        "studio/execution_checkpoint.py",
+        "studio/generic_delivery.py",
         "studio/generic_project.py",
         "studio/generic_repository.py",
         "studio/production_os_review_canary.py",
-        "studio/production_os_worker_canary.py"
+        "studio/production_os_worker_canary.py",
+        "studio/source_delivery_checkpoint.py",
+        "tests/test_production_os_worker_canary.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 9
     },
     "tests/test_github_artifact_cas_audit_store.py": {
       "dependencies": [
@@ -7065,6 +7079,7 @@
         "studio/evolution_synthesis.py",
         "studio/existing_project.py",
         "studio/generic_capability_synthesis.py",
+        "studio/generic_delivery.py",
         "studio/generic_model.py",
         "studio/generic_repository.py",
         "studio/github_agent_performance_store.py",
@@ -7101,7 +7116,7 @@
         "tests/test_provider_429_cooldown.py",
         "tests/test_repository_branch_identity.py"
       ],
-      "in_degree": 43,
+      "in_degree": 44,
       "out_degree": 2
     },
     "tests/test_jumpy_v13_migration.py": {
@@ -7256,6 +7271,7 @@
         "studio/stage_registry.py",
         "studio/target_ci_verification.py",
         "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_studio.py"
       ],
       "dependents": [
@@ -7325,7 +7341,7 @@
         "studio/replacement_ci_policy_v11.py"
       ],
       "in_degree": 64,
-      "out_degree": 14
+      "out_degree": 15
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [
@@ -7625,12 +7641,16 @@
         "studio/existing_project.py",
         "studio/generic_target_ci.py",
         "studio/godot_model.py",
+        "studio/multi_engine_orchestrator.py",
         "studio/native_model_usage.py",
+        "studio/production_os_review_canary.py",
         "studio/production_os_worker_canary.py",
+        "tests/test_generic_worker_canary_resume.py",
+        "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_provider_429_cooldown.py"
       ],
-      "in_degree": 8,
+      "in_degree": 12,
       "out_degree": 5
     },
     "tests/test_production_os_worker_cli.py": {

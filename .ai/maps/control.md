@@ -142,7 +142,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 46,
+  "sequence": 49,
   "repository": "dbrckk/ai-dev-server",
   "scenario": "file"
 }
@@ -151,8 +151,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 26,
-  "reason": "Read-only Production-OS GitHub OIDC worker authentication qualification on studycall12; queue verified empty before dispatch (2026-11-05)"
+  "sequence": 27,
+  "reason": "Continue existing queued Production-OS canary 49 after stale canary 48 review was rejected; no new task enqueued (2026-11-05)."
 }
 ```
 

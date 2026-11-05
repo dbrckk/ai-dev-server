@@ -620,7 +620,7 @@ jobs:
           if not isinstance(payload, dict):
               payload = {}
           raw_status = payload.get("status")
-          status = raw_status if raw_status in {
+          status = raw_status if isinstance(raw_status, str) and raw_status in {
               "completed", "idle", "paused", "draining", "failed"
           } else "unknown"
           mobile_fallback = "true" if status == "idle" else "false"
